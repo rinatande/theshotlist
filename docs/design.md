@@ -460,6 +460,22 @@ Locations could be created, edited, reordered and deleted long before the shot �
 
 **Reordering shots is the same screen as reordering locations**, on a `LOCATIONS | SHOTS` toggle, rather than a third way to drag things. Shots show their band, their number, their status mark and a drag handle; moving one renumbers the rest and exposed marks survive the renumber.
 
+### 5.14 Project actions — edit and delete
+
+Once a project existed there was no way to change it or get rid of it.
+
+**A `⋯` at the right of the project's title** on every screen titled with the project's name — the shot list in both themes, the beat view, the Days screen, the gear and look tabs, and their empty states. Not on a day's list (`B4`), whose title is the day, not the project. The title truncates with an ellipsis to make room; the `⋯` keeps a 44px target by overlapping the header's padding rather than growing it.
+
+**`⋯`, not a gear.** The app already has a Settings screen — theme, time format — reached from Projects. A gear that opened *Edit* and *Delete* would be the icon promising one thing and doing another, which is the same trap as "Setup" (§5.10). `⋯` is the conventional sign for *actions on this thing*. It's also the first icon in an otherwise all-text interface, so it's three plain dots in `--ink`, nothing more.
+
+**The sheet.** Slides up from the bottom over a dimmed screen. The project's name at the top, so it's clear what you're acting on, and exactly two rows: `EDIT PROJECT` and `DELETE PROJECT`, delete in `--warn`. Tap outside, swipe down or `CLOSE` to dismiss.
+
+**Delete confirms in the same sheet.** It doesn't open a new screen or a system dialog; the sheet's content changes to the question, and says what goes with the project: *"Are you sure you want to delete this project? 12 shots, 3 days and the brief go with it. This can't be undone."* Everywhere else the app states consequences in place instead of confirming (§5.10, §5.12) — project delete is the one exception, because it's the one action that genuinely can't be reversed: nothing is stored anywhere but the device. `YES, DELETE` is filled `--warn`; `CANCEL` beneath closes the sheet.
+
+**Edit reuses the create flow**, prefilled, titled `Edit project · 1/2` and `2/2`, and ending in `SAVE` instead of `CREATE PROJECT`. Nothing new to learn.
+
+**Changes that touch planned shots say so before saving.** When an edit changes something the existing list depends on — the number of days, the delivery length — a `CHANGES` box appears above `SAVE` saying exactly what will happen: *"Going from 3 days to 2: day 3's 4 shots move to day 2. Nothing is deleted — you can move them again from the list."* It appears only when such a change has been made. Nothing moves silently, and nothing is deleted by an edit.
+
 ---
 
 ## 6. Gear
@@ -549,7 +565,7 @@ Two suggestion boards are on the canvas deliberately, because the contrast is th
 | **Screen header** | 20px top padding, back link left (12px, `0.12em`, `--accent`), status right. Title 20px/700 UPPER below. Bottom `1px --rule`. |
 | **Progress meter** | Label 11px UPPER `--ink-muted`, 4px track in `--rule` (day: `#E0D5BE`), fill `--ok`, count 13px/700 `--ok`, tabular. |
 | **Tab bar** | Inline text tabs, 12px UPPER `0.12em`, `14px 0` vertical padding, `20px` gap on the container — never per-tab margins. Active: `--accent` + 2px bottom border. Inactive: `--ink-muted`. No pills, no background. The padding is what it is because 12px gave a 41px row: under the 44px floor in §3 and easy to miss, since a tab looks like text rather than a control. |
-| **Project header + tabs** | One block, identical on every screen behind the tabs: back link and connection status, project name at 19px/700 UPPER, format line in `--ink-muted`, then the tab bar. It does not vary by tab, and it does not disappear when a tab is empty — an empty tab is a state of the project, not a different place. A screen that needs its own title (the gear library's item count, say) puts it in a strip *below* the tab bar rather than replacing the project name. |
+| **Project header + tabs** | One block, identical on every screen behind the tabs: back link and connection status, project name at 19px/700 UPPER on one line (truncating with an ellipsis) with the `⋯` project-actions button at its right (§5.14), format line in `--ink-muted`, then the tab bar. It does not vary by tab, and it does not disappear when a tab is empty — an empty tab is a state of the project, not a different place. A screen that needs its own title (the gear library's item count, say) puts it in a strip *below* the tab bar rather than replacing the project name. |
 | **Column header** | 11px/700 `0.14em` `--ink-muted`, fixed column widths `34 / 44 / 1fr / 34`, `1px --rule` above and below. |
 | **Location band** | `--band` fill, 7px padding, 11px/700 `0.14em` `--ink-faint`, name left and start time right. |
 | **Shot row** | 13px vertical padding, `1px --rule` bottom. No. (34px) · size (44px, 700) · subject stack (15px + 11px meta) · status (34px, right). Whole row is the link to detail; the status control is a 44×44 button with negative margin so it overlaps the row padding without growing it. |
@@ -563,6 +579,8 @@ Two suggestion boards are on the canvas deliberately, because the contrast is th
 | **Disabled primary** | Same height and type, but `1px --rule` border, no fill, `--ink-muted` label — never the enabled button at reduced opacity, per §3. It is always accompanied by a line above it naming what's missing (*"Pick a kind and a treatment."*), because a dead button with no explanation is the most common way a form loses someone. |
 | **Reference tile** | Flat 16:9 or 4:3 block, no radius, no caption over the image — captions sit beneath, on ground or in a `--band` strip. Text over a photograph can't be contrast-guaranteed, so we don't put any there. |
 | **Empty state** | Never a blank page and never a single button. Screen chrome stays intact (an empty shot list keeps its header, tabs and plan bar reading `0 / 18—24`), then a plain-language line about what's missing, then **exactly three** numbered ways forward, each with one line saying what it's good for. The first route is the recommended one and says why. Below them, one quieter alternative route. |
+| **Icon button** | 44×44 target around a 20px glyph, overlapping surrounding padding with negative margin so it never grows the row. `aria-label` always. The app has one icon — `⋯` — and a new one needs a reason the words couldn't do the job. |
+| **Bottom sheet** | Anchored to the bottom edge, full width, `--ground` with a `1px --ink` top border and a 36×4 grabber in `--rule`. Over a scrim — the one place a translucent overlay is right, because what's beneath is inert while the sheet is open. Title at 11px UPPER `--ink-muted`, then rows at the list-row spec. Dismissed by tapping the scrim, swiping down, or `CLOSE`. A confirmation replaces the sheet's content rather than stacking a second sheet. |
 | **Suggestion block** | `1px --accent` box (or a 3px left rule), 11px/700 `--warn` label, 13–15px body. The one place the app talks to you rather than listing. |
 
 ---
@@ -625,6 +643,11 @@ More, specified in §5.6–5.9: the brief in four states (empty, written, what i
 
 *States:* no brief written (`! NO BRIEF` on the day row; the list stays generic and says so) · brief written offline (banner offering to re-read it when signal returns) · extraction got it wrong (chips are tappable before anything is generated) · a deliverable conflicting with the presence level (stays listed, workaround proposed, never silently dropped) · treatment and presence contradicting each other (named plainly, three explicit exits).
 
+### Project actions
+The `⋯` sheet, the delete confirmation, and edit steps 1 and 2 — specified in §5.14.
+
+*States:* sheet open · delete confirming · edit with no list-affecting change (no `CHANGES` box) · edit that moves shots (the box, above `SAVE`).
+
 ### Wrap
 Three boards — a middle day, the blocked one, and the last day — specified in §5.12. Night theme, because wrap is the exit from shoot mode.
 
@@ -668,7 +691,7 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 12. **No welcome before first launch.** The empty Projects screen doubles as onboarding. That may be enough for a local-first app, or it may be too cold a start — worth watching with real first-timers.
 13. **Google sign-in is drawn as plain text.** A shipped build must use Google's own button asset and follow their branding rules; the board is a placeholder for layout only.
 14. **`UNPLACED` has no screen of its own.** It's specified as a group at the foot of the list, but a project where most shots are unplaced — the common state early on — hasn't been drawn, and that's the state a first-time user is most likely to be in.
-15. **Changing format after shots exist.** Switching a project from reel to mid-length re-seeds the beats and moves the budget. Existing shots need to land somewhere sensible rather than being orphaned, and that migration isn't designed.
+15. **Changing format after shots exist — partly resolved.** The edit flow now states what a change does to planned shots before saving (§5.14), and fewer days is drawn. Still undesigned: changing the *delivery* re-seeds the beats (HOOK/BUILD/PAYOFF → OPEN/MIDDLE/CLOSE), and shots already assigned to a beat need a mapping rather than falling back to unassigned.
 
 ---
 

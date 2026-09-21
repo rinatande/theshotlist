@@ -210,6 +210,20 @@ The blocked version, for an outstanding `[★]`, has an escape: `WRAP ANYWAY —
 
 ---
 
+### 2.14 A gear that doesn't open settings — 21 Sep
+
+**What broke.** Projects could be created but never edited or deleted. The ask was a settings icon beside the project title opening a sheet with *Edit* and *Delete*.
+
+**Options.** A gear, as first described. A `⋯` (more). Or a text label, to match the all-text interface.
+
+**Decision. [R]** `⋯`. The app already has a Settings screen for theme and time format; a gear here would have meant two different kinds of "settings", and the icon would promise one thing while doing another — the same failure as "Setup" (2.6), this time in an icon rather than a word. Two further calls, both yours: the delete confirmation says what's lost (*"12 shots, 3 days and the brief go with it. This can't be undone."*), matching how every other destructive action in the app explains itself; and editing a project that already has shots shows a `CHANGES` box before saving, so nothing moves silently. That last one turns open problem 15 from theoretical into drawn.
+
+**Why it's evidence.** A small one, and useful precisely because it's small: it shows a lesson from earlier in the project (words that promise the wrong thing) being applied unprompted to a new medium (an icon). Consistency of judgement across a project is harder to show than any single good decision.
+
+*Artifacts:* `M1-ProjectMenu`, `M2-ProjectDelete`, `PE1-EditProject`, `PE2-EditProjectFormat`, the `⋯` on ten project screens, §5.14, canvas note `mnote`.
+
+---
+
 ## 3. Artifact inventory
 
 | Artifact | Where | Case study use |
