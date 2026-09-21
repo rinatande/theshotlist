@@ -1,0 +1,78 @@
+.header {
+  padding: calc(var(--s-5) + env(safe-area-inset-top)) var(--gutter) var(--s-4);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.group {
+  padding: var(--s-4) var(--gutter) var(--s-5);
+}
+
+.rows {
+  margin: 0;
+}
+
+.row {
+  min-height: var(--target);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-15);
+}
+
+.value {
+  margin: 0;
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.install {
+  min-height: var(--target);
+  margin: -12px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
+
+.how {
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.note {
+  margin: 0;
+  padding: var(--s-3) var(--gutter);
+  font-size: var(--text-12);
+  color: var(--ink-muted);
+}
+
+.footer {
+  padding: var(--s-5) var(--gutter) calc(var(--s-6) + env(safe-area-inset-bottom));
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}

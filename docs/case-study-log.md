@@ -268,6 +268,16 @@ The blocked version, for an outstanding `[★]`, has an escape: `WRAP ANYWAY —
 
 ---
 
+### 2.19 The chips were the tab bug again — 21 Sep
+
+**What broke.** Building step 1 of new project from the boards, every chip came out 35px tall: 9px padding around 12px type. The §3 floor is 44px, and it's the same failure as the tab bar (2.11) — a control that reads as text, so nobody notices it's small. Kind, treatment, length, aspect, days and the Projects filters all use chips, so this was most of the tappable surface on the first screens a new user meets.
+
+**Decision.** Chips take their height from `min-height: 44px`, not padding, so they look as drawn and meet the floor. §7's chip row now says so. A second rule came with it: a chip that can't be picked yet (SOMEONE ELSE, NO ONE in v0) is muted with a dashed edge and a line saying why — never dimmed.
+
+**Why it's evidence.** The first bug was found by auditing a component across boards; this one was found by building it. Same defect, two different ways of catching it — which is an argument for doing both.
+
+---
+
 ## 3. Artifact inventory
 
 | Artifact | Where | Case study use |

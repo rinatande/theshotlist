@@ -1,0 +1,96 @@
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+}
+
+/* The one translucent overlay in the app: what's beneath is inert (§7). */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  animation: fade var(--t-enter) var(--ease);
+}
+
+.sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 560px;
+  margin: 0 auto;
+  padding-bottom: env(safe-area-inset-bottom);
+  background-color: var(--ground);
+  background-image: radial-gradient(var(--grain) 0.5px, transparent 0.6px);
+  background-size: 3px 3px;
+  border-top: 1px solid var(--ink);
+  outline: none;
+  animation: rise var(--t-sheet) var(--ease);
+}
+
+.grab {
+  touch-action: none;
+}
+
+.grabber {
+  display: block;
+  width: 36px;
+  height: 4px;
+  margin: 10px auto 2px;
+  background: var(--rule);
+}
+
+.head {
+  padding: 12px var(--gutter) 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+}
+
+.close {
+  flex-shrink: 0;
+  min-height: var(--target);
+  margin: -14px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font-size: var(--text-12);
+  font-weight: 500;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fade {
+  from {
+    background: transparent;
+  }
+}
+
+/* Reduced motion: no slide, and the scrim simply appears (§3). */
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .scrim {
+    animation: none;
+  }
+}

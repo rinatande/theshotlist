@@ -13,8 +13,12 @@ const revision =
 const withSerwist = withSerwistInit({
   swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
-  // The start page, so a cold launch with no signal opens the app (§3).
-  additionalPrecacheEntries: [{ url: "/", revision }],
+  // Every page, so a cold launch with no signal opens the app and can go
+  // anywhere in it (§3). Pages read their data from the device, not the server.
+  additionalPrecacheEntries: ["/", "/new", "/project", "/project/edit", "/settings", "/gear"].map((url) => ({
+    url,
+    revision,
+  })),
   disable: process.env.NODE_ENV === "development",
 });
 

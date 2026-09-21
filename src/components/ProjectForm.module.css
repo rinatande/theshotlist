@@ -1,0 +1,67 @@
+/* WHAT THAT SETS UP (P2): an ink-ruled box with a band heading. */
+.setsUp {
+  border: 1px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+.setsUpHead {
+  padding: 8px 14px;
+  background: var(--band);
+  color: var(--ink-faint);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+}
+
+.setsUpRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-13);
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+
+.setsUpRow strong {
+  text-align: right;
+}
+
+.setsUpText {
+  margin: 0;
+  padding: 12px 14px;
+  font-size: var(--text-13);
+  line-height: 1.55;
+}
+
+/* Past projects in the copy sheet */
+.sheetList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 60dvh;
+  overflow-y: auto;
+}
+
+.sheetRow {
+  width: 100%;
+  min-height: var(--target);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px var(--gutter);
+  border: 0;
+  border-top: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sheetRowTitle {
+  font-size: var(--text-15);
+  font-weight: 500;
+}

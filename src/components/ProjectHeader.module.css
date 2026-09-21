@@ -1,0 +1,98 @@
+.header {
+  padding: calc(var(--s-5) + env(safe-area-inset-top)) var(--gutter) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  margin: -12px 0;
+  color: var(--accent);
+  font-size: var(--text-12);
+  font-weight: 500;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}
+
+.status {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ok);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+
+/* One line, truncating, so the ⋯ always has room (§5.14). */
+.name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Icon button (§7): 44×44 around the glyph, overlapping the padding. */
+.more {
+  flex-shrink: 0;
+  width: var(--target);
+  height: var(--target);
+  margin: -12px -12px -12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: var(--text-20);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.format {
+  margin: 6px 0 0;
+  font-size: var(--text-11);
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+/* Tab bar (§7): 14px vertical padding gives the 44px row; gap, never margins. */
+.tabs {
+  display: flex;
+  gap: var(--s-5);
+  margin-top: var(--s-2);
+}
+
+.tab {
+  padding: 14px 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--ink-muted);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
+
+.tab[aria-current="page"] {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}

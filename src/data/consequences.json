@@ -1,0 +1,25 @@
+{
+  "_about": "Copy for the consequence boxes in new project (design.md §5.1, §5.2). Edit freely. {length} is replaced in custom.",
+
+  "treatment": {
+    "talking-to-camera": "Pieces to camera get their own beat, and audio becomes a must, not a bonus. Fewer inserts — your voice carries the cut.",
+    "silent": "No pieces to camera and no lav needed. Your list will lean on ambience, hands, movement and light.",
+    "interview": "A sit-down setup at the centre, with cutaways to cover the edit points and room tone for the gaps.",
+    "narrated": "Visuals only, but plenty of them — voice-over can land anywhere, so every beat needs options.",
+    "scripted": "Every shot is planned before the day, in the order the script needs them, with matched angles and continuity notes."
+  },
+
+  "genre": {
+    "brand": "The client's deliverables stay pinned at the top of the list."
+  },
+
+  "delivery": {
+    "reel": "Enough to cut a reel without shooting all morning.",
+    "short": "Enough for a one-to-three-minute cut.",
+    "mid": "Enough for a five-to-ten-minute piece, with room for a sequence or two.",
+    "long": "Enough for a ten-to-twenty-minute film, chapter by chapter.",
+    "custom": "Enough for a {length} cut."
+  },
+
+  "deliveryTail": "Both are a guide, not a rule."
+}

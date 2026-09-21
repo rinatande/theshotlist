@@ -1,0 +1,216 @@
+.topBar {
+  padding: calc(var(--s-6) + env(safe-area-inset-top)) var(--gutter) 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--ink-muted);
+}
+
+.topLinks {
+  display: flex;
+  gap: var(--s-4);
+}
+
+.topLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  margin: -12px 0;
+  color: var(--accent);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}
+
+.title {
+  margin: 10px var(--gutter) 14px;
+  font-size: var(--text-20);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.filters {
+  padding: 0 var(--gutter) 14px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-4) var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.rowTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.name {
+  font-size: var(--text-16);
+  font-weight: 500;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: var(--ink-muted);
+}
+
+.marker-day,
+.marker-due {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.marker-no-list {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--warn);
+  white-space: nowrap;
+}
+
+.marker-wrapped {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ok);
+  white-space: nowrap;
+}
+
+/* Progress meter (§7): 4px track, --ok fill, tabular count. */
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.track {
+  flex: 1;
+  height: 4px;
+  background: var(--track);
+}
+
+.fill {
+  display: block;
+  height: 4px;
+  background: var(--ok);
+}
+
+.count,
+.countOk {
+  font-size: var(--text-12);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.countOk {
+  color: var(--ok);
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--text-11);
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.meta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.formatLine {
+  flex-shrink: 0;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.none {
+  padding: var(--s-4) var(--gutter);
+  color: var(--ink-muted);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- E4 ---------------------------------------------------------------- */
+
+.pitch {
+  margin: var(--s-6) var(--gutter) var(--s-4);
+  font-size: var(--text-20);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.steps li {
+  padding: 14px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-15);
+}
+
+.stepNo {
+  display: inline-block;
+  width: 34px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.ok {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.emptyBody {
+  justify-content: flex-end;
+}
+
+.nothing {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-15);
+  line-height: 1.55;
+}

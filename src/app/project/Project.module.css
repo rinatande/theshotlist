@@ -1,0 +1,13 @@
+.coming {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-15);
+  line-height: 1.55;
+}
+
+.missingTitle {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}

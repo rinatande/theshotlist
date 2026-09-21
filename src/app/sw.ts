@@ -15,6 +15,9 @@ declare const self: ServiceWorkerGlobalScope;
 // opens with no signal.
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
+  // Pages take their subject from the query (/project?id=…), so one precached
+  // page serves every project offline.
+  precacheOptions: { ignoreURLParametersMatching: [/^id$/, /^step$/] },
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
