@@ -10,7 +10,8 @@ The design is finished. This repo turns it into a working app. **Don't redesign;
 |---|---|
 | `docs/design.md` | **The spec.** Tokens, components, every screen, every rule. Section numbers below refer to it. |
 | `docs/case-study-log.md` | Why the big decisions went the way they did. Read before "improving" anything in it. |
-| `docs/boards/` | Screenshots of the design boards, if Rina has exported them. The canvas is the visual reference; the spec is the rulebook. Where they disagree, ask. |
+| `docs/boards/` | The design boards as canvas source, one file per screen — read them for layout, copy and exact values, not for markup structure. See its README. Where a board and the spec disagree, the spec wins; ask. |
+| `docs/build-journal.md` | Every time Rina corrected or redirected you, and what changed. Read it before starting a milestone — it's how she works. |
 | `src/styles/tokens.css` | The eleven colour tokens (day + night), type, space, targets, motion. Ready to use. |
 | `src/lib/types.ts` | The data model. Ready to use. |
 | `src/data/templates.json` | Starter shot templates for the offline suggestion engine. Rina edits these. |
@@ -89,4 +90,11 @@ Each of these was a real defect or a deliberate decision. The spec section says 
   renumbers 05 → 04, and exposed marks are unaffected.
   ```
 
+- **Log every correction in `docs/build-journal.md`.** When Rina corrects, overrules or redirects you — rejects a plan, catches a bug, changes a decision, tells you to stop — add one entry in the same turn, before carrying on. Format is in the file. Record it in her words where you can, and don't soften it or make yourself look better: the entries that show you were wrong are the valuable ones. Small wording tweaks don't need an entry; anything that changed what got built does.
 - **The case study is part of the work.** When a decision changes during the build — something in the spec didn't survive contact with code — add an entry to `docs/case-study-log.md` in its existing shape (what broke / options / decision / why it's evidence). Mark it **[R]** when Rina drove it.
+
+## Records and privacy
+
+- **Never ask for, print or commit a secret.** The Anthropic API key (M6) lives in `.env.local` and in Vercel's environment settings, nowhere else. `.env*` stays in `.gitignore`. If Rina pastes a key into the chat, tell her to rotate it.
+- **`docs/sessions/` is private.** Rina exports session transcripts there at the end of each milestone. Make sure `docs/sessions/` is in `.gitignore` during M0, and never commit anything inside it. The public record is the build journal, the case study log and the commit history.
+- **At the end of each milestone,** remind Rina to export the session (`/export`) into `docs/sessions/`, named by milestone — `M0-scaffold.md`, `M1-data.md` and so on.

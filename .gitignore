@@ -43,3 +43,6 @@ next-env.d.ts
 # Serwist
 public/sw*
 public/swe-worker*
+
+# Private session transcripts (CLAUDE.md, Records and privacy)
+docs/sessions/
