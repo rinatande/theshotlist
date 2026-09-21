@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Edit location</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<style>
+body { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; background: #F2EBDD; }
+a { color: #A83B2A; } a:hover { color: #8A2E20; }
+input { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; color: #1C1714; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column;">
+
+  <div style="padding: 18px 20px 10px 20px; border-bottom: 1px solid #D8CDB8; display: flex; justify-content: space-between; align-items: center;">
+    <a href="S2-ShotList.dc.html" style="font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none;">← CANCEL</a>
+    <h1 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;">Edit location</h1>
+  </div>
+
+  <div style="flex-grow: 1; overflow: hidden; padding: 16px 20px 0 20px; display: flex; flex-direction: column; gap: 16px;">
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="lname" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">NAME</label>
+      <input id="lname" type="text" value="Cliff path" style="box-sizing: border-box; width: 100%; height: 48px; padding: 0 12px; font-size: 16px; color: #1C1714; background: #FBF6EA; border: 1px solid #1C1714; border-radius: 0;">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="lwhere" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">WHERE · OPTIONAL</label>
+      <input id="lwhere" type="text" value="Headland, NSW" style="box-sizing: border-box; width: 100%; height: 44px; padding: 0 12px; font-size: 15px; color: #1C1714; background: #FBF6EA; border: 1px solid #D8CDB8; border-radius: 0;">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="ltime" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">START TIME · OPTIONAL</label>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input id="ltime" type="text" value="6:20 AM" style="box-sizing: border-box; width: 116px; height: 44px; padding: 0 12px; font-size: 16px; font-weight: 700; color: #1C1714; background: #FBF6EA; border: 1px solid #1C1714; border-radius: 0;">
+        <button type="button" style="flex-grow: 1; height: 44px; background: transparent; border: 1px solid #D8CDB8; cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #6B5F52;">CLEAR THE TIME</button>
+      </div>
+      <span style="font-size: 11px; line-height: 1.5; color: #6B5F52;">Moving this to 6:20 puts it after the lane in the running order. Nothing else changes.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span id="lday" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">ON WHICH DAY</span>
+      <div role="group" aria-labelledby="lday" style="display: flex; gap: 6px;">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; background: #1C1714; color: #F2EBDD; padding: 9px 12px;">DAY 1 · 18 SEP</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.06em; border: 1px solid #D8CDB8; padding: 9px 12px;">DAY 2 · 19 SEP</span>
+      </div>
+      <span style="font-size: 11px; line-height: 1.5; color: #6B5F52;">Move it to day 2 and its seven shots go with it.</span>
+    </div>
+
+    <div style="border: 1px solid #D8CDB8; display: flex; flex-direction: column;">
+      <div style="padding: 8px 14px; background: #E9E0CC; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #4F463A;">WHAT'S HERE</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; font-size: 13px;">
+        <span style="color: #6B5F52; letter-spacing: 0.08em;">7 SHOTS · 3 EXPOSED</span>
+        <a href="E3-RunningOrder.dc.html" style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-decoration: none;">RUNNING ORDER ›</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="padding: 10px 20px 22px 20px; border-top: 1px solid #D8CDB8; display: flex; flex-direction: column; gap: 10px;">
+    <a href="S2-ShotList.dc.html" style="display: flex; align-items: center; justify-content: center; height: 48px; background: #A83B2A; color: #F2EBDD; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.12em;">SAVE</a>
+    <button type="button" style="width: 100%; height: 42px; background: transparent; border: 1px solid #8F4F0C; cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #8F4F0C;">DELETE · ITS 7 SHOTS MOVE TO UNPLACED</button>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

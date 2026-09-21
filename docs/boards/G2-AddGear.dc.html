@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add gear</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<style>
+body { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; background: #F2EBDD; }
+a { color: #A83B2A; } a:hover { color: #8A2E20; }
+input { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; color: #1C1714; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column;">
+
+  <div style="padding: 20px 20px 12px 20px; border-bottom: 1px solid #D8CDB8; display: flex; justify-content: space-between; align-items: center;">
+    <a href="G1-GearLibrary.dc.html" style="font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none;">← CANCEL</a>
+    <h1 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;">New gear</h1>
+  </div>
+
+  <div style="flex-grow: 1; overflow: hidden; padding: 18px 20px 0 20px; display: flex; flex-direction: column; gap: 18px;">
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span id="cat" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">CATEGORY</span>
+      <div role="group" aria-labelledby="cat" style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">CAMERA</span>
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #1C1714; color: #F2EBDD; padding: 9px 11px;">LENS</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">SUPPORT</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">LIGHT</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">AUDIO</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">POWER</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="name" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">NAME</label>
+      <input id="name" type="text" value="Sony 85 f/1.8" style="box-sizing: border-box; width: 100%; height: 48px; padding: 0 12px; font-size: 16px; color: #1C1714; background: #FBF6EA; border: 1px solid #1C1714; border-radius: 0;">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">LENS SPECS</span>
+      <div style="display: flex; gap: 10px;">
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px;">
+          <label for="fmin" style="font-size: 11px; letter-spacing: 0.06em; color: #6B5F52;">FOCAL MIN</label>
+          <input id="fmin" type="text" value="85" style="box-sizing: border-box; width: 100%; height: 44px; padding: 0 12px; font-size: 15px; color: #1C1714; background: #FBF6EA; border: 1px solid #D8CDB8; border-radius: 0;">
+        </div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px;">
+          <label for="fmax" style="font-size: 11px; letter-spacing: 0.06em; color: #6B5F52;">FOCAL MAX</label>
+          <input id="fmax" type="text" value="85" style="box-sizing: border-box; width: 100%; height: 44px; padding: 0 12px; font-size: 15px; color: #1C1714; background: #FBF6EA; border: 1px solid #D8CDB8; border-radius: 0;">
+        </div>
+        <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px;">
+          <label for="ap" style="font-size: 11px; letter-spacing: 0.06em; color: #6B5F52;">MAX f</label>
+          <input id="ap" type="text" value="1.8" style="box-sizing: border-box; width: 100%; height: 44px; padding: 0 12px; font-size: 15px; color: #1C1714; background: #FBF6EA; border: 1px solid #D8CDB8; border-radius: 0;">
+        </div>
+      </div>
+      <div style="display: flex; gap: 6px;">
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">MACRO</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">STABILISED</span>
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #1C1714; color: #F2EBDD; padding: 9px 11px;">E MOUNT</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span id="kits" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">IN KITS</span>
+      <div role="group" aria-labelledby="kits" style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">POCKET</span>
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #A83B2A; color: #F2EBDD; padding: 9px 11px;">DOC DAY</span>
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #A83B2A; color: #F2EBDD; padding: 9px 11px;">FULL CAMP RIG</span>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid #D8CDB8;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #8F4F0C; white-space: nowrap;">UNLOCKS</span>
+      <span style="flex-grow: 1; font-size: 13px; line-height: 1.5;">Tight inserts and compressed backgrounds. Shots needing 85mm+ will start appearing in suggestions.</span>
+    </div>
+
+  </div>
+
+  <div style="padding: 12px 20px 24px 20px; border-top: 1px solid #D8CDB8;">
+    <a href="G1-GearLibrary.dc.html" style="display: flex; align-items: center; justify-content: center; height: 48px; background: #A83B2A; color: #F2EBDD; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.12em;">SAVE TO GEAR</a>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

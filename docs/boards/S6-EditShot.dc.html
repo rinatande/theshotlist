@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Edit shot</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<style>
+body { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; background: #F2EBDD; }
+a { color: #A83B2A; } a:hover { color: #8A2E20; }
+input, select, textarea { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; color: #1C1714; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column;">
+
+  <div style="padding: 20px 20px 12px 20px; border-bottom: 1px solid #D8CDB8; display: flex; justify-content: space-between; align-items: center;">
+    <a href="S3-ShotDetail.dc.html" style="font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none;">← CANCEL</a>
+    <h1 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;">Edit shot · 03</h1>
+  </div>
+
+  <div style="flex-grow: 1; overflow: hidden; padding: 18px 20px 0 20px; display: flex; flex-direction: column; gap: 17px;">
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="size" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">SHOT SIZE</label>
+      <div id="size" style="display: flex; gap: 0; border: 1px solid #D8CDB8;">
+        <span style="flex-grow: 1; text-align: center; padding: 12px 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em;">WS</span>
+        <span style="flex-grow: 1; text-align: center; padding: 12px 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; border-left: 1px solid #D8CDB8;">MS</span>
+        <span style="flex-grow: 1; text-align: center; padding: 12px 0; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; background: #1C1714; color: #F2EBDD;">CU</span>
+        <span style="flex-grow: 1; text-align: center; padding: 12px 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; border-left: 1px solid #D8CDB8;">OTS</span>
+        <span style="flex-grow: 1; text-align: center; padding: 12px 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; border-left: 1px solid #D8CDB8;">INS</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="subject" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">SUBJECT</label>
+      <input id="subject" type="text" value="Hands on the rope" style="box-sizing: border-box; width: 100%; height: 48px; padding: 0 12px; font-size: 16px; color: #1C1714; background: #FBF6EA; border: 1px solid #1C1714; border-radius: 0;">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span id="lens" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">LENS</span>
+      <div role="group" aria-labelledby="lens" style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">18—50</span>
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #1C1714; color: #F2EBDD; padding: 9px 11px;">85</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">15 MACRO</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span id="support" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">SUPPORT</span>
+      <div role="group" aria-labelledby="support" style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #1C1714; color: #F2EBDD; padding: 9px 11px;">HANDHELD</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">TRIPOD</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px;">GIMBAL</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="loc" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">LOCATION</label>
+      <div id="loc" style="display: flex; gap: 8px;">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #F2EBDD; background: #A83B2A; padding: 9px 12px;">CLIFF PATH</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.06em; border: 1px solid #D8CDB8; padding: 9px 12px;">HEADLAND</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <label for="note" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">NOTE</label>
+      <textarea id="note" rows="3" style="box-sizing: border-box; width: 100%; padding: 10px 12px; font-size: 15px; line-height: 1.5; color: #1C1714; background: #FBF6EA; border: 1px solid #D8CDB8; border-radius: 0; resize: none;">Wait for the rope to take load. Three takes, one with hands leaving frame.</textarea>
+    </div>
+
+    <div style="border: 1px solid #D8CDB8; display: flex; flex-direction: column;">
+      <button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 3px; width: 100%; box-sizing: border-box; text-align: left; padding: 12px 14px; border: none; border-bottom: 1px solid #D8CDB8; background: transparent; cursor: pointer; font-family: inherit; color: #1C1714;">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em;">DUPLICATE</span>
+        <span style="font-size: 11px; line-height: 1.45; color: #6B5F52;">Same spec, next number. For a second take, or the same insert somewhere else.</span>
+      </button>
+      <button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 3px; width: 100%; box-sizing: border-box; text-align: left; padding: 12px 14px; border: none; background: transparent; cursor: pointer; font-family: inherit; color: #8F4F0C;">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em;">DELETE</span>
+        <span style="font-size: 11px; line-height: 1.45; color: #6B5F52;">Shots below move up — 04 becomes 03. Anything already exposed keeps its mark.</span>
+      </button>
+    </div>
+
+  </div>
+
+  <div style="padding: 12px 20px 24px 20px; border-top: 1px solid #D8CDB8;">
+    <a href="S3-ShotDetail.dc.html" style="display: flex; align-items: center; justify-content: center; height: 48px; background: #A83B2A; color: #F2EBDD; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.12em;">SAVE</a>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

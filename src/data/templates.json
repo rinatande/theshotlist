@@ -1,0 +1,258 @@
+[
+  {
+    "id": "high-establisher",
+    "size": "WS", "subject": "The place from above — a high vantage before anything happens",
+    "beat": "opener", "genres": ["travel", "documentary", "brand"], "treatments": [],
+    "requires": ["wide"], "unlockedBy": "wide", "light": "any", "person": "none",
+    "reason": "The {item} gets the whole place in one frame. Find height first: stairs, a bridge, a rooftop.",
+    "keywords": ["view", "city", "town", "village", "valley", "coast", "headland", "harbour"]
+  },
+  {
+    "id": "steam-backlit",
+    "size": "CU", "subject": "Steam off the cup, backlit",
+    "beat": "opener", "genres": ["travel", "brand", "personal"], "treatments": [],
+    "requires": [], "light": "sunrise", "person": "none",
+    "reason": "Steam only shows against the light. Put the window or the sun behind the cup.",
+    "keywords": ["coffee", "tea", "cafe", "breakfast", "morning", "steam"]
+  },
+  {
+    "id": "hands-small-task",
+    "size": "INS", "subject": "Hands doing one small task — sliding a door, tying a lace, turning a key",
+    "beat": "body", "genres": [], "treatments": [],
+    "requires": [], "light": "any", "person": "body",
+    "reason": "Hands carry a sequence without showing a face. Cheap to get, always useful in the edit.",
+    "keywords": ["hands", "making", "preparing", "packing"]
+  },
+  {
+    "id": "walk-away",
+    "size": "MS", "subject": "Walking away from camera, through frame",
+    "beat": "body", "genres": ["travel", "personal", "documentary"], "treatments": [],
+    "requires": [], "light": "any", "person": "body",
+    "reason": "Movement without a face. Lock off and let them walk out of frame — it gives you a clean cut point.",
+    "keywords": ["walk", "wander", "stroll", "explore"]
+  },
+  {
+    "id": "empty-street-lines",
+    "size": "WS", "subject": "Empty street, leading lines",
+    "beat": "body", "genres": ["travel", "personal"], "treatments": ["silent", "narrated"],
+    "requires": [], "light": "sunrise", "person": "none",
+    "reason": "Early enough and the street is yours. Put the vanishing point on a third.",
+    "keywords": ["street", "lane", "alley", "quiet", "early", "sunrise"]
+  },
+  {
+    "id": "surface-texture",
+    "size": "CU", "subject": "A texture — stone, weave, grain, rust",
+    "beat": "body", "genres": ["travel", "brand", "personal"], "treatments": ["silent", "narrated"],
+    "requires": ["macro"], "unlockedBy": "macro", "light": "any", "person": "none",
+    "reason": "The {item} turns a wall into a frame. Side light brings texture out; flat light hides it.",
+    "fallback": { "subject": "A texture, as close as the lens will focus", "reason": "No macro packed — get as close as it focuses and crop in the edit." },
+    "keywords": ["texture", "stone", "wood", "fabric", "old", "temple"]
+  },
+  {
+    "id": "cloud-lapse",
+    "size": "WS", "subject": "Timelapse — clouds over the skyline",
+    "beat": "body", "genres": ["travel", "documentary"], "treatments": [],
+    "requires": ["tripod"], "unlockedBy": "tripod", "light": "any", "person": "none",
+    "reason": "Locked off on the {item}: a 2-second interval for 10 minutes gives you 10 seconds of time passing.",
+    "fallback": { "subject": "Timelapse from a wall or a railing", "reason": "No tripod — wedge the camera on something solid and don't touch it for ten minutes." },
+    "keywords": ["clouds", "sky", "sunset", "time", "day passing"]
+  },
+  {
+    "id": "threshold-match",
+    "size": "MS", "subject": "Through a doorway — in on one, out on another",
+    "beat": "any", "genres": ["travel", "personal", "brand"], "treatments": [],
+    "requires": [], "light": "any", "person": "body",
+    "reason": "Two doorways shot the same way cut together as one move. Match the framing, not the door.",
+    "keywords": ["door", "gate", "entrance", "shop", "temple"]
+  },
+  {
+    "id": "reflection-puddle",
+    "size": "WS", "subject": "The scene upside down in a puddle or a window",
+    "beat": "body", "genres": ["travel", "personal"], "treatments": ["silent", "narrated"],
+    "requires": [], "light": "any", "person": "none",
+    "reason": "Get the lens low, almost touching the water. After rain this is free.",
+    "keywords": ["rain", "wet", "reflection", "puddle", "glass"]
+  },
+  {
+    "id": "golden-silhouette",
+    "size": "WS", "subject": "A silhouette against the last of the light",
+    "beat": "closer", "genres": ["travel", "personal", "brand"], "treatments": [],
+    "requires": [], "light": "golden", "person": "body",
+    "reason": "Expose for the sky and let them go black. Works at any presence level — nobody is recognisable.",
+    "keywords": ["sunset", "evening", "golden", "dusk", "last light"]
+  },
+  {
+    "id": "pov-walk-in",
+    "size": "MS", "subject": "Point of view, walking in",
+    "beat": "opener", "genres": ["travel", "personal"], "treatments": [],
+    "requires": [], "light": "any", "person": "none",
+    "reason": "Arrival from your own eyes. Walk slowly and bend your knees — it hides most of the bounce.",
+    "keywords": ["arrive", "arrival", "enter", "first", "walk"]
+  },
+  {
+    "id": "foreground-reveal",
+    "size": "MS", "subject": "Push past something in the foreground to reveal the scene",
+    "beat": "opener", "genres": ["travel", "brand", "documentary"], "treatments": [],
+    "requires": ["gimbal"], "unlockedBy": "gimbal", "light": "any", "person": "none",
+    "reason": "The {item} makes the push smooth enough to open on. Start close on a plant, a post, a shoulder.",
+    "fallback": { "subject": "Pan off something in the foreground to reveal the scene", "reason": "No gimbal — a slow pan off a foreground object does the same job." },
+    "keywords": ["reveal", "discover", "hidden"]
+  },
+  {
+    "id": "rack-focus",
+    "size": "CU", "subject": "Rack focus — foreground to background",
+    "beat": "body", "genres": ["brand", "documentary", "travel"], "treatments": [],
+    "requires": ["fast"], "unlockedBy": "fast", "light": "any", "person": "none",
+    "reason": "The {item} opens wide enough for the background to melt. Pull focus slowly — about two seconds.",
+    "keywords": ["detail", "focus", "shallow"]
+  },
+  {
+    "id": "neon-night",
+    "size": "WS", "subject": "Signs and their reflections after dark",
+    "beat": "body", "genres": ["travel", "personal"], "treatments": [],
+    "requires": ["fast"], "unlockedBy": "fast", "light": "night", "person": "none",
+    "reason": "The {item} holds the shot past dusk without the grain taking over.",
+    "keywords": ["night", "neon", "lights", "evening", "bar", "market"]
+  },
+  {
+    "id": "drone-pullback",
+    "size": "WS", "subject": "Drone pull-back — from the subject out to the whole place",
+    "beat": "closer", "genres": ["travel", "brand", "documentary"], "treatments": [],
+    "requires": ["drone"], "unlockedBy": "drone", "light": "golden", "person": "none",
+    "reason": "The {item} ends the piece by showing how small it all was. Check the wind and local rules first.",
+    "keywords": ["drone", "aerial", "coast", "headland", "landscape"]
+  },
+  {
+    "id": "piece-to-camera-open",
+    "size": "MS", "subject": "Piece to camera — say where you are and why",
+    "beat": "opener", "genres": ["travel", "tutorial", "personal"], "treatments": ["talking-to-camera"],
+    "requires": ["mic"], "unlockedBy": "mic", "light": "any", "person": "face",
+    "reason": "The {item} keeps your voice clean over the street. Get two takes, one shorter than you think.",
+    "keywords": ["intro", "hello", "welcome", "today"]
+  },
+  {
+    "id": "walk-and-talk",
+    "size": "MS", "subject": "Walk and talk",
+    "beat": "body", "genres": ["travel", "personal", "documentary"], "treatments": ["talking-to-camera", "interview"],
+    "requires": ["lav"], "unlockedBy": "lav", "light": "any", "person": "face",
+    "reason": "The {item} stays close to the mouth while you move. Walk slower than feels natural.",
+    "keywords": ["talk", "chat", "explain", "tell"]
+  },
+  {
+    "id": "reaction-cu",
+    "size": "CU", "subject": "A reaction — tasting, seeing, laughing",
+    "beat": "body", "genres": ["travel", "personal", "documentary"], "treatments": [],
+    "requires": [], "light": "any", "person": "face",
+    "reason": "Reactions are what people remember. Keep rolling after the moment — the real one comes late.",
+    "keywords": ["taste", "food", "eat", "first time", "try"]
+  },
+  {
+    "id": "b-roll-match",
+    "size": "INS", "subject": "A cutaway of exactly what you're talking about",
+    "beat": "any", "genres": ["tutorial", "travel", "documentary"], "treatments": ["talking-to-camera", "narrated", "interview"],
+    "requires": [], "light": "any", "person": "none",
+    "reason": "Every sentence you say to camera needs a picture to cut to. Shoot it straight after, while you remember.",
+    "keywords": []
+  },
+  {
+    "id": "hero-product",
+    "size": "CU", "subject": "Hero shot of the product on a clean surface",
+    "beat": "closer", "genres": ["brand"], "treatments": [],
+    "requires": ["tripod"], "unlockedBy": "tripod", "light": "any", "person": "none",
+    "reason": "Locked off on the {item} so the product stays sharp and still. Clean the surface — it shows.",
+    "fallback": { "subject": "Hero shot of the product, braced on the table edge", "reason": "No tripod — rest the camera on the table edge and hold for ten seconds." },
+    "keywords": ["product", "hero", "brand", "bag", "bottle", "pack", "deal"]
+  },
+  {
+    "id": "product-in-use",
+    "size": "MS", "subject": "The product in someone's hands, being used",
+    "beat": "body", "genres": ["brand"], "treatments": [],
+    "requires": [], "light": "any", "person": "body",
+    "reason": "Brands want their thing in a life, not on a table. Hands are enough.",
+    "keywords": ["product", "using", "wearing", "holding"]
+  },
+  {
+    "id": "logo-detail",
+    "size": "INS", "subject": "Logo or label, close",
+    "beat": "any", "genres": ["brand"], "treatments": [],
+    "requires": ["macro"], "unlockedBy": "macro", "light": "any", "person": "none",
+    "reason": "The {item} gets the label sharp edge to edge. Clients check for this one.",
+    "fallback": { "subject": "Logo or label, as close as the lens focuses", "reason": "No macro — get as close as it focuses; you'll crop in." },
+    "keywords": ["logo", "label", "brand", "pack", "packaging"]
+  },
+  {
+    "id": "pour-slowmo",
+    "size": "CU", "subject": "The pour, in slow motion",
+    "beat": "body", "genres": ["brand", "travel"], "treatments": [],
+    "requires": ["slowmo"], "unlockedBy": "slowmo", "light": "any", "person": "body",
+    "reason": "Your {item} shoots fast enough to slow the pour right down. Light it from behind.",
+    "fallback": { "subject": "The pour, real speed, three takes", "reason": "No high frame rate — do three pours at real speed and pick the cleanest." },
+    "keywords": ["pour", "pouring", "coffee", "drink", "splash"]
+  },
+  {
+    "id": "say-the-name",
+    "size": "MS", "subject": "Say the brand's name to camera",
+    "beat": "any", "genres": ["brand"], "treatments": ["talking-to-camera", "scripted"],
+    "requires": ["mic"], "unlockedBy": "mic", "light": "any", "person": "face",
+    "reason": "Usually contracted, and easy to forget on the day. Say it three ways, with the {item} close.",
+    "keywords": ["name", "say", "mention", "brand deal"]
+  },
+  {
+    "id": "interview-main",
+    "size": "MS", "subject": "Interview — main angle, eyeline just off camera",
+    "beat": "body", "genres": ["documentary", "brand"], "treatments": ["interview"],
+    "requires": ["tripod", "lav"], "unlockedBy": "lav", "light": "any", "person": "face",
+    "reason": "The {item} on them, the camera locked off. Sit them so the window lights one side of the face.",
+    "keywords": ["interview", "owner", "talk to", "ask", "story"]
+  },
+  {
+    "id": "interview-tight",
+    "size": "CU", "subject": "Interview — tighter second angle",
+    "beat": "body", "genres": ["documentary", "brand"], "treatments": ["interview"],
+    "requires": ["tele"], "unlockedBy": "tele", "light": "any", "person": "face",
+    "reason": "The {item} gives you a second size from the same spot, so you can cut mid-answer.",
+    "fallback": { "subject": "Interview — reframe tighter between questions", "reason": "One lens — reframe tighter between questions and you'll still have a cut point." },
+    "keywords": ["interview", "owner", "talk to"]
+  },
+  {
+    "id": "at-work-wide",
+    "size": "WS", "subject": "Them at work, observed — you're not there",
+    "beat": "body", "genres": ["documentary", "event"], "treatments": ["silent", "interview", "narrated"],
+    "requires": [], "light": "any", "person": "body",
+    "reason": "Stay wide and quiet until they forget the camera. Five minutes before you roll is normal.",
+    "keywords": ["work", "craft", "making", "kitchen", "workshop", "farm"]
+  },
+  {
+    "id": "hands-at-work",
+    "size": "INS", "subject": "Their hands at work, close",
+    "beat": "body", "genres": ["documentary", "brand", "event"], "treatments": [],
+    "requires": ["tele"], "unlockedBy": "tele", "light": "any", "person": "body",
+    "reason": "The {item} gets you close without getting in their way.",
+    "fallback": { "subject": "Their hands at work, from beside them", "reason": "No long lens — ask if you can stand close for thirty seconds." },
+    "keywords": ["hands", "craft", "making", "chef", "kitchen", "farm"]
+  },
+  {
+    "id": "environmental-portrait",
+    "size": "MS", "subject": "A still portrait — they look at the lens for five seconds",
+    "beat": "closer", "genres": ["documentary", "brand", "personal"], "treatments": [],
+    "requires": ["tripod"], "unlockedBy": "tripod", "light": "any", "person": "face",
+    "reason": "Locked off on the {item}. Ask them not to smile. Five seconds feels long; it's the shot people remember.",
+    "keywords": ["portrait", "owner", "person", "family"]
+  },
+  {
+    "id": "exterior-arrival",
+    "size": "WS", "subject": "The outside of where it happens",
+    "beat": "opener", "genres": ["documentary", "event", "brand"], "treatments": [],
+    "requires": [], "light": "day", "person": "none",
+    "reason": "The audience needs to know where they are before they go inside.",
+    "keywords": ["shop", "cafe", "venue", "restaurant", "studio", "farm"]
+  },
+  {
+    "id": "crowd-lapse",
+    "size": "WS", "subject": "Timelapse — people moving through the space",
+    "beat": "body", "genres": ["event", "travel"], "treatments": [],
+    "requires": ["tripod", "power"], "unlockedBy": "tripod", "light": "any", "person": "none",
+    "reason": "The {item} holds still for the length of it; the power bank keeps it running.",
+    "keywords": ["crowd", "busy", "market", "station", "festival", "event"]
+  }
+]

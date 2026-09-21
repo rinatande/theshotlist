@@ -1,0 +1,106 @@
+/*
+ * TheShotList — design tokens.  Source of truth: docs/design.md §4.1.
+ *
+ * Rules (docs/design.md §3, §4.1):
+ * - Components reference these variables only. No raw hex anywhere else.
+ * - Night is a pure token swap: nothing about layout or structure changes.
+ * - Auto (the default) follows prefers-color-scheme with no JS.
+ *   An explicit data-theme on <html> always wins.
+ * - Every text pair below was checked for WCAG AA contrast; the ratios are in
+ *   the spec. If you change a value, re-check it before committing.
+ */
+
+:root {
+  /* ---- Colour: day ------------------------------------------------------ */
+  --ground:     #F2EBDD; /* app background */
+  --band:       #E9E0CC; /* section header bands */
+  --field:      #FBF6EA; /* input and textarea fill */
+  --ink:        #1C1714; /* primary text */
+  --ink-muted:  #6B5F52; /* secondary text, metadata, exposed rows */
+  --ink-faint:  #4F463A; /* text on --band */
+  --rule:       #D8CDB8; /* hairlines, dividers, inactive borders */
+  --accent:     #A83B2A; /* primary action, active tab, selected */
+  --accent-ink: #F2EBDD; /* text on an --accent fill */
+  --ok:         #3F5B46; /* exposed, complete, progress fill */
+  --warn:       #8F4F0C; /* coverage gap, flagged shot, over budget */
+  --track:      #E0D5BE; /* progress-meter track */
+  --grain:      #1C171412; /* paper dot texture (day only) */
+
+  color-scheme: light;
+
+  /* ---- Type (§4.2) -------------------------------------------------------- */
+  --font: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --text-11: 11px;  /* UPPER tracked labels only */
+  --text-12: 12px;
+  --text-13: 13px;
+  --text-15: 15px;  /* body floor */
+  --text-16: 16px;  /* any focusable field — stops iOS zooming */
+  --text-20: 20px;
+  --text-25: 25px;
+  --text-28: 28px;
+  --text-31: 31px;
+  --track-label: 0.14em; /* letter-spacing for 11px UPPER labels */
+  --track-ui:    0.12em; /* letter-spacing for buttons and tabs */
+
+  /* ---- Space (§3: 4px base) ---------------------------------------------- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-12: 48px; --s-16: 64px;
+  --gutter: 20px;
+
+  /* ---- Targets ----------------------------------------------------------- */
+  --target:       44px; /* floor for anything tappable — tabs included (§7) */
+  --target-btn:   48px; /* primary / secondary buttons */
+  --target-shoot: 72px; /* the GOT IT button in shoot mode */
+
+  /* ---- Motion (§3) ------------------------------------------------------- */
+  --ease:       cubic-bezier(0.2, 0, 0, 1);
+  --t-state:    120ms;
+  --t-enter:    200ms;
+  --t-sheet:    320ms;
+}
+
+/* ---- Colour: night — explicit choice ------------------------------------ */
+:root[data-theme="night"] {
+  --ground:     #0C0E0D;
+  --band:       #141816;
+  --field:      #1A1F1C;
+  --ink:        #E8EDE9;
+  --ink-muted:  #8A948E;
+  --ink-faint:  #A8B2AC;
+  --rule:       #262C29;
+  --accent:     #FFB020;
+  --accent-ink: #0C0E0D;
+  --ok:         #5BE39D;
+  --warn:       #FF7A45;
+  --track:      #262C29;
+  --grain:      transparent;
+  color-scheme: dark;
+}
+
+/* ---- Colour: night — Auto, following the OS, unless day was chosen ------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="day"]) {
+    --ground:     #0C0E0D;
+    --band:       #141816;
+    --field:      #1A1F1C;
+    --ink:        #E8EDE9;
+    --ink-muted:  #8A948E;
+    --ink-faint:  #A8B2AC;
+    --rule:       #262C29;
+    --accent:     #FFB020;
+    --accent-ink: #0C0E0D;
+    --ok:         #5BE39D;
+    --warn:       #FF7A45;
+    --track:      #262C29;
+    --grain:      transparent;
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-state: 0ms;
+    --t-enter: 0ms;
+    --t-sheet: 0ms;
+  }
+}

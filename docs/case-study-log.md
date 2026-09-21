@@ -1,0 +1,261 @@
+# TheShotList — case study log
+
+A running record of decisions, why they were made, and what evidence exists for each. Kept alongside `design.md`, which is the *spec*; this is the *reasoning*. Started 21 Sep 2026, backfilled from the work so far.
+
+**Target:** portfolio piece for mid-level design engineer roles. That target shapes what's worth keeping — see §4.
+
+---
+
+## 1. How to use this
+
+Each entry has the same shape, because that's the shape a case study needs:
+
+> **What broke** — the problem, stated as something that was actually wrong, not a feature that was missing.
+> **Options** — what was considered, including the one that was rejected.
+> **Decision** — what was chosen.
+> **Why it's evidence** — what this demonstrates about how you work.
+
+An entry only earns its place if something *changed*. Decisions that went the obvious way aren't case study material. The ones where you reversed course are the valuable ones, and they're the ones that get forgotten first.
+
+Where a decision was yours rather than proposed, it's marked **[R]**. This matters: in an interview you'll be asked to defend every choice on the page, and you need to know which ones you drove.
+
+---
+
+## 2. Decision log
+
+### 2.1 Colour carries the emotion, not the structure — 18 Sep
+
+**What broke.** Four visual directions were explored (darkroom, camera report, contact sheet, paper report). Two were liked for opposite reasons: A for its warmth, B for its structure.
+
+**Options.** Pick one and lose half of what worked. Or find out what was actually doing the work.
+
+**Decision. [R]** Combine A's palette with B's structure and typography — which then revealed that the emotional difference between the directions was almost entirely the *ground colour*, not the layout. That finding is what made a two-theme system viable: one structure, two grounds, day and night.
+
+**Why it's evidence.** A designer isolating the variable rather than choosing between bundles. It also sets up the theme system as a *consequence* of a finding rather than a feature someone asked for.
+
+*Artifacts:* eight direction-study boards, still on the canvas as history (rows 1–3). Do not delete these — a case study needs the rejected work.
+
+---
+
+### 2.2 The shot budget is a ceiling, not a target — 18 Sep
+
+**What broke.** Every planning tool's progress meter pushes you to do more. For a videographer the actual failure mode isn't "missed a shot" — it's "spent the whole morning behind a viewfinder and didn't see the place".
+
+**Options.** A target with a progress bar, which is what every app does. Or a range with an upper bound, which behaves differently: silent when you're under, advisory when you're over.
+
+**Decision. [R]** A budget expressed as a range (`18—24`), never a single number, because a range reads as advice and a number reads as a goal. Under budget is silent — an unfinished list is the normal state of a list. Over budget gets one advisory at the foot, once: *"trim now rather than at 6am in the cold."*
+
+**Why it's evidence.** This is the product's point of view, and the strongest single line in the case study. It's a values decision expressed as an interaction rule, and it's defensible in an interview: you can explain what failure mode you designed against and why the conventional pattern makes it worse.
+
+*Artifacts:* `P2-NewProjectFormat`, `P3-ShotListBeats` (deliberately drawn over budget), §5.2 of the spec.
+
+---
+
+### 2.3 The presence model was wrong, and you caught it — 18 Sep
+
+**What broke.** The model asked *"how much of the video is YOU"* — which quietly assumed the videographer is the subject. Shooting a chef who talks to camera, "you: not at all" is true, and would have stripped every talking-head shot out of the list. A correct answer producing a wrong list.
+
+**Options.** Special-case the exception. Or split the concept.
+
+**Decision. [R]** Split `cast` (who the video is about: me / someone else / no one, plus supporting people) from `presence` (how much each of them is in it, four-point scale). You-behind-the-camera becomes its own row defaulting to *not at all*. A side effect worth noting: the conflict rule got *more* accurate — *you: not at all* × *Priya: the subject* × *talking to camera* is no longer flagged, because it's an ordinary client film.
+
+**Why it's evidence.** **This is the best story in the project.** It has the full arc: a plausible model, a concrete case that breaks it, a structural fix rather than a patch, and a measurable improvement in behaviour. It's also the one that shows domain knowledge no one could fake — you knew the case because you shoot.
+
+*Artifacts:* `B5-OnCamera`, `B6-PresenceConflict`, `B7-Cast`, `B8-CastShotList`, canvas note `cnote` (which states the bug in full), §5.8.
+
+---
+
+### 2.4 Never dim with opacity — 18 Sep
+
+**What broke.** Completed shot rows were de-emphasised with reduced opacity. Checked against WCAG: the row's metadata dropped to 2.42:1. The design looked correct and was unreadable.
+
+**Options.** Accept it as decoration. Or find a de-emphasis that survives a contrast check.
+
+**Decision.** De-emphasis is `--ink-muted` plus strike-through, never opacity — recorded as a standing rule in §3 rather than a one-off fix, then applied across three boards. Two other failures found in the same pass: an amber at 2.91 on paper (split into fill-only and text-safe variants), and white frame numbers on light thumbnails at 1.91.
+
+**Why it's evidence.** Verified, not asserted. Every token pair in the system was run through a contrast script and the numbers are in the spec — a table of computed ratios, not a claim that it's "accessible". For a design engineer role this is the right kind of rigour: you wrote the check, ran it, and turned the result into a rule.
+
+*Artifacts:* the contrast table in §4.1, the rule in §3, `scratchpad/check2.py`. **Keep the script — it's proof.**
+
+---
+
+### 2.5 The night theme as a test of the system — 18 Sep
+
+**What broke.** Nothing. This was a deliberate experiment.
+
+**Decision.** The night boards were generated from the day boards by a single-pass regex substitution of eleven semantic tokens — no hand-tuning. If the system were incoherent, that would have produced garbage.
+
+**Why it's evidence.** This is a design *engineer* artifact specifically. It's the difference between "I made a dark mode" and "I built a token system and proved it holds under substitution". Worth stating in the case study with the exact method.
+
+*Artifacts:* `N1`–`N5`, canvas note `nightnote`, the eleven-token table in §4.1.
+
+---
+
+### 2.6 "Setup" was borrowed jargon, and it collided — 18 Sep
+
+**What broke.** The object heading every shot-list group was called a `Setup`. On a crewed set that means one camera position; here it sat next to gear kits and read as one. You asked, in effect, *what is Setup C — is that gear?* Also flagged: "call time" is when crew are required to arrive, which is meaningless working solo.
+
+**Options.** Explain the term better. Or admit the term was imported without being earned.
+
+**Decision. [R]** Rename to `Location`, drop the letters entirely (`Setup C` made you learn a code for something you already know by sight), change "call time" to an optional **start time**, and move the day-count question out of the location screen and into project creation where it belongs. Roughly a dozen boards were updated.
+
+**Why it's evidence.** Two things: domain expertise used as a critique tool, and a willingness to rip up finished work over a word. The cost was stated up front (ten boards) and paid anyway. Interviewers respond to this — most portfolios only show forward motion.
+
+*Artifacts:* canvas note `enote` (records the reasoning permanently), §5.10, `E1`/`E2`/`E3`.
+
+---
+
+### 2.7 Empty states as a pattern, not a screen — 18 Sep
+
+**What broke.** Empty screens were unspecified, which is where most apps quietly fail their first-time users.
+
+**Decision.** A component-level rule: never a blank page, never a single button. Screen chrome stays intact (an empty shot list keeps its header, tabs and `0 / 18—24` counter), then a plain line about what's missing, then **exactly three** routes with the best one named and its reason given, plus one quieter alternative. Nine boards drawn against the rule.
+
+**Why it's evidence.** Systems thinking: one rule, applied consistently, verifiable by looking at the boards. Better than nine one-off screens.
+
+*Artifacts:* `E4`–`E9`, `B0-BriefEmpty`, `P0a`/`P0b`, the pattern in §7.
+
+---
+
+### 2.8 The arrival state of a form is not the form — 18 Sep
+
+**What broke.** `P1-NewProject` existed only in its filled state. Nobody ever sees that. What everyone meets is fourteen unselected chips and a button that can't be pressed.
+
+**Options.** Pre-select sensible defaults so the form is fast. Or leave it blank and make the button dead.
+
+**Decision. [R]** Blank, with the button disabled — because a pre-picked `TRAVEL × SILENT` can be walked straight past, and you'd get an observational travel list for an interview shoot. The cost of a wrong answer here is a whole wrong list, so the form insists on a real one. Two boards drawn: first-ever project (no gear, nothing to copy) and ordinary new project (a quiet *from a past project* route).
+
+Supporting decisions: the name is optional, with the date as placeholder; the consequence box *waits* rather than appearing later; the disabled button always carries a line naming what's missing.
+
+**Why it's evidence.** A clear trade-off decided against the easy option, with a stated reason. Also the origin of the `Disabled primary` component — de-emphasis without opacity again, applied consistently.
+
+*Artifacts:* `P0a-FirstProject`, `P0b-NewProjectEmpty`, §5.1, the component in §7.
+
+---
+
+### 2.9 When does the AI actually run? — 21 Sep
+
+**What broke.** The brief screen showed extracted tags — `BRAND DEAL`, `3 DELIVERABLES` — sitting there while the brief was half-written. You asked how those get created, and pointed out that per-keystroke extraction would burn energy and data. The board was implying live inference and the spec had never said when extraction fires.
+
+**Options.** Confirm on the results screen (cheapest, weakest). A separate `READ MY BRIEF` step (honest, two taps). One button, two phases.
+
+**Decision. [R]** Separate the two paths by cost, because they are not the same interaction:
+
+| | Keyword matching | The full read |
+|---|---|---|
+| Runs | Continuously, debounced on a typing pause | **Once, on `GENERATE`** |
+| Costs | Nothing — local string matching | A request: latency, battery, money |
+
+One press of `GENERATE SHOTS` runs the read and lands on a confirm screen before any shot exists. One request returns structure *and* shots, so a second is only spent if something is corrected. The result is cached against the brief text. Quoted chips and inferred chips are drawn differently, because `SUNRISE` is a word you typed and `3 DELIVERABLES` is a judgement about what a client's sentence obliges you to shoot. Regenerating over an existing list asks before replacing.
+
+**Why it's evidence.** **This is the single most on-target artifact for a design engineer role.** It is not a question about pixels — it's a question about how the system runs, what it costs, and where the human check belongs. Most design portfolios that claim "AI" show a chat bubble. This shows someone reasoning about inference cost, caching, offline fallback, and the placement of a confirmation step relative to an irreversible action. Lead the case study with this if you're aiming at design engineer.
+
+*Artifacts:* `B0-BriefEmpty`, `B1-Brief`, `B9-WhatItRead`, `B10-Regenerate`, §5.6 (which now carries the cost table), canvas note `bnote`.
+
+---
+
+### 2.10 The same content, two frames — 21 Sep
+
+**What broke.** The empty gear state existed only as a standalone library screen, but gear is also the third tab inside a project. Reached that way, dropping the project header and tabs reads as having navigated away.
+
+**Decision. [R]** *(Yours, built directly in the canvas.)* A second version keeping the project header and `SHOTS / LOOK / GEAR` bar, with the screen's own title in a strip below the tabs rather than replacing the project name. The header block was made identical across all tabs.
+
+**Why it's evidence.** You worked in the artifact rather than describing a change — worth saying explicitly in the case study, because it's the design-engineer distinction. The general rule it produced ("an empty tab is a state of the project, not a different place") is now a component in §7.
+
+*Open:* two `<h1>`s on the board; tab spacing specced two ways across boards; the empty-state family isn't wired to its own siblings. All logged, none fixed yet.
+
+---
+
+### 2.11 A consistency pass that turned up an accessibility bug — 21 Sep
+
+**What broke.** Three separate things, all found by looking at one component across every board that used it. The tab bar was specced two different ways (per-tab `margin-right` on seven boards, container `gap` on three) with vertical padding drifting between 10, 11 and 12px. The empty-state screens weren't wired to each other — tabbing from an empty shot list landed you on a *populated* look board. And one board had two `<h1>`s.
+
+**Decision.** One spec for the tab bar, applied to all ten boards that carry it: `gap` on the container, never per-tab margins. Padding raised to `14px` — which is the part that matters, because 12px produced a 41px row, under the 44px touch floor the spec itself sets in §3. A tab looks like text rather than a control, so it's a target people miss *and* don't realise they're missing.
+
+**Why it's evidence.** Two things worth saying in the case study. First, the bug was found by auditing a component across its instances rather than by reviewing screens — that's a design *systems* habit and it's what caught a violation of the project's own stated floor. Second, it's an honest example of drift: the spec said 44px from day one and ten boards quietly didn't meet it. Showing that you found your own violation is more convincing than claiming you never had one.
+
+---
+
+### 2.12 Wrap is not a completion screen — 21 Sep
+
+**What broke.** The app had no ending. Shoot mode went shot to shot, and `[✓] GOT IT` on the last one led nowhere.
+
+**Options.** The conventional ending is a completion screen — `12/12`, a tick, a sense of achievement. Or an ending that follows from the budget argument in 2.2.
+
+**Decision.** Not a celebration. The headline is the count and one line tying it back to the *cut* rather than to effort: *"There's nothing you have to chase tomorrow."* Exposed shots collapse to a number; the screen's attention goes to the two groups that need a decision — flagged, and not shot — and unshot shots never silently disappear.
+
+The blocked version, for an outstanding `[★]`, has an escape: `WRAP ANYWAY — I'LL TELL THEM`, with its consequence stated. **One change from the agreed plan:** it called for a disabled `WRAP` button above the escape. Drawn, it read as two controls for one action, with the dead one purely decorative. The reason line stayed, the dead button went.
+
+**Why it's evidence.** Two things. The product's thesis carried consistently from the first screen (budget as ceiling) to the last (wrap as "enough") — that coherence is what makes a case study read as a point of view rather than a feature list. And the plan-versus-drawn deviation is a small, honest example of the design changing once it existed on screen. Worth a sentence in the write-up: it shows you judge the artifact, not just the spec.
+
+*Artifacts:* `W1-Wrap`, `W2-WrapBlocked`, canvas note `wnote`, §5.12.
+
+---
+
+### 2.13 "Where do kept shots go?" — 21 Sep
+
+**What broke.** Two things, found by one question. First, the last-day case: `MOVE TO DAY 3` has nowhere to go on a single-day shoot or the final day. Second, and more important, you asked what `KEEP` actually does — can you still wrap, and where do the shots go? There was no good answer. `MOVE` and `DROP` each named a destination; `KEEP` didn't, and on day 2 it would have left a shot stranded on a closed day.
+
+**Options.** For the last day: grey out `MOVE`, offer *add a day*, or remove it. For `KEEP`: redefine it as open on the project, as a saved-for-another-shoot list outside the project, or both.
+
+**Decision. [R]** A rule — *every option at wrap names where the shot goes* — resting on one distinction: **wrap closes a day, not a project.** `KEEP OPEN` moves a shot off the day and onto the project with no day; the Projects list shows `N OPEN` until it's resolved. On the last day `MOVE` is removed, not greyed out, because the only live alternative (*add a day*) would nudge you to extend the shoot. And the default follows the budget: in range it's `DROP` with *"You have enough for the cut"*; under range it's `KEEP OPEN`.
+
+**Why it's evidence.** A good interview story because the question was simple and the answer changed the model. It's the same shape as the presence bug (2.3): a control that looked complete until someone asked what it *did*. And the budget-driven default is the product thesis reaching the last decision in the flow — worth pointing at explicitly, because consistency of a point of view across fifty screens is hard to fake.
+
+**Then reversed. [R]** You came back to it: *if I keep a shot, can I still wrap — and if I can, what's the point?* The honest answer was that "keep" reads as *leave it where it is*, which is today, which means don't wrap — the same word-says-the-wrong-thing trap as "Setup". The underlying case (a pickup long after the shoot) was worth asking about directly, so the question became a behavioural one: how often do you actually go back for a missed shot? *Rarely.* So `KEEP` went. Two options on a middle day, `MOVE` and `DROP`; on the last day no chips at all, because one option is a confirmation. `DROP` became reversible — struck through in the record, un-droppable — which covers the rare pickup without a third button. The budget-driven behaviour survived, moved from the default to the sentence.
+
+**Why the reversal is the better story.** The first decision was defensible and got shipped to the canvas. It then failed a plain-language test from you — the person the product is for — and the resolution came from asking about your *behaviour* rather than your preference. That's a research move made inside a design review — worth telling in exactly that order, including the version that was wrong.
+
+*Artifacts:* `W1-Wrap`, `W2-WrapBlocked`, `W3-WrapLastDay` (all now `MOVE` / `DROP`), §5.12 including *Why there's no third option*, canvas note `wnote`.
+
+---
+
+## 3. Artifact inventory
+
+| Artifact | Where | Case study use |
+|---|---|---|
+| Design canvas, ~50 boards | Design artifact, 11 labelled rows | The main visual. Rows read as a narrative already. |
+| `design.md`, ~650 lines | This folder | Proof of systems thinking. Excerpt the token table and §5.6, don't reproduce whole. |
+| Direction study, 8 boards | Canvas rows 1–3 | Rejected work. **Do not delete.** |
+| Canvas notes (`enote`, `cnote`, `bnote`, `f1`–`f12`) | On the canvas | Reasoning captured at the time. The `f1`–`f12` flow audit is unusually good portfolio material — it's a designer auditing their own coverage and naming the gaps. |
+| Contrast script + output | `scratchpad/check2.py` | Evidence over assertion. |
+| Version history | Artifact, 30+ versions | Shows iteration. Worth exporting a few before/after pairs. |
+| This log | This folder | Your interview prep. |
+
+---
+
+## 4. What's missing — honestly
+
+Four gaps between where this is and a case study that lands a mid-level design engineer role.
+
+**It isn't built.** This is the whole ballgame for the role you're aiming at. Screens are table stakes; a working PWA someone can open on their phone is the differentiator. Everything above is evidence of *design* rigour — the code is what makes the title claim true.
+
+**The AI is specified, not running.** When a job ad says "built something with AI", hiring managers mean shipped, not designed. §5.6 describes a hybrid extraction system with an offline fallback and a caching rule. Building it — even small, even rough — converts the strongest section of this case study from a proposal into a thing that works. The offline keyword path is a weekend; the read is an API call and a confirm screen.
+
+**n = 1.** Every insight so far is yours, which is legitimate — you're the user — but a mid-senior case study with no other voices gets read as an exercise. Three conversations with other videographers would transform it, and would very likely break something, which is the point. The presence-model bug is exactly the kind of thing a fourth person finds.
+
+**No evidence of outcome.** Hard on a personal project. The substitutes available: the contrast numbers, the coverage audit (`f12` tracks gaps closed against gaps remaining), and — once it's built — one real shoot planned with it, with the list before and after.
+
+---
+
+## 5. Capture checklist
+
+Things that are cheap now and unrecoverable later.
+
+- [ ] Export the four direction-study boards as images before the canvas gets tidied
+- [ ] Export before/after pairs: the `Setup`→`Location` rename, the presence model, the brief screen
+- [ ] Keep `check2.py` and a saved run of its output
+- [ ] Screenshot the `f1`–`f12` flow audit at a couple of points in time — the gap count moving is the story
+- [ ] When the build starts: commit messages that say *why*, not *what*. They become the engineering half of the case study for free.
+- [ ] One paragraph, written the day it happens, whenever something gets thrown away
+
+---
+
+## 6. When we get to code
+
+Worth deciding deliberately, because each is a case study beat:
+
+- **Framework and why** — a reasoned choice beats a fashionable one, especially if the reason is "offline-first PWA with no server requirement".
+- **How the tokens become code** — CSS custom properties mapping 1:1 to the eleven semantic tokens keeps the day/night substitution argument alive in the build.
+- **Where the model call lives** — the §5.6 architecture is already specified. Building it as specified, and saying so, is the strongest possible link between the design and the engineering halves.
+- **What you measure** — first-paint offline, time from opening the app to a usable list. Two numbers beat a page of adjectives.
