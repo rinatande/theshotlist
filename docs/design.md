@@ -238,7 +238,7 @@ An empty beat is a prompt rather than a hole: *"Nothing here yet — this is the
 | Narrated (VO) | 16–22 | 28–36 | 44–56 | 60–76 |
 | Scripted | 14–20 | 24–32 | 40–52 | 56–72 |
 
-- **Custom** is the only delivery that asks for a length, in seconds. Its range is interpolated between the columns either side of it (reel = 45s, short = 120s, mid = 450s, long = 900s), and extrapolated at the same rate beyond them.
+- **Custom** is the only delivery that asks for a length, in seconds. Its range is interpolated between the columns either side of it (reel = 45s, short = 120s, mid = 450s, long = 900s), shrinking in proportion below a reel (a 15-second silent clip is 6–8) and carrying the mid→long rate past a long cut.
 - **Multi-day** projects split the range evenly across days, rounding so the days sum to the whole. Each day's share is editable later; a brief-driven suggestion ("day 2 is the sunrise day, give it more") is v1.
 - **Editable.** The `WHAT THAT SETS UP` box says the budget is a guide you can change; changing it stores an override on the project, and the table is no longer consulted for that project.
 

@@ -146,6 +146,8 @@ export interface Day {
   date?: IsoDate;
   label?: string;         // "Higashiyama"
   wrappedAt?: IsoDateTime;
+  /** Set when the person edits this day's share; otherwise the even split applies (§5.2). */
+  budget?: Budget;
 }
 
 /**
@@ -239,6 +241,8 @@ export interface Project {
   /** Optional at creation: falls back to "<date> shoot" (§5.1). */
   name: string;
   format: Format;
+  /** Set when the person edits the budget; the delivery × treatment table is then ignored (§5.2). */
+  budgetOverride?: Budget;
   startDate?: IsoDate;
   dayCount: number;       // asked at creation (§5.9). 1 → no day layer in the UI.
   where?: string;
