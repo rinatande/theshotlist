@@ -749,6 +749,7 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 19. **Redoing the list when gear arrives.** Gear is stubbed in v0, so suggestions are gear-free. When gear lands (v1), adding it to a project with a generated list should offer to redo the list for the new kit — same add-or-replace choice as reading the brief again (B10). Not drawn.
 20. **Place chips from capital letters will misfire.** The offline rule in §5.6 turns any capitalised mid-sentence word into a place chip, so brand and people's names come through as places. Cheap to dismiss, but worth watching how often it happens.
 21. **Place names leave the device for the sun-times lookup** (§5.10). It's one short request per name, with no brief text, but it is a network call the rest of the offline path doesn't make, and the privacy note should say so the first time.
+22. **Four glyphs the boards use aren't in the font we can get.** Google's build of JetBrains Mono has no `✓` (U+2713), `★` (U+2605) or `⋯` (U+22EF) at all, and serves `←` (U+2190) in no subset. All four are drawn by a system fallback font today — including the `[✓]` and `[★]` status marks, the most-seen glyphs in the app. Options: self-host upstream JetBrains Mono if it has them (needs a subsetting step), or draw these four as inline SVG sized to the mono cell. Found by the M0 proof page's glyph check.
 
 ---
 

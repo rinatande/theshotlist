@@ -27,6 +27,8 @@ The design is finished. This repo turns it into a working app. **Don't redesign;
 
 Ask before adding any dependency not listed here.
 
+Next 16 has breaking changes from older versions: read `AGENTS.md` and the bundled docs in `node_modules/next/dist/docs/` before writing Next code. Production builds run `next build --webpack`, because `@serwist/next` is a webpack plugin; dev runs on Turbopack with the service worker off.
+
 ## v0 scope: the core route
 
 Projects → new project → empty list → brief → what it read → shot list → shoot mode → wrap.
