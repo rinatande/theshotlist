@@ -31,7 +31,9 @@ Ask before adding any dependency not listed here.
 
 Projects → new project → empty list → brief → what it read → shot list → shoot mode → wrap.
 
-Both themes. Installable. Fully usable offline. **Gear, look board, cast and adding days are stubbed**: the tab or screen exists and loads, with a line saying it's coming, but the core route never depends on them.
+Also in v0: project edit and delete (the `⋯` sheet, §5.14) and a minimal Settings (theme, time format, storage — §8).
+
+Both themes. Installable. Fully usable offline. **Gear, look board, cast, per-day briefs and adding days are stubbed**: the tab or screen exists and loads, with a line saying it's coming, but the core route never depends on them.
 
 ## Milestones
 
@@ -40,18 +42,19 @@ Work in order. Each one ends with something that runs, a commit, and a short not
 **M0 — Scaffold.** The folder isn't empty, so run `create-next-app` (TypeScript, App Router, `src/` dir, ESLint, no Tailwind) into a temporary directory and move the result in **without overwriting anything already here**. Wire up `tokens.css`, the font, the manifest and the service worker. A single page proving both themes: Auto follows `prefers-color-scheme`; `data-theme` on `<html>` overrides it. Deploy to Vercel. *Done when:* it installs to a phone home screen and opens with no signal.
 
 **M1 — Data.** Dexie schema from `types.ts`. Pure functions, each with Vitest tests:
-- `budget(format)` → `{min, max}` from delivery × treatment (§5.2)
+- `budget(format)` → `{min, max}` from the delivery × treatment table, custom interpolated by seconds; an override on the project wins (§5.2)
+- `dayBudgets(project)` → the range split evenly across days, summing to the whole (§5.2)
 - `runningOrder(project, dayId?)` → locations sorted: start time first by clock, then untimed by drag `order` (§5.10)
-- `shotNumbers(project)` → numbers derived from the running order. **Never stored.**
+- `shotNumbers(project)` → numbers derived from the running order, continuous across days, `UNPLACED` last in each day, `[★]` unnumbered (§5.10). **Never stored.**
 - `capabilities(packedGear)` → the `Capability` set from gear specs (thresholds in one place)
 
-**M2 — Projects and new project.** `S1` Projects, `E4` empty Projects, `P0a` first-ever project, `P0b` empty new project, `P1` filled, `P2` format + days. The name is optional (§5.1). `NEXT` is disabled until kind and treatment are picked, and says why.
+**M2 — Projects and new project.** `S1` Projects, `E4` empty Projects, `P0a` first-ever project, `P0b` empty new project, `P1` filled, `P2` format + days (no gear-kit line in v0). The name is optional (§5.1). `NEXT` is disabled until kind and treatment are picked, and says why. Cast defaults to lead = me, presence = part of it. Project actions: `A1` `⋯` sheet, `A2` delete, `PE1`/`PE2` edit (§5.14). `S5` Settings, v0 rows only (§8).
 
-**M3 — The shot list.** `E5` empty, `S2` (location/beat toggle), `S4` add, `S3` detail, `S6` edit, `E3`/`S7` running order, `E1`/`E2` locations. Status marks `[ ]` `[✓]` `[!]`; `[★]` sits outside the budget count (§5.7).
+**M3 — The shot list.** `E5` empty, `S2` (location/beat toggle), `S4` add, `S3` detail, `S6` edit, `E3`/`S7` running order, `E1`/`E2` locations. Status column is `[ ]` / `[✓]` only; a flag is a `!` line under the subject (§4.4). `[★]` counts toward the budget but is never numbered (§5.7). Coverage gap and duplicate rules are in §8 Add shot. Sun times (§5.10): calculated on the device, coordinates from a one-time place-name lookup or the phone's location; Auto follows sunset from here (§9).
 
-**M4 — Brief, offline.** `B0` empty, `B1` written, `B9` what it read — offline this shows **quoted chips only**. Keyword matching runs on the device, debounced on a pause in typing, **never per keystroke and never over the network** (§5.6). `GENERATE SHOTS` builds a list from templates × format × packed gear × cast presence (§6.2). Every suggestion carries its reason line, naming the gear item.
+**M4 — Brief, offline.** `B0` empty, `B1` written, `B9` what it read — offline this shows **quoted chips only**. Keyword matching runs on the device, debounced on a pause in typing, **never per keystroke and never over the network** (§5.6). Chips come from `src/data/chips.json` plus the capitalised-word place rule. `GENERATE SHOTS` builds a list from templates × format × packed gear × cast presence (§6.2), filled to the **top** of the budget and placed into locations by light and keywords. Every suggestion carries its reason line; with no gear packed (v0), suggestions are gear-free and the line says why the shot works rather than naming an item.
 
-**M5 — Shoot mode and wrap.** `N4` shoot mode (night theme, one shot at a time, 72px `GOT IT`). `W1` middle day, `W2` blocked by a `[★]`, `W3` last day (§5.12). Wrap closes a **day**, never a project. `MOVE` only exists when a later day does; `DROP` is reversible.
+**M5 — Shoot mode and wrap.** `N4` shoot mode (night theme, one shot at a time, 72px `GOT IT`). `SKIP` sends a shot to the end of the queue; `FLAG` asks for a note; the counter is the exposed count; the last shot doesn't auto-wrap. `W1` middle day, `W2` blocked by a `[★]`, `W3` last day (§5.12). Wrap closes a **day**, never a project. `MOVE` and `RESHOOT TOMORROW` only exist when a later day does; `DROP` is reversible.
 
 **M6 — The read (later, separate).** A Route Handler that sends the brief to the Anthropic API and returns quoted chips, inferred chips and deliverables. The API key stays server-side, in an environment variable — never in client code. Fired **once**, on `GENERATE`; cached against a hash of the brief text. Adds `B10` (read again: add or replace).
 

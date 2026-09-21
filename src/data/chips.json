@@ -1,0 +1,43 @@
+[
+  { "label": "SUNRISE",      "kind": "time", "light": "sunrise", "words": ["sunrise", "dawn", "first light", "early morning", "daybreak"] },
+  { "label": "GOLDEN HOUR",  "kind": "time", "light": "golden",  "words": ["golden hour", "golden light", "late afternoon", "magic hour"] },
+  { "label": "MIDDAY",       "kind": "time", "light": "day",     "words": ["midday", "noon", "lunchtime", "harsh light", "hard light"] },
+  { "label": "SUNSET",       "kind": "time", "light": "golden",  "words": ["sunset", "dusk", "sundown"] },
+  { "label": "BLUE HOUR",    "kind": "time", "light": "blue",    "words": ["blue hour", "twilight", "after sunset"] },
+  { "label": "NIGHT",        "kind": "time", "light": "night",   "words": ["night", "after dark", "neon", "city lights", "nightlife"] },
+
+  { "label": "RAIN",         "kind": "weather", "words": ["rain", "rainy", "wet", "drizzle", "storm"] },
+  { "label": "FOG",          "kind": "weather", "words": ["fog", "foggy", "mist", "misty", "haze"] },
+  { "label": "SNOW",         "kind": "weather", "words": ["snow", "snowy", "frost"] },
+  { "label": "WIND",         "kind": "weather", "words": ["wind", "windy", "gusty"] },
+  { "label": "OVERCAST",     "kind": "weather", "words": ["overcast", "cloudy", "grey sky", "gray sky"] },
+  { "label": "CLEAR",        "kind": "weather", "words": ["sunny", "clear sky", "blue sky"] },
+
+  { "label": "SILENT B-ROLL", "kind": "treatment", "words": ["no talking", "silent", "b-roll", "broll", "observational", "ambient"] },
+  { "label": "TO CAMERA",     "kind": "treatment", "words": ["talking to camera", "piece to camera", "to camera", "vlog", "talking head"] },
+  { "label": "INTERVIEW",     "kind": "treatment", "words": ["interview", "sit-down", "sit down", "q&a"] },
+  { "label": "VOICE-OVER",    "kind": "treatment", "words": ["voice-over", "voiceover", "vo", "narration", "narrated"] },
+
+  { "label": "QUIET",        "kind": "mood", "words": ["quiet", "calm", "slow", "still", "peaceful", "gentle"] },
+  { "label": "ENERGETIC",    "kind": "mood", "words": ["energetic", "busy", "fast", "crowded", "lively", "hectic"] },
+  { "label": "MOODY",        "kind": "mood", "words": ["moody", "dark", "cinematic", "dramatic"] },
+  { "label": "WARM",         "kind": "mood", "words": ["warm", "cosy", "cozy", "intimate", "homely"] },
+  { "label": "PLAYFUL",      "kind": "mood", "words": ["playful", "fun", "silly", "light-hearted"] },
+
+  { "label": "FOOD",         "kind": "subject", "words": ["food", "cooking", "kitchen", "chef", "restaurant", "dinner", "breakfast", "lunch"] },
+  { "label": "COFFEE",       "kind": "subject", "words": ["coffee", "cafe", "café", "espresso", "barista", "tea"] },
+  { "label": "STREET",       "kind": "subject", "words": ["street", "streets", "alley", "laneway", "wandering", "walk"] },
+  { "label": "MARKET",       "kind": "subject", "words": ["market", "stall", "stalls", "vendor"] },
+  { "label": "NATURE",       "kind": "subject", "words": ["nature", "forest", "mountain", "hike", "trail", "valley", "garden"] },
+  { "label": "WATER",        "kind": "subject", "words": ["water", "sea", "ocean", "river", "lake", "beach", "coast", "waves"] },
+  { "label": "ARCHITECTURE", "kind": "subject", "words": ["architecture", "building", "temple", "shrine", "church", "bridge"] },
+  { "label": "PEOPLE",       "kind": "subject", "words": ["people", "crowd", "portrait", "locals", "friends", "family"] },
+  { "label": "TEXTURE",      "kind": "subject", "words": ["texture", "textures", "details", "close-ups", "closeups", "steam"] },
+  { "label": "HANDS",        "kind": "subject", "words": ["hands", "making", "craft", "handmade"] },
+  { "label": "PRODUCT",      "kind": "subject", "words": ["product", "packaging", "unboxing", "bag"] },
+
+  { "label": "BRAND DEAL",   "kind": "work", "words": ["brand deal", "brand", "client", "sponsored", "sponsor", "deliverables", "paid"] },
+  { "label": "HERO SHOT",    "kind": "work", "words": ["hero shot", "hero"] },
+  { "label": "LOGO",         "kind": "work", "words": ["logo", "branding"] },
+  { "label": "SAY THE NAME", "kind": "work", "words": ["say the name", "mention", "shout-out", "shoutout", "name out loud"] }
+]

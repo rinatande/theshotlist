@@ -25,6 +25,7 @@
   --warn:       #8F4F0C; /* coverage gap, flagged shot, over budget */
   --track:      #E0D5BE; /* progress-meter track */
   --grain:      #1C171412; /* paper dot texture (day only) */
+  --scrim:      #1C171485; /* behind a bottom sheet: ink at 52%. Sheet ground 3.44:1, --ink edge 4.36:1 against it (§7) */
 
   color-scheme: light;
 
@@ -74,6 +75,7 @@
   --warn:       #FF7A45;
   --track:      #262C29;
   --grain:      transparent;
+  --scrim:      #000000B3; /* black at 70%: page mutes to ~2:1; the --ink top border carries the edge at 17:1 (§7) */
   color-scheme: dark;
 }
 
@@ -93,6 +95,7 @@
     --warn:       #FF7A45;
     --track:      #262C29;
     --grain:      transparent;
+  --scrim:      #000000B3; /* black at 70%: page mutes to ~2:1; the --ink top border carries the edge at 17:1 (§7) */
     color-scheme: dark;
   }
 }

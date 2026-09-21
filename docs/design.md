@@ -2,7 +2,7 @@
 
 **Status:** Direction locked. Visual system defined, key screens specified in both themes. Gear, project format, day briefs, deliverables, cast, locations, empty states and account modelled.
 **Direction:** *Paper Report* (day) and *Camera Report* (night) — one structure, two themes.
-**Last updated:** 18 September 2026
+**Last updated:** 21 September 2026
 
 ---
 
@@ -135,6 +135,7 @@ Two colours are deliberately *not* interchangeable across themes: day's accent i
 | Role | Size | Weight | Tracking | Case |
 |---|---|---|---|---|
 | Screen title | 20px | 700 | 0.08em | UPPER |
+| Screen label (a step or mode heading in the header bar — *New project · 2/2*, *Wrap · Day 2 of 3*) | 13px | 700 | 0.12em | UPPER |
 | Shot detail title | 20px | 700 | 0.02em | Sentence |
 | Shoot-mode subject | 28px | 700 | 0.01em | Sentence |
 | Body / notes | 15–16px | 400 | 0 | Sentence |
@@ -153,7 +154,7 @@ One family is a real constraint and the point of the direction. It's also a PWA 
 - **Radius 0.** Everywhere. No exceptions.
 - **1px `--rule` hairlines do all the separating.** No shadows, no elevation, no card fills for grouping.
 - **`--band` fill marks section headers only** — location groups, settings groups. Never a content background.
-- **Paper grain** (day only): a radial-dot overlay at ~7% opacity, 3px pitch. It's what stops the ground reading as flat off-white. Night gets the same overlay in light ink at the same opacity, which reads as sensor noise rather than paper.
+- **Paper grain** (day only): a radial-dot overlay at ~7% opacity, 3px pitch. It's what stops the ground reading as flat off-white. Night has no grain — `--grain` is `transparent` there, matching the night boards. (An earlier draft gave night the same overlay in light ink, as sensor noise; the boards never drew it, and the boards won.)
 - **No texture beyond that.** No scanlines, no sprockets, no stamps — those belonged to the directions we didn't take.
 
 ### 4.4 Status language
@@ -164,10 +165,12 @@ The bracketed code is the system's signature and it is load-bearing, not decorat
 |---|---|---|
 | `[ ]` | planned, not yet shot | `--ink-muted` |
 | `[✓]` | exposed | `--ok` |
-| `[!]` | flagged, or a coverage gap | `--warn` |
+| `[!]` | flagged, or a coverage gap — used in wrap and shoot mode, **not in the shot row's status column** (below) | `--warn` |
 | `[★]` | required — a contracted deliverable (§5.7) | `--accent` |
 
 An exposed row additionally strikes its subject through and drops all its text to `--ink-muted`. That's two non-colour signals plus colour — it survives greyscale, glare, and colour-blindness.
+
+**A flag is a line, not a status mark.** On a shot row the status column only ever shows `[ ]` or `[✓]`. A flagged shot keeps its `[ ]` and gains a warning line under the subject, in place of the meta line: `! NO COVERAGE YET` — the `!` plus the flag's note, 11px UPPER in `--warn`. The `!` and the words carry the meaning, so it's still never colour alone. The flag is set with `FLAG` in shoot mode (which asks for the note), cleared from edit shot, and decided at wrap (§5.12). Moving it out of the column keeps the column a single binary — shot or not — which is the thing you scan for.
 
 ---
 
@@ -223,7 +226,21 @@ Length does two things, and both are visible immediately.
 
 An empty beat is a prompt rather than a hole: *"Nothing here yet — this is the one people remember."* A seeded structure is also the difference between opening the app to a blank page and opening it to a question you can answer.
 
-**It sets a shot budget**, derived from length × treatment — roughly 2–3s per shot for a reel, longer holds for observational work, fewer shots per minute for interview-led. Always shown as a range, never a single number: a range reads as advice, a number reads as a target.
+**It sets a shot budget**, derived from length × treatment — roughly 2–3s per shot for a reel, longer holds for observational work, fewer shots per minute for interview-led. Always shown as a range, never a single number: a range reads as advice, a number reads as a target. It is a rough guide to how many shots cover a cut of that length; going over or under is the person's call.
+
+**The budget table.** A first draft, reasoned rather than measured (open problem 6). Silent sits at about 1.5× talking, per §5.1. Planned shots grow more slowly than running time, because a long cut uses each planned shot several times.
+
+| Treatment | Reel (~45s) | Short (1–3 min) | Mid (5–10 min) | Long (10–20 min) |
+|---|---|---|---|---|
+| Talking to camera | 12–16 | 20–26 | 32–42 | 44–58 |
+| Silent / observational | 18–24 | 30–40 | 48–64 | 66–88 |
+| Interview-led | 10–14 | 18–24 | 28–36 | 36–48 |
+| Narrated (VO) | 16–22 | 28–36 | 44–56 | 60–76 |
+| Scripted | 14–20 | 24–32 | 40–52 | 56–72 |
+
+- **Custom** is the only delivery that asks for a length, in seconds. Its range is interpolated between the columns either side of it (reel = 45s, short = 120s, mid = 450s, long = 900s), and extrapolated at the same rate beyond them.
+- **Multi-day** projects split the range evenly across days, rounding so the days sum to the whole. Each day's share is editable later; a brief-driven suggestion ("day 2 is the sunrise day, give it more") is v1.
+- **Editable.** The `WHAT THAT SETS UP` box says the budget is a guide you can change; changing it stores an override on the project, and the table is no longer consulted for that project.
 
 **The budget exists to stop overshooting, not to drive it up.** Its job is to tell you when you have enough and can put the camera down and be somewhere. That is the opposite of how a progress meter usually behaves, and it's deliberate — the failure mode this app should prevent isn't only "missed a shot", it's "spent the whole morning behind a viewfinder".
 
@@ -233,7 +250,7 @@ An empty beat is a prompt rather than a hole: *"Nothing here yet — this is the
 | In range | Neutral. |
 | Over | Counter turns `--warn` with `!`, and one advisory at the foot of the list: *"26 planned for a 45-second cut. Eighteen to twenty-four is plenty — trim now rather than at 6am in the cold."* |
 
-One advisory, once, at the foot — never a warning per shot.
+One advisory, once, at the foot — never a warning per shot. Required `[★]` shots count toward the total (§5.7), and the advisory never suggests cutting one: its trim advice speaks only of the shots you could drop.
 
 ### 5.3 Aspect
 
@@ -250,6 +267,8 @@ The same shots under two lenses, toggled from the plan bar:
 
 Both are needed because they genuinely disagree. A reel's hook and its payoff are often the same location six hours apart; shooting order and edit order have almost nothing to do with each other. Shoot mode always uses the running order regardless of the toggle — on set, the edit doesn't exist yet.
 
+**Every shot has a beat, even one added by hand.** Add shot has no beat field, so the app works one out the way it does for suggestions: first by matching the subject against template keywords and subjects, taking that template's beat; failing that, by size and position — a `WS` in the day's first location opens, anything in the last location closes, everything else is body. It's a guess, and it's only visible in the beat view. How it gets corrected is open (§10).
+
 ### 5.5 What format feeds
 
 Format joins gear and the day's brief (§5.6) as the three inputs to the suggestion engine. A template shot declares a `beat` and its `shootTypes` alongside its gear `requires`, so two axes vary independently: the pocket-kit café list and the full-rig camp list differ by **gear**; a 45-second reel and an eight-minute travel piece in the same café differ by **format**. The long version gets sit-down coverage, establishing shots and room for a sequence that a reel has no time for.
@@ -259,6 +278,8 @@ Format joins gear and the day's brief (§5.6) as the three inputs to the suggest
 Genre, treatment and format describe the *kind* of video. The brief describes *this day* — and it's the only input that can know about a brand deal, a person you're meeting, or the fact that the light is only good for twenty minutes.
 
 **Free text, two scopes.** A brief for the whole project and a brief per day, toggled at the top of the screen. Loose or detailed both work — "wandering Higashiyama, quiet" is a valid brief, and so is three paragraphs with a client's shot requirements pasted in.
+
+**v0: one brief, for the project.** The per-day scope and its toggle wait for v1. A multi-day shoot describes each day inside the one brief if it wants to; whether a separate brief per day earns its place is a v1 question. `! NO BRIEF` on a day row follows from the per-day brief and waits with it.
 
 **How it becomes shots — hybrid, and the split matters.**
 
@@ -280,6 +301,10 @@ This preserves the offline-first promise from §3: **a brief typed in a valley w
 
 Firing the read per keystroke would mean hundreds of requests to watch someone type three paragraphs. It never happens on input. The result is cached against the brief text, so reopening the screen and generating again with nothing changed costs nothing.
 
+**Where the offline chips come from.** A keyword → chip dictionary, `src/data/chips.json`, edited by hand like the templates. Each chip has a label, a kind and the words that trigger it — `SUNRISE` from *sunrise, dawn, first light, early morning*. Kinds: time, weather, treatment, mood, subject, work. Place names can't be listed in advance, so one rule covers them: a capitalised word that isn't the first word of a sentence, and isn't in the dictionary, becomes a `place` chip. It will sometimes catch a brand name; quoted chips are tappable, so a wrong one costs a tap.
+
+**What generating builds.** Suggestions fill to the **top** of the budget range, not the bottom — easier to cut from a full list than to invent on set. Each lands in a location where one fits: a template's `light` matches it to a timed location (`sunrise` → the earliest start, `golden` / `blue` → the latest), and its keywords match location names. Anything that fits nowhere goes to `UNPLACED`. Time-of-day chips from the brief also rank templates with that `light` higher.
+
 **One press, two phases.** `GENERATE SHOTS` runs the read and lands on a confirm screen — **what it read** — before any shot exists. From the person's side it's one press; the checking is a beat inside it rather than an extra decision. One request returns both the structure and the shots, so a second is only spent if you actually correct something.
 
 **Quoted and inferred are drawn differently**, because they carry different risk. `SUNRISE` is a word you typed — outline chip, low stakes. `3 DELIVERABLES` is a judgement the app made about what a client's sentence obliges you to shoot — filled chip, under a heading that says to check it. The deliverables are then listed individually rather than left as a count: a number you can't inspect is a number you can't verify, and these are the shots you're contractually on the hook for.
@@ -294,11 +319,11 @@ A brand deal's shots are not suggestions — they're obligations, and the failur
 
 | | Behaviour |
 |---|---|
-| Mark | `[★]` in `--accent`, in place of the row number |
+| Mark | `[★]` in `--accent`, in place of the row number. Required shots are **never numbered** — the mark is the identity. |
 | Position | Pinned in a `REQUIRED — <client>` band above every location, in both grouping modes |
-| Counting | Counted separately: `★ 0/3` beside the budget. **Deliverables sit outside the shot budget** — a contract is not discretionary, and an over-budget warning must never read as "drop one of these". |
+| Counting | Counted **toward** the shot budget — they're shots you'll take, and leaving them out understated the day. Also counted on their own: `★ 0/3` beside the budget. The over-budget advisory never suggests dropping one (§5.2): a contract is not discretionary. |
 | Wrap | Shoot mode will not let you wrap the day with a deliverable outstanding. It's the one place the app is allowed to be obstinate. |
-| Origin | Created from the brief when it calls them out, or set by hand with a long-press on any shot. |
+| Origin | Created from the brief when the read calls them out (M6). Setting one by hand is open (§10): the long-press drawn for it is unassigned in v0. |
 
 A required shot that conflicts with another setting doesn't get silently dropped — see below.
 
@@ -392,7 +417,16 @@ Location
 
 **Light-aware start times.** The new-location screen knows the project's date and location, so it states the sunrise and how long golden hour holds, and says what the chosen time buys you: *"Sunrise is 6:02 at Headland on 19 Sep and golden hour holds to about 6:45. A 6:10 start gives you 35 minutes of it."* Quick chips (`SUNRISE / MIDDAY / GOLDEN`) fill a sensible time so the common case is one tap.
 
+**Where the sun times come from.** Sunrise, sunset and golden hour are calculated on the device from a date and a latitude/longitude — no network, no library. The coordinates come one of two ways:
+
+- **The place name, looked up once.** The first time a project's `where` (or a location's) is seen with signal, the name is sent to a free geocoding service (Open-Meteo, no account) and the coordinates are saved with it. From then on everything works offline. The place name is the only thing sent — never the brief — and the screen says so the first time.
+- **The phone's location**, behind the browser's permission prompt, offered as `USE WHERE I AM`.
+
+With neither — offline before a lookup, permission refused — the light lines are simply absent, not shown as an error. The same numbers drive shoot mode's `LIGHT GOES 6:10 PM · 46 MIN` and Auto's sunset switch (§9).
+
 **Times sort themselves; the rest is drag order.** Anything with a start time sits in clock order. Locations without one keep the order you dragged them into, under a `NO TIME SET` heading. Shot numbers follow the running order, so moving one location above another renumbers — the reorder screen says so plainly, and anything already exposed keeps its mark, because the number is a position, not an identity.
+
+**How numbering runs.** One sequence for the whole project, continuous across days — day 1 is 01–12 and day 2 carries on at 13 — so a number is never shared. Within a day: timed locations by clock, then untimed by drag order, then that day's `UNPLACED` shots last. Shots with no day at all come after the last day. `[★]` shots take no number (§5.7) and don't consume one.
 
 **Deleting a location never deletes shots.** They fall to an `UNPLACED` group at the foot of the list. That's a bucket in the model and it earns its place: losing six planned shots because you renamed a location is a much worse failure than an extra group header. The delete row states this consequence in place rather than opening a confirm dialog.
 
@@ -425,7 +459,7 @@ The app had no ending. You could plan a shoot, work through it and tick everythi
 
 | | What it asks |
 |---|---|
-| **Flagged** `[!]` | Reshoot tomorrow, or accept as is. A flag is an unresolved judgement and shouldn't survive the day unexamined. |
+| **Flagged** `[!]` | Reshoot tomorrow, or accept as is. A flag is an unresolved judgement and shouldn't survive the day unexamined. `RESHOOT TOMORROW` moves the shot to the next day and resets it to `[ ]`, keeping its note; on the last day it's absent (not greyed), the same rule as `MOVE` below, which leaves accept or drop. |
 | **Not shot** `[ ]` | Move to a later day, or drop. A bulk choice sets every shot in the group; any single shot can then be changed on its own. |
 
 **Every option names where the shot goes.**
@@ -448,6 +482,10 @@ Unshot shots never evaporate. A planning tool that silently discards what you di
 **The deliverable guard, and its escape.** A day with an outstanding `[★]` doesn't wrap clean: the deliverable is pinned at the top under the client's name, and the two routes offered are `SHOOT IT NOW` and `WRAP ANYWAY — I'LL TELL THEM`. The escape is deliberate. Blocking absolutely would be paternalistic, and the real reasons are ordinary — the location closed, the client cancelled, it rained. What the app owes you is that the consequence is stated rather than hidden: the shot stays `[★]` and the project keeps showing it outstanding. A guard you can't pass becomes a guard people route around.
 
 *Not drawn as a dead button.* The earlier plan was a disabled `WRAP` with the reason above it, matching the disabled-primary component in §7. On the screen it read badly: a dead `WRAP DAY 2` sitting directly above a live `WRAP ANYWAY` is two controls for one action, and the disabled one is pure decoration once the escape exists. The reason line stayed; the dead button didn't.
+
+**Reopening a wrapped day** (*"Wrapping locks nothing — you can reopen the day"*, W1) means opening it as a record: what was planned, what was exposed, what was dropped. From there a dropped shot can be un-dropped or moved to a later day. It doesn't un-wrap the day.
+
+**Wrap is only ever chosen.** Exposing the last shot doesn't send you to wrap — you might want to go back over the list or add something. Shoot mode says everything's through and offers `+ ADD SHOT` and `WRAP`.
 
 ### 5.13 Editing a shot
 
@@ -569,7 +607,7 @@ Two suggestion boards are on the canvas deliberately, because the contrast is th
 | **Column header** | 11px/700 `0.14em` `--ink-muted`, fixed column widths `34 / 44 / 1fr / 34`, `1px --rule` above and below. |
 | **Location band** | `--band` fill, 7px padding, 11px/700 `0.14em` `--ink-faint`, name left and start time right. |
 | **Shot row** | 13px vertical padding, `1px --rule` bottom. No. (34px) · size (44px, 700) · subject stack (15px + 11px meta) · status (34px, right). Whole row is the link to detail; the status control is a 44×44 button with negative margin so it overlaps the row padding without growing it. |
-| **Status control** | 44×44 minimum, transparent, renders the bracketed code. Tap toggles `[ ]` ↔ `[✓]`; long-press sets `[!]`. |
+| **Status control** | 44×44 minimum, transparent, renders the bracketed code. Tap toggles `[ ]` ↔ `[✓]`. Long-press does nothing in v0 (flags are a line, §4.4; setting `[★]` by hand is open, §10). |
 | **Radio row** | Whole row is a `<button role="radio">`, 44px minimum. The mark is `( )` / `(•)` in a fixed 26px column, `flex-shrink: 0`, **with an explicit `line-height` matching the label's first line** — without it the two marks land on different baselines, because the bullet and the space have different vertical metrics. Selected mark in `--accent`, its label at 700. Label plus one line of description in `--ink-muted`. `1px --rule` between rows. For mutually exclusive settings that need explaining — never for binary toggles. |
 | **Segmented control** | `1px --rule` box, equal `flex-grow` segments, `1px --rule` between. Selected: `--ink` fill + `--accent-ink` at 700 (or `--accent` fill in night, where an ink fill would be a white slab). |
 | **Chip** | 7–9px padding, 11–12px UPPER. Selected = filled; unselected = `1px --rule` outline. Used for filters, locations, gear. |
@@ -580,7 +618,7 @@ Two suggestion boards are on the canvas deliberately, because the contrast is th
 | **Reference tile** | Flat 16:9 or 4:3 block, no radius, no caption over the image — captions sit beneath, on ground or in a `--band` strip. Text over a photograph can't be contrast-guaranteed, so we don't put any there. |
 | **Empty state** | Never a blank page and never a single button. Screen chrome stays intact (an empty shot list keeps its header, tabs and plan bar reading `0 / 18—24`), then a plain-language line about what's missing, then **exactly three** numbered ways forward, each with one line saying what it's good for. The first route is the recommended one and says why. Below them, one quieter alternative route. |
 | **Icon button** | 44×44 target around a 20px glyph, overlapping surrounding padding with negative margin so it never grows the row. `aria-label` always. The app has one icon — `⋯` — and a new one needs a reason the words couldn't do the job. |
-| **Bottom sheet** | Anchored to the bottom edge, full width, `--ground` with a `1px --ink` top border and a 36×4 grabber in `--rule`. Over a scrim — the one place a translucent overlay is right, because what's beneath is inert while the sheet is open. Title at 11px UPPER `--ink-muted`, then rows at the list-row spec. Dismissed by tapping the scrim, swiping down, or `CLOSE`. A confirmation replaces the sheet's content rather than stacking a second sheet. |
+| **Bottom sheet** | Anchored to the bottom edge, full width, `--ground` with a `1px --ink` top border and a 36×4 grabber in `--rule`. Over a scrim (`--scrim`) — the one place a translucent overlay is right, because what's beneath is inert while the sheet is open. Day: `#1C1714` at 52%, so the sheet's ground reads 3.44:1 against the dimmed page and its `--ink` edge 4.36:1. Night: black at 70%, which mutes the page to about 2:1 so it reads as inert; darkening can't separate two near-black grounds, so on night the `--ink` top border carries the edge at 17:1. Both clear the 3:1 non-text floor. Destructive fills (`YES, DELETE`) use `--warn` with `--accent-ink` labels: 5.38:1 day, 7.49:1 night. Title at 11px UPPER `--ink-muted`, then rows at the list-row spec. Dismissed by tapping the scrim, swiping down, or `CLOSE`. A confirmation replaces the sheet's content rather than stacking a second sheet. |
 | **Suggestion block** | `1px --accent` box (or a 3px left rule), 11px/700 `--warn` label, 13–15px body. The one place the app talks to you rather than listing. |
 
 ---
@@ -609,8 +647,12 @@ Size as a five-way segmented control (WS / MS / CU / OTS / INS) — the fastest 
 
 *States:* editing an existing shot (same screen, `SAVE` instead of `ADD TO LIST`) · duplicate-shot warning.
 
+*Rules:* a **coverage gap** is a size with no shots at the chosen location (*"You have no INS at the headland yet."*). A **duplicate** is a shot matching an existing one on size, subject (ignoring case and spacing), location, lens and support — the warning says which number it matches and still lets you add it, since a second take is legitimate.
+
 ### Settings
 Grouped rows under `--band` headers: **Appearance / Shot lists / Data**. Appearance holds the theme control (§9). Data holds offline storage, call-sheet export, and the PWA install prompt. Version and offline status in the footer.
+
+*v0:* Appearance → Theme; Shot lists → Time format; Data → how many projects are stored on this device, and the install prompt when the browser offers one. Account and call-sheet export wait for v1.
 
 ### Brief screens
 Four boards: **empty** (nothing written — three ways in, `GENERATE` disabled), **written**, **what it read** (the confirm phase), and **read again** (add or replace). Specified in §5.6.
@@ -656,6 +698,11 @@ Three boards — a middle day, the blocked one, and the last day — specified i
 ### Shoot mode *(night only, by design)*
 The on-set variant, and the reason the night theme exists. One shot at a time. Location and remaining daylight pinned at the top, big `04/12` counter. The current shot gets a 28px subject and its spec as chips. Two upcoming shots below, nothing more. The primary target is 72px tall — `[✓] GOT IT` — with `SKIP` and `FLAG` at 56px beneath it. No tabs, no navigation, no way to get lost.
 
+- **The counter** is today's exposed count over today's shots — `04/12` means four got.
+- **`SKIP`** sends the shot to the end of today's queue, still `[ ]`. If you never come back to it, wrap asks about it with the rest.
+- **`FLAG`** asks for a short note, then moves on; the note becomes the shot's `!` line (§4.4).
+- **After the last shot** it doesn't jump to wrap: it says everything's through and offers `+ ADD SHOT` and `WRAP` (§5.12).
+
 It's night-only because it's a screen you'd only ever open on a set. If usage says otherwise, it themes like everything else.
 
 ---
@@ -670,6 +717,10 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 - *Night* — "Night is pinned on. Switch to Auto to follow sunset where you are."
 
 **Auto is the default**, and it should be. A videographer's day genuinely does change light partway through, and sunset is a better trigger than an OS-level dark-mode schedule because it matches the thing they're actually reacting to. Auto falls back to `prefers-color-scheme` when location isn't available.
+
+**Where "where you are" comes from.** The phone's location if it's been allowed, else the coordinates of the project whose shoot date is today (§5.10), else `prefers-color-scheme`. Sunset is calculated on the device, so Auto keeps working offline.
+
+**How the choice is kept.** The setting lives in `localStorage`, not with the projects in IndexedDB, because it has to be known before the first paint: a small inline script sets `data-theme` on `<html>` before anything renders, so a pinned Night never flashes Day on launch. `theme-color` follows the resolved theme so the OS chrome matches.
 
 **Why it's buried.** The point of two themes here is that the app is already right when you open it. A visible toggle invites fiddling and takes up a corner of every screen for something you'd touch twice a year. The one concession worth building: a **long-press on the app icon** offering "Open in Night" as a shortcut, for the shoot that starts before the sun goes down.
 
@@ -692,6 +743,12 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 13. **Google sign-in is drawn as plain text.** A shipped build must use Google's own button asset and follow their branding rules; the board is a placeholder for layout only.
 14. **`UNPLACED` has no screen of its own.** It's specified as a group at the foot of the list, but a project where most shots are unplaced — the common state early on — hasn't been drawn, and that's the state a first-time user is most likely to be in.
 15. **Changing format after shots exist — partly resolved.** The edit flow now states what a change does to planned shots before saving (§5.14), and fewer days is drawn. Still undesigned: changing the *delivery* re-seeds the beats (HOOK/BUILD/PAYOFF → OPEN/MIDDLE/CLOSE), and shots already assigned to a beat need a mapping rather than falling back to unassigned.
+16. **Setting `[★]` by hand has no control.** The long-press drawn for it (§5.7) is unassigned in v0, and until the read ships (M6) nothing else can create a required shot — so offline, the deliverable guard in wrap (W2) can't be reached. Likely a `REQUIRED FOR` row with a client name in add / edit shot. Needs drawing.
+17. **A guessed beat can't be corrected.** Hand-added shots get an inferred beat (§5.4), but there's no control to change it — no beat field in add / edit, no drag between beats. Wrong guesses will show up in the beat view.
+18. **Per-day budget split is even.** §5.9 wants each day's share to follow what the day is doing (9 / 16 / 19, not 15 / 15 / 14). v0 splits evenly and lets you edit; a suggestion from the brief is v1.
+19. **Redoing the list when gear arrives.** Gear is stubbed in v0, so suggestions are gear-free. When gear lands (v1), adding it to a project with a generated list should offer to redo the list for the new kit — same add-or-replace choice as reading the brief again (B10). Not drawn.
+20. **Place chips from capital letters will misfire.** The offline rule in §5.6 turns any capitalised mid-sentence word into a place chip, so brand and people's names come through as places. Cheap to dismiss, but worth watching how often it happens.
+21. **Place names leave the device for the sun-times lookup** (§5.10). It's one short request per name, with no brief text, but it is a network call the rest of the offline path doesn't make, and the privacy note should say so the first time.
 
 ---
 

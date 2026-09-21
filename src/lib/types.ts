@@ -207,7 +207,10 @@ export interface Shot {
 
 export interface Chip {
   label: string;          // "SUNRISE", "HIGASHIYAMA"
-  kind: 'place' | 'time' | 'mood' | 'genre' | 'client' | 'deliverable' | 'other';
+  /** time · weather · treatment · mood · subject · work come from src/data/chips.json;
+   *  place from the capitalised-word rule; the rest only from the online read (§5.6). */
+  kind: 'place' | 'time' | 'weather' | 'treatment' | 'mood' | 'subject' | 'work'
+      | 'genre' | 'client' | 'deliverable' | 'other';
 }
 
 export interface Extraction {

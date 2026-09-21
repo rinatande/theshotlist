@@ -220,7 +220,51 @@ The blocked version, for an outstanding `[★]`, has an escape: `WRAP ANYWAY —
 
 **Why it's evidence.** A small one, and useful precisely because it's small: it shows a lesson from earlier in the project (words that promise the wrong thing) being applied unprompted to a new medium (an icon). Consistency of judgement across a project is harder to show than any single good decision.
 
-*Artifacts:* `M1-ProjectMenu`, `M2-ProjectDelete`, `PE1-EditProject`, `PE2-EditProjectFormat`, the `⋯` on ten project screens, §5.14, canvas note `mnote`.
+*Artifacts:* `A1-ProjectMenu`, `A2-ProjectDelete`, `PE1-EditProject`, `PE2-EditProjectFormat`, the `⋯` on ten project screens, §5.14, canvas note `mnote`. (Boards renamed from `M1`/`M2` on 21 Sep so they don't collide with the build's milestone names.)
+
+---
+
+### 2.15 Required shots count toward the budget — 21 Sep
+
+**What broke.** Nothing on screen — it came up in the pre-build review. §5.7 kept `[★]` deliverables outside the shot budget so an over-budget warning could never read as "drop one of these". Asked directly, you saw the budget differently: it's a rough guide to how many shots cover the cut, and a contracted shot is still a shot you'll take. Leaving three of them out made a busy day look lighter than it was.
+
+**Options.** Keep them outside (the spec). Count them and drop their separate counter. Count them and keep the protection.
+
+**Decision. [R]** Count them in the total, keep `★ 0/3` alongside, and make the over-budget advisory never suggest cutting one. Required shots also take no number: the ★ is the identity. The original worry is answered by the advisory's wording rather than by the arithmetic.
+
+**Why it's evidence.** The first rule solved a copy problem with a data rule. The better fix put the protection where the risk actually was — in what the warning says — and let the count be honest. A small example of separating what a number *is* from how it's *presented*.
+
+---
+
+### 2.16 A flag is a line, not a status — 21 Sep
+
+**What broke.** The status control carried three marks — `[ ]`, `[✓]`, `[!]` — with long-press for the flag, while §5.7 also gave long-press to `[★]`. One gesture, two meanings. Meanwhile several boards already showed the flag as a `! NO COVERAGE YET` line under the subject.
+
+**Decision. [R]** The status column only ever shows `[ ]` or `[✓]`. A flag becomes a `!` line with its note under the subject, set by `FLAG` in shoot mode (which asks for the note), cleared from edit shot, decided at wrap. Long-press does nothing in v0, to be revisited in v1.
+
+**Why it's evidence.** The boards had quietly drifted to a better answer than the spec. Taking the drawn version, and removing a gesture rather than resolving its conflict, is the kind of simplification that only shows up when the design is read as a system.
+
+---
+
+### 2.17 Sun times from a place name — 21 Sep
+
+**What broke.** Three screens depend on the sun — light-aware start times (E1), `LIGHT GOES` in shoot mode (N4), and Auto's sunset switch (§9) — and none of them said where the coordinates came from. `where` is free text, and a place name can't be turned into a latitude offline.
+
+**Options.** Hide the light lines in v0. Phone location only. Look the name up once online, then work offline, with phone location as the other way in.
+
+**Decision. [R]** The last. The place name is geocoded once (Open-Meteo, free, no account) and the coordinates are stored; sun times are calculated on the device with no library. With neither source the lines are absent rather than broken. The trade — a place name leaves the device — is written into the spec (§10, 21) so the privacy note says it.
+
+**Why it's evidence.** An offline-first promise tested against a feature that needs the world. The answer was to find the one piece of data that needs the network, fetch it once, and keep everything downstream local.
+
+---
+
+### 2.18 Settling the rest before code — 21 Sep
+
+**What happened.** A pre-build review of the spec against the boards turned up 23 questions. Most were gaps rather than defects: no budget table, no numbering rule across days, no definition of a coverage gap or a duplicate, no behaviour for `SKIP`, no place for the theme setting to live before first paint. They were answered in one pass. **[R]** on each, except where you left it to judgement.
+
+**Decisions worth naming.** One project brief in v0 (per-day briefs wait until they prove they're needed). Generate to the top of the budget, since cutting is easier than inventing on set. Numbers run continuously across days. A guessed beat for hand-added shots. Gear-free suggestions until gear ships. Project edit and delete moved into v0 because the designs existed.
+
+**Why it's evidence.** The review is the artifact: a spec checked line by line against its own boards before a line of code, with each gap either closed or written into §10 by number. It's the handover between the design half and the engineering half of the project.
 
 ---
 
