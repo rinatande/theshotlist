@@ -71,3 +71,24 @@ Rules: record it honestly, including when the AI was plainly wrong. Small wordin
 **Rina:** "how do i test my app? the link is just for the themes. can i not test the functionality?" Offered M1 alone or M1 with M2, she answered "m1 and m2 together".
 **Changed:** M1 and M2 were built in one pass, so the next deploy was usable: create, edit and delete projects, and Settings. Each milestone note now says what to try on the phone.
 **Kind:** other
+
+### 2026-09-22 · M2 · Truncate names on the list, wrap them on the project screen
+
+**Proposed:** As built in M2, following §5.14 and §7: the Projects list let long names wrap, and the project header truncated the name to one line so the `⋯` always had room.
+**Rina:** "On the projects listing page can we please truncate the name of a project if more than 1 line?" and "I would also like to reverse what I said before on the project detail page. I think we should wrap the project name on this page instead of truncating it."
+**Changed:** Project names truncate to one line on the Projects list and wrap in full in the project header, with the `⋯` beside the first line. `Projects.module.css`, `ProjectHeader.module.css`; design.md §5.14 and the §7 project-header row updated.
+**Kind:** design call
+
+### 2026-09-22 · M3 · Build M3 in one piece
+
+**Proposed:** Split M3: M3a (list, beats, add/detail/edit, locations, running order), then M3b (sun times, place-name lookup, LIGHT boxes, sunset Auto), so the core could be tested sooner.
+**Rina:** "I think I would prefer to do a sweeping test of the whole m3 so do it together if possible."
+**Changed:** M3 is built and handed over as one milestone, sun times included.
+**Kind:** plan rejected
+
+### 2026-09-22 · M3 · Movement is suggested by the app
+
+**Proposed:** Claude Code pointed out that the shot detail (S3) shows MOVEMENT and AUDIO but add/edit (S4, S6) have no fields for them, and asked whether to add two optional text fields or leave both out.
+**Rina:** "I think movement should be auto suggested when the shot is created, depending on what the app thinks is best." On audio she asked for a recommendation, and whether it's needed at all.
+**Changed:** Movement is suggested when a shot is created (rules proposed in the M3 plan, awaiting her go). Audio is still open.
+**Kind:** design call

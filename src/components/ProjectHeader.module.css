@@ -30,23 +30,23 @@
 
 .titleRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--s-3);
   margin-top: var(--s-4);
 }
 
-/* One line, truncating, so the ⋯ always has room (§5.14). */
+/* The whole name, wrapping onto as many lines as it needs; the ⋯ stays
+   beside the first line (§5.14). The Projects list is where it truncates. */
 .name {
   flex: 1;
   min-width: 0;
   margin: 0;
   font-size: 19px;
   font-weight: 700;
+  line-height: 1.3;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 
 /* Icon button (§7): 44×44 around the glyph, overlapping the padding. */
@@ -54,7 +54,7 @@
   flex-shrink: 0;
   width: var(--target);
   height: var(--target);
-  margin: -12px -12px -12px 0;
+  margin: -10px -12px -10px 0;
   display: flex;
   align-items: center;
   justify-content: center;

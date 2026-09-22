@@ -64,11 +64,15 @@
   gap: 10px;
 }
 
+/* One line on the list; the full name is on the project screen (§5.14). */
 .name {
+  flex: 1;
+  min-width: 0;
   font-size: var(--text-16);
   font-weight: 500;
-  min-width: 0;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .muted {
