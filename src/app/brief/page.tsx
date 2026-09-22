@@ -10,6 +10,8 @@ import ui from "@/components/ui.module.css";
 import { projectBrief, setBriefText } from "@/lib/brief";
 import { matchChips, type QuotedChip } from "@/lib/chips";
 import { db } from "@/lib/db";
+import { MAX_BRIEF } from "@/lib/read";
+import { readsLeft } from "@/lib/readClient";
 import type { Project } from "@/lib/types";
 import { useLive } from "@/lib/useLive";
 import { saveProject, useProject } from "@/lib/useProject";
@@ -33,6 +35,10 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
   const [copying, setCopying] = useState(false);
   const [placeholder, setPlaceholder] = useState("");
   const area = useRef<HTMLTextAreaElement>(null);
+  const [left, setLeft] = useState<{ available: boolean; remaining: number } | null>(null);
+  useEffect(() => {
+    readsLeft().then(setLeft);
+  }, []);
   const others = useLive(() => db.projects.toArray(), []);
   const pastBriefs = (others ?? []).filter((p) => p.id !== project.id && projectBrief(p)?.text.trim());
 
@@ -67,6 +73,7 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
             ref={area}
             className={`${ui.input} ${styles.brief}`}
             value={text}
+            maxLength={MAX_BRIEF}
             placeholder={placeholder}
             onChange={(e) => setText(e.target.value)}
           />
@@ -149,10 +156,27 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
             </div>
           </>
         ) : (
-          <div className={ui.box}>
-            <span className={ui.boxHeading}>ON THIS PHONE</span>
-            <p className={ui.boxText}>Matched here, free and offline. A fuller read that picks out client deliverables comes later.</p>
-          </div>
+          left?.available ? (
+            <div className={ui.box}>
+              <span className={ui.boxHeading}>ONLINE</span>
+              <p className={ui.boxText}>
+                Your brief is read in full once, when you generate — not as you type. You&apos;ll see what it read before anything is built. Sent once to be
+                read, not stored by this app. Offline it falls back to the matching above and still works.
+              </p>
+              <p className={ui.hint}>
+                {left.remaining === 0
+                  ? "No full reads left today — it will match on this phone instead."
+                  : left.remaining === 1
+                    ? "1 full read left today."
+                    : `${left.remaining} full reads left today.`}
+              </p>
+            </div>
+          ) : (
+            <div className={ui.box}>
+              <span className={ui.boxHeading}>ON THIS PHONE</span>
+              <p className={ui.boxText}>Matched here, free and offline. With signal, generating reads the whole brief instead — client deliverables included.</p>
+            </div>
+          )
         )}
       </div>
 

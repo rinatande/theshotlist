@@ -60,6 +60,9 @@ Work in order. Each one ends with something that runs, a commit, and a short not
 **M5 — Shoot mode and wrap.** `N4` shoot mode (night theme, one shot at a time, 72px `GOT IT`). `SKIP` sends a shot to the end of the queue; `FLAG` asks for a note; the counter is the exposed count; the last shot doesn't auto-wrap. `W1` middle day, `W2` blocked by a `[★]`, `W3` last day (§5.12). Wrap closes a **day**, never a project. `MOVE` and `RESHOOT TOMORROW` only exist when a later day does; `DROP` is reversible.
 
 **M6 — The read (later, separate).** A Route Handler that sends the brief to the Anthropic API and returns quoted chips, inferred chips and deliverables. The API key stays server-side, in an environment variable — never in client code. Fired **once**, on `GENERATE`; cached against a hash of the brief text. Adds `B10` (read again: add or replace).
+- **Model:** Claude Sonnet 5 (`claude-sonnet-5`) for everyone; Opus 5 is kept for a possible paid tier later (Rina, 22 Sep).
+- **Limits (design.md §5.6):** a $2/day ceiling for the whole app, 5 reads/day per phone, 15 per network address, and invite links for 25 reads over 14 days. Rina also sets a spend limit in the Anthropic console. Counters live in Upstash Redis; production refuses reads if no store is configured.
+- **Environment variables (Vercel):** `ANTHROPIC_API_KEY`; Upstash's `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL` / `_TOKEN`); `INVITES` as a comma list of codes; optional overrides `READ_DAILY_BUDGET_USD`, `READ_PER_DEVICE_DAILY`, `READ_PER_ADDRESS_DAILY`, `INVITE_READS`, `INVITE_DAYS`.
 
 ## Rules that must not break
 

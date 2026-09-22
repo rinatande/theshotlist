@@ -23,3 +23,28 @@ export function setQuoted(p: Project, chips: QuotedChip[], now = new Date()): Pr
   const brief: Brief = { ...existing, extraction: { quoted: chips, inferred: [], deliverables: [] } };
   return { ...p, briefs: p.briefs.map((b) => (b.id === existing.id ? brief : b)), updatedAt: now.toISOString() };
 }
+
+/** Keep an online read on the brief (M6), so reopening it costs nothing. */
+export function saveRead(
+  p: Project,
+  read: { hash: string; model: string; result: NonNullable<Brief["read"]>["result"] },
+  now = new Date(),
+): Project {
+  const existing = projectBrief(p);
+  if (!existing) return p;
+  const brief: Brief = {
+    ...existing,
+    readHash: read.hash,
+    readAt: now.toISOString(),
+    read: { ...read, text: existing.text, at: now.toISOString(), dropped: [] },
+  };
+  return { ...p, briefs: p.briefs.map((b) => (b.id === existing.id ? brief : b)), updatedAt: now.toISOString() };
+}
+
+/** What the person dropped on B9: inferred chips and deliverable shots they said it got wrong. */
+export function setDropped(p: Project, dropped: string[], now = new Date()): Project {
+  const existing = projectBrief(p);
+  if (!existing?.read) return p;
+  const brief: Brief = { ...existing, read: { ...existing.read, dropped } };
+  return { ...p, briefs: p.briefs.map((b) => (b.id === existing.id ? brief : b)), updatedAt: now.toISOString() };
+}

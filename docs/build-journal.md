@@ -127,3 +127,10 @@ Rules: record it honestly, including when the AI was plainly wrong. Small wordin
 **Rina:** "C and maybe we can do m6 before m5 as I feel like the whole purpose of this app is based around the generated shot list from the brief being amazing or atleast usable."
 **Changed:** Offline action coverage is built now; M6 (the online read) moves ahead of M5 (shoot mode and wrap). CLAUDE.md milestone order updated.
 **Kind:** plan rejected
+
+### 2026-09-22 · M6 · Sonnet 5 for everyone, Opus 5 as a tier
+
+**Proposed:** After a side-by-side on her coffee-machine brief (Opus 5: 39 shots, $0.156, 79 s; Sonnet 5: 33 shots, $0.051, 51 s), Claude Code recommended Opus 5 for the read, because its reason lines were the practical ones.
+**Rina:** "I think both are good, just opus is more detailed, and gives more direction in the reason line. I think in general it would be more than enough for all users to use sonnet 5. Then maybe we can introduce a tiered user / subscription option than enables opus 5." She also wants people — especially reviewers of her job applications — to be able to try it without burning her credit.
+**Changed:** The read defaults to Sonnet 5; Opus 5 is reserved for a future tier. Usage limits are being designed before M6 is built.
+**Kind:** plan rejected

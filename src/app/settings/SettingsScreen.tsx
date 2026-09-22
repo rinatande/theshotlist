@@ -9,6 +9,7 @@ import { db } from "@/lib/db";
 import { formatClock, readTimeFormat, writeTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import { useLive } from "@/lib/useLive";
 import { useOfflineReady } from "@/lib/useOfflineReady";
+import { forgetInvite, inviteCode, readsLeft } from "@/lib/readClient";
 import styles from "./Settings.module.css";
 
 /** The event Chrome and Android fire when the app can be installed. */
@@ -24,11 +25,15 @@ export function SettingsScreen() {
   const [time, setTime] = useState<TimeFormat>("12h");
   const [install, setInstall] = useState<InstallPrompt | null>(null);
   const [installed, setInstalled] = useState(false);
+  const [invite, setInvite] = useState<string | undefined>(undefined);
+  const [left, setLeft] = useState<{ available: boolean; remaining: number } | null>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setTime(readTimeFormat());
     setInstalled(window.matchMedia("(display-mode: standalone)").matches);
+    setInvite(inviteCode());
+    readsLeft().then(setLeft);
     const onPrompt = (e: Event) => {
       e.preventDefault();
       setInstall(e as InstallPrompt);
@@ -94,6 +99,30 @@ export function SettingsScreen() {
             </dd>
           </div>
           <div className={styles.row}>
+            <dt>Full brief reads</dt>
+            <dd className={styles.value}>
+              {left?.available ? (left.remaining === 1 ? "1 LEFT" : `${left.remaining} LEFT`) + (invite ? "" : " TODAY") : "OFFLINE"}
+            </dd>
+          </div>
+          {invite && (
+            <div className={styles.row}>
+              <dt>Invite · {invite.toUpperCase()}</dt>
+              <dd className={styles.value}>
+                <button
+                  type="button"
+                  className={styles.install}
+                  onClick={() => {
+                    forgetInvite();
+                    setInvite(undefined);
+                    readsLeft().then(setLeft);
+                  }}
+                >
+                  FORGET
+                </button>
+              </dd>
+            </div>
+          )}
+          <div className={styles.row}>
             <dt>Add to home screen</dt>
             <dd className={styles.value}>
               {installed ? (
@@ -117,7 +146,7 @@ export function SettingsScreen() {
             </dd>
           </div>
         </dl>
-        <p className={styles.note}>Your projects are stored on this phone, not on a server.</p>
+        <p className={styles.note}>Your projects are stored on this phone, not on a server. A brief is sent once when it&apos;s read in full, and isn&apos;t stored.</p>
       </section>
 
       <footer className={styles.footer}>

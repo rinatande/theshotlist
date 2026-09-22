@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Choice } from "@/components/Choice";
 import ui from "@/components/ui.module.css";
 import { db } from "@/lib/db";
 import { budgetLabel, dateSpan, formatLine } from "@/lib/labels";
 import { GROUPS, progress, projectGroup, projectMarker, todayIso, type ProjectGroup } from "@/lib/status";
 import type { Project } from "@/lib/types";
+import { rememberInvite } from "@/lib/readClient";
 import { useLive } from "@/lib/useLive";
 import styles from "./Projects.module.css";
 
@@ -17,6 +18,14 @@ type Filter = "all" | ProjectGroup;
 export function ProjectsScreen() {
   const projects = useLive(() => db.projects.orderBy("updatedAt").reverse().toArray(), []);
   const [filter, setFilter] = useState<Filter>("all");
+
+  // An invite link (/?invite=acme) gives a job application's reviewer more full reads.
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("invite");
+    if (!code) return;
+    rememberInvite(code);
+    window.history.replaceState(null, "", "/");
+  }, []);
 
   if (projects === undefined) return <div className={ui.screen} aria-busy="true" />;
   if (projects.length === 0) return <EmptyProjects />;

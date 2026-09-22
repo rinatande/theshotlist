@@ -103,3 +103,38 @@
   line-height: 1.55;
   color: var(--ink-muted);
 }
+
+.requiredBand {
+  color: var(--accent);
+}
+
+/* B10: the list already exists, and nothing has happened to it yet. */
+.changed {
+  padding: var(--s-4) var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.changedLead {
+  margin: 0;
+  font-size: var(--text-15);
+  line-height: 1.55;
+}
+
+.changedCount {
+  margin: 0;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+}
+
+.careful {
+  padding: 13px 14px;
+  border: 1px solid var(--warn);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}

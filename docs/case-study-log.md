@@ -288,6 +288,22 @@ The blocked version, for an outstanding `[★]`, has an escape: `WRAP ANYWAY —
 
 **Why it's evidence.** A spec assumption tested by the first line of code rather than trusted. The check was cheap — a canvas measurement on a throwaway page — and it caught a defect that would have shipped invisibly on the designer's own machine, where a system font happened to have the glyphs. It's also a case of the design's own rule ("one family") being defended in code when the easy path was to let the browser quietly break it.
 
+### 2.21 Paying for the read, and what "read once" has to mean — 22 Sep
+
+**What broke.** Three things, once the read was a real request. First, cost: the spec treated the read as an enhancement, and was silent on who pays for it in an app anyone can open. Second, the promise on B9, *"It won't run again unless you change the brief"*, was false as first built: the cache key included the plan, so adding the read's own 24 shots changed the planned count, and opening the screen again bought a second read. The browser test caught it, not a unit test. Third, B10's `REPLACE ALL N` board clears shots already marked exposed.
+
+**Options.** For cost: Opus 5 for everyone, a per-brief cap on regenerating, a cap on the number of briefs, or sign-in for more. The alternative was Sonnet 5 plus layered limits. For the cache: hash the plan and change the copy, or hash only the brief text and keep the copy. For B10: build the board, or keep exposed shots.
+
+**Decision. [R]** Rina compared Opus 5 and Sonnet 5 on her own coffee-machine brief and judged Sonnet "more than enough for all users", keeping Opus for a possible paid tier. The limits are layered so no single one has to be harsh:
+- a $2 daily ceiling across the app;
+- a spend limit in the Anthropic console;
+- 5 reads a day per phone, with 15 per network address as a backstop;
+- invite links worth 25 reads over 14 days, for the people she sends it to with job applications.
+
+There's no sign-in, which keeps §3's "no account needed". The hash covers the brief text alone, so the copy stays true. B10 replaces only what isn't shot, and the button says so: `REPLACE — KEEP WHAT'S SHOT`.
+
+**Why it's evidence.** The design's cost argument — *once on `GENERATE`, never per keystroke* — became a real budget. The limits fall back to the offline path the design already guaranteed, so running out of reads degrades the list rather than breaking the app. And a line of interface copy was treated as a contract the code has to keep, rather than rewritten to match what the code happened to do.
+
 ---
 
 ## 3. Artifact inventory

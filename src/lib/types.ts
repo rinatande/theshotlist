@@ -262,6 +262,21 @@ export interface Brief {
   readHash?: string;
   readAt?: IsoDateTime;
   extraction?: Extraction;
+  /**
+   * The last online read (M6), kept whole so reopening costs nothing. Shaped
+   * as src/lib/read.ts ReadResult; typed loosely here to keep the model free
+   * of the read's wire format.
+   */
+  read?: {
+    hash: string;
+    /** The brief text it was read from — a changed brief means a new read. */
+    text: string;
+    at: IsoDateTime;
+    model: string;
+    result: import("./read").ReadResult;
+    /** Inferred chips and deliverable subjects the person dropped on B9. */
+    dropped: string[];
+  };
 }
 
 // ─── Project ─────────────────────────────────────────────────────────────────
