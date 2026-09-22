@@ -46,3 +46,8 @@ public/swe-worker*
 
 # Private session transcripts (CLAUDE.md, Records and privacy)
 docs/sessions/
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/

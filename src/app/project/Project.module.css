@@ -17,7 +17,8 @@
   gap: 10px;
 }
 
-.shoot {
+/* Beats ui.secondary's width: 100% whatever order the two stylesheets load in. */
+.actions .shoot {
   flex: 0 0 auto;
   width: auto;
 }
