@@ -304,6 +304,19 @@ There's no sign-in, which keeps §3's "no account needed". The hash covers the b
 
 **Why it's evidence.** The design's cost argument — *once on `GENERATE`, never per keystroke* — became a real budget. The limits fall back to the offline path the design already guaranteed, so running out of reads degrades the list rather than breaking the app. And a line of interface copy was treated as a contract the code has to keep, rather than rewritten to match what the code happened to do.
 
+### 2.22 A list that arrives in one place and has to be moved one shot at a time — 22 Sep
+
+**What broke.** The designed route is brief first, then generate; locations are optional (§5.10). So the normal first list had no locations, and every generated shot landed in `UNPLACED`. Rina made a location and then edited forty shots one by one to put them in it. No board showed moving more than one shot, because every board started from a list that was already placed.
+
+**Options.**
+- A select mode on the list, with a bulk move.
+- Asking for locations before generating, which puts a form in front of the part of the app that works.
+- Letting the online read name the places, since it already knows where the brief happens.
+
+**Decision. [R]** Both of the first and last, before shoot mode, because shoot mode walks the running order and a list stuck in `UNPLACED` makes it worse too. The select mode reuses wrap's bulk row (`ALL N` plus tick one to change one) rather than inventing a pattern. The move sheet can create a location by name, so the forty-shot case is four taps: `SELECT`, `ALL 24`, a name, `MOVE`. The read suggests locations only when there are none, marks them `NEW` on B2, and creates each once, when the first shot needing it is added. On a real brief it proposed Harbourside, Fish market and Flat, and all 24 shots arrived placed.
+
+**Why it's evidence.** A gap only a real run could show: every screen was right on its own, and the fault was in the path between them. Rina found it by using the build rather than reviewing it. The fix came from the existing system, the wrap bulk row and the read's own schema, rather than a new idea.
+
 ---
 
 ## 3. Artifact inventory

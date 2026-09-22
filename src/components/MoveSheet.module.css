@@ -1,0 +1,49 @@
+.scroll {
+  max-height: 70dvh;
+  overflow-y: auto;
+  padding-bottom: calc(var(--s-5) + env(safe-area-inset-bottom));
+}
+
+.day {
+  margin: 0;
+  padding: 14px var(--gutter) 8px;
+  border-bottom: 1px solid var(--ink);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  width: 100%;
+  min-height: var(--target);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 13px var(--gutter);
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.name {
+  font-size: var(--text-15);
+  overflow-wrap: anywhere;
+}
+
+.new {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--gutter) 0;
+}

@@ -54,6 +54,12 @@ export interface ReadResult {
   inferred: { label: string; kind: string }[];
   deliverables: { client: string; shots: ReadShot[] }[];
   shots: ReadShot[];
+  /**
+   * Places it suggests when the project has none yet, so its shots arrive
+   * placed rather than in UNPLACED (design.md §10, 23). Absent on reads saved
+   * before this existed.
+   */
+  locations?: { name: string; day: number | null }[];
 }
 
 export interface ReadResponse {
@@ -126,8 +132,17 @@ export const READ_SCHEMA = {
       },
     },
     shots: { type: "array", items: SHOT_SCHEMA },
+    locations: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { name: { type: "string" }, day: { type: ["integer", "null"] } },
+        required: ["name", "day"],
+        additionalProperties: false,
+      },
+    },
   },
-  required: ["quoted", "inferred", "deliverables", "shots"],
+  required: ["quoted", "inferred", "deliverables", "shots", "locations"],
   additionalProperties: false,
 } as const;
 
@@ -142,7 +157,8 @@ What good looks like:
 - Plain words, not film-set jargon. Say "location", not "setup"; "start time", not "call time".
 - Sizes: WS (wide), MS (medium), CU (close-up), OTS (over the shoulder), INS (insert). Beats: opener, body, closer. Light: any, sunrise, golden, blue, night, day.
 - Sound: "speech" when someone talks on camera, "natural" when there's no talking but the place's sound is worth recording, "none" only when music or voice-over will cover it entirely. In a silent or observational film, natural sound is the soundtrack — use "natural", not "none".
-- If location names are given, set each shot's "location" to exactly one of those names where it clearly belongs, else null. Set "day" to the day number only on a multi-day shoot, else null.
+- Locations. If location names are given, set each shot's "location" to exactly one of those names where it clearly belongs, else null, and return "locations" empty. If none are given, suggest the places this shoot happens in "locations": short names a person would write on their own list ("Kitchen", "Nagi Coffee", "Higashiyama streets"), in the order they'd be shot, and as few as honestly cover it — usually one to four; a shoot in one room is one location. On a multi-day shoot give each its day, else null. Then set every shot's "location" to one of those names.
+- Set a shot's "day" to the day number only on a multi-day shoot, else null.
 
 Chips:
 - "quoted": places, times of day, moods, subjects, clients and people exactly as they appear in the brief's own words. Never the project settings — no aspect ratios, lengths, shot counts or treatment names unless the brief itself says them.

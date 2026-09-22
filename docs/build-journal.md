@@ -134,3 +134,14 @@ Rules: record it honestly, including when the AI was plainly wrong. Small wordin
 **Rina:** "I think both are good, just opus is more detailed, and gives more direction in the reason line. I think in general it would be more than enough for all users to use sonnet 5. Then maybe we can introduce a tiered user / subscription option than enables opus 5." She also wants people — especially reviewers of her job applications — to be able to try it without burning her credit.
 **Changed:** The read defaults to Sonnet 5; Opus 5 is reserved for a future tier. Usage limits are being designed before M6 is built.
 **Kind:** plan rejected
+
+### 2026-09-22 · M6 · No way to move many shots into a location
+
+**Proposed:** M6 shipped with generated shots landing in `UNPLACED` when the project had no locations yet, and placing a shot meant editing it one at a time. M5 (shoot mode and wrap) was next.
+**Rina:** "When I was testing the new version, I was nicely able to generate the shot list which landed in unplaced. I then created a location. Then had to manually add all the 40 shots one by one to a location."
+**Changed:** Both built before M5, at her go ("Let's fix both before m5"):
+- **Select and move:** `SELECT` on a band, tick boxes with `ALL N`, and `MOVE N TO…` a location, a day's UNPLACED, or a new location named in the sheet.
+- **Suggested locations:** the online read suggests locations when a project has none, so generated shots arrive placed.
+
+design.md §10 item 23 and §5.6.
+**Kind:** bug caught

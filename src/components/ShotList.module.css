@@ -82,6 +82,101 @@
   color: var(--accent);
 }
 
+/* A band with SELECT: the name, then the control at 44px. */
+.bandPick {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding-left: var(--gutter);
+  background: var(--band);
+  color: var(--ink-faint);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+}
+
+.bandPickName {
+  flex: 1;
+  min-width: 0;
+}
+
+.bandWrap {
+  display: flex;
+  align-items: center;
+}
+
+.bandWrap .bandLink {
+  flex: 1;
+  min-width: 0;
+}
+
+.bandSelect {
+  flex-shrink: 0;
+  min-height: var(--target);
+  padding: 0 var(--gutter);
+  border: 0;
+  border-left: 1px solid var(--rule);
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
+
+.allRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: var(--target);
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
+
+/* A drawn box, not the platform's: 20px, inked, filled with the accent when ticked. */
+.tick {
+  appearance: none;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  display: inline-grid;
+  place-content: center;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.tick:checked {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.tick:checked::after {
+  content: "✓";
+  color: var(--accent-ink);
+  font-size: var(--text-13);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tick:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+label.row {
+  cursor: pointer;
+}
+
 .bandLink {
   display: flex;
   justify-content: space-between;

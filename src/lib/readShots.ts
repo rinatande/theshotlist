@@ -1,5 +1,5 @@
 import type { ReadResult, ReadShot } from "./read";
-import { addShot } from "./shots";
+import { addLocation, addShot } from "./shots";
 import type { Id, Project } from "./types";
 import { capitalise } from "./words";
 
@@ -15,17 +15,21 @@ export interface ReadPick {
   client?: string;
   locationId?: Id;
   dayId?: Id;
+  /** A location the read suggested that isn't on the project yet; adding the shot creates it. */
+  newLocation?: string;
   /** A required shot whose subject is already on the list as required. */
   alreadyOn: boolean;
 }
 
 const norm = (s: string) => s.trim().replace(/\s+/g, " ").toLowerCase();
 
-function place(project: Project, shot: ReadShot): { locationId?: Id; dayId?: Id } {
+function place(project: Project, shot: ReadShot, suggested: ReadResult["locations"] = []): { locationId?: Id; dayId?: Id; newLocation?: string } {
   const location = shot.location ? project.locations.find((l) => norm(l.name) === norm(shot.location!)) : undefined;
   if (location) return { locationId: location.id, dayId: location.dayId };
-  if (project.days.length > 1 && shot.day) return { dayId: project.days.find((d) => d.index === shot.day)?.id };
-  return {};
+  const dayOf = (index: number | null | undefined) => (project.days.length > 1 && index ? project.days.find((d) => d.index === index)?.id : undefined);
+  const suggestion = shot.location ? suggested.find((l) => norm(l.name) === norm(shot.location!)) : undefined;
+  if (suggestion) return { newLocation: suggestion.name.trim(), dayId: dayOf(suggestion.day) ?? dayOf(shot.day) };
+  return { dayId: dayOf(shot.day) };
 }
 
 /** Subjects start with a capital, however the read wrote them. */
@@ -48,7 +52,7 @@ export function readPicks(project: Project, read: { hash: string; result: ReadRe
           id: `${prefix}:req:${di}:${si}`,
           shot,
           client: d.client,
-          ...place(project, shot),
+          ...place(project, shot, read.result.locations),
           alreadyOn: requiredOnList.has(norm(shot.subject)),
         }))
         .filter((p) => !dropped.has(norm(p.shot.subject)) && !onList.has(p.id)),
@@ -57,7 +61,7 @@ export function readPicks(project: Project, read: { hash: string; result: ReadRe
 
   const shots = read.result.shots
     .map(tidy)
-    .map((shot, i): ReadPick => ({ id: `${prefix}:${i}`, shot, ...place(project, shot), alreadyOn: false }))
+    .map((shot, i): ReadPick => ({ id: `${prefix}:${i}`, shot, ...place(project, shot, read.result.locations), alreadyOn: false }))
     .filter((p) => !onList.has(p.id));
 
   return { required, shots };
@@ -68,12 +72,19 @@ export function addReadPicks(project: Project, picks: ReadPick[], now = new Date
   let next = project;
   for (const p of picks) {
     if (p.alreadyOn) continue;
+    let locationId = p.locationId;
+    if (p.newLocation) {
+      // Created by the first shot that needs it; the rest find it by name.
+      const made = next.locations.find((l) => norm(l.name) === norm(p.newLocation!) && (next.days.length < 2 || l.dayId === (p.dayId ?? next.days[0]?.id)));
+      if (made) locationId = made.id;
+      else [next, locationId] = addLocation(next, { name: p.newLocation, dayId: p.dayId }, now, newId);
+    }
     const [q, id] = addShot(
       next,
       {
         size: p.shot.size,
         subject: p.shot.subject,
-        locationId: p.locationId,
+        locationId,
         dayId: p.dayId,
         beat: p.shot.beat,
         movement: p.shot.movement,

@@ -12,6 +12,7 @@ import {
   deleteShot,
   duplicateShot,
   findDuplicate,
+  moveShots,
   numberIfAdded,
   reorderLocations,
   toggleExposed,
@@ -206,5 +207,38 @@ describe("light lines", () => {
     const locations = [loc("Cliff path", 0, { startTime: 380 }), loc("The headland", 1, { startTime: 17 * 60 + 25 })];
     const p = project({ coords, startDate: "2026-09-19", locations });
     expect(runningOrderLight(p, locations, "12h")).toMatch(/^The headland at 5:25 PM is the last of the good light — sunset is 5:\d\d PM\./);
+  });
+});
+
+describe("moveShots", () => {
+  it("moves many unplaced shots into a location, in list order, after what's there", () => {
+    const p = project({
+      locations: [loc("kitchen", 0)],
+      shots: [shot("k1", 0, { locationId: "kitchen" }), shot("u1", 0), shot("u2", 1), shot("u3", 2)],
+    });
+    const q = moveShots(p, ["u3", "u1"], { locationId: "kitchen" });
+    const kitchen = q.shots.filter((s) => s.locationId === "kitchen").sort((a, b) => a.order - b.order);
+    expect(kitchen.map((s) => s.id)).toEqual(["k1", "u1", "u3"]);
+    expect(q.shots.find((s) => s.id === "u2")!.locationId).toBeUndefined();
+    // Numbers follow the move: kitchen's three, then what's left unplaced.
+    const n = shotNumbers(q);
+    expect([n.get("k1"), n.get("u1"), n.get("u3"), n.get("u2")]).toEqual([1, 2, 3, 4]);
+  });
+
+  it("takes the location's day on a multi-day shoot, and can send shots back to a day's UNPLACED", () => {
+    const p = project({
+      days: [day("d1", 1), day("d2", 2)],
+      locations: [loc("temple", 0, { dayId: "d2" })],
+      shots: [shot("a", 0, { dayId: "d1" }), shot("b", 1, { dayId: "d1" })],
+    });
+    const q = moveShots(p, ["a", "b"], { locationId: "temple" });
+    expect(q.shots.every((s) => s.locationId === "temple" && s.dayId === "d2")).toBe(true);
+    const r = moveShots(q, ["b"], { dayId: "d1" });
+    expect(r.shots.find((s) => s.id === "b")).toMatchObject({ locationId: undefined, dayId: "d1" });
+  });
+
+  it("does nothing for a location that doesn't exist", () => {
+    const p = project({ shots: [shot("a", 0)] });
+    expect(moveShots(p, ["a"], { locationId: "gone" })).toBe(p);
   });
 });

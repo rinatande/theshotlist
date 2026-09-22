@@ -293,3 +293,25 @@ export function arrangeShots(p: Project, dayId: Id | undefined, groups: Map<stri
 export function dayOfShot(p: Project, s: Shot): Id | undefined {
   return shotDayId(s, new Map(p.locations.map((l) => [l.id, l])));
 }
+
+/**
+ * Move many shots at once — to a location, or to a day's UNPLACED — in the
+ * order they sit on the list now, after whatever is already there. Numbers
+ * follow, because a number is a position (§5.10). Built after Rina placed
+ * 40 generated shots one at a time (design.md §10, 23).
+ */
+export function moveShots(p: Project, ids: Id[], target: { locationId?: Id; dayId?: Id }, now = new Date()): Project {
+  const location = target.locationId ? p.locations.find((l) => l.id === target.locationId) : undefined;
+  if (target.locationId && !location) return p;
+  const dayId = p.days.length > 1 ? (location ? location.dayId : (target.dayId ?? p.days[0]?.id)) : undefined;
+  const moving = new Set(ids);
+  const numbers = shotNumbers(p);
+  const rank = (s: Shot) => numbers.get(s.id) ?? Number.MAX_SAFE_INTEGER;
+  const picked = p.shots.filter((s) => moving.has(s.id)).sort((a, b) => rank(a) - rank(b) || a.order - b.order);
+  const start = nextOrder({ ...p, shots: p.shots.filter((s) => !moving.has(s.id)) }, location?.id, dayId);
+  const order = new Map(picked.map((s, i) => [s.id, start + i]));
+  return touch(
+    { ...p, shots: p.shots.map((s) => (order.has(s.id) ? { ...s, locationId: location?.id, dayId, order: order.get(s.id)! } : s)) },
+    now,
+  );
+}

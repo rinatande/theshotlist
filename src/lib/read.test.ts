@@ -84,6 +84,32 @@ describe("turning a read into shots", () => {
     expect(addReadPicks(has, [pick]).shots).toHaveLength(1);
   });
 
+  it("places shots in the locations it suggests when there are none, creating each once", () => {
+    const bare = project();
+    const suggesting = {
+      ...read,
+      result: { ...RESULT, deliverables: [], locations: [{ name: "Kitchen", day: null }], shots: [s("Descaler in", { location: "kitchen" }), s("Tank back in", { location: "Kitchen" }), s("Somewhere", { location: null })] },
+    };
+    const { shots } = readPicks(bare, suggesting);
+    expect(shots.map((x) => x.newLocation)).toEqual(["Kitchen", "Kitchen", undefined]);
+    const next = addReadPicks(bare, shots, new Date(0));
+    expect(next.locations.map((l) => l.name)).toEqual(["Kitchen"]);
+    const kitchen = next.locations[0].id;
+    expect(next.shots.filter((x) => x.locationId === kitchen)).toHaveLength(2);
+    expect(next.shots.find((x) => x.subject === "Somewhere")!.locationId).toBeUndefined();
+    // Once it exists, a later read's shot finds it rather than suggesting it again.
+    expect(readPicks(next, { ...suggesting, hash: "ffff" }).shots[0]).toMatchObject({ locationId: kitchen });
+    expect(readPicks(next, { ...suggesting, hash: "ffff" }).shots[0].newLocation).toBeUndefined();
+  });
+
+  it("puts a suggested location on its day on a multi-day shoot", () => {
+    const suggesting = { ...read, result: { ...RESULT, deliverables: [], locations: [{ name: "Temple", day: 2 }], shots: [s("Roofline", { location: "Temple" })] } };
+    const next = addReadPicks(p, readPicks(p, suggesting).shots, new Date(0));
+    const temple = next.locations.find((l) => l.name === "Temple")!;
+    expect(temple.dayId).toBe("d2");
+    expect(next.shots.find((x) => x.subject === "Roofline")).toMatchObject({ locationId: temple.id, dayId: "d2" });
+  });
+
   it("replace clears what isn't shot and keeps what is (B10, kept safer than the board)", () => {
     const list = project({ shots: [shot("done", 0, { status: "exposed" }), shot("todo", 1), shot("flag", 2, { status: "flagged" }), shot("gone", 3, { status: "dropped" })] });
     expect(clearUnshot(list).shots.map((x) => x.id)).toEqual(["done", "gone"]);

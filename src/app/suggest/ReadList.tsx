@@ -13,6 +13,7 @@ import { currentRead } from "@/lib/readClient";
 import { addReadPicks, clearUnshot, readPicks, type ReadPick } from "@/lib/readShots";
 import type { Project } from "@/lib/types";
 import { saveProject } from "@/lib/useProject";
+import { inWords } from "@/lib/words";
 import styles from "./Suggest.module.css";
 
 /**
@@ -54,8 +55,12 @@ export function ReadList({ project }: { project: Project }) {
     setAdded((a) => new Set([...a, ...picks.map((p) => p.templateId)]));
   };
 
-  const where = (locationId?: string, dayId?: string) =>
-    `${project.days.length > 1 && dayId ? `DAY ${dayIndex(dayId)} · ` : ""}${locationId ? (locationName.get(locationId) ?? "").toUpperCase() : "UNPLACED"}`;
+  const where = (locationId?: string, dayId?: string, newLocation?: string) =>
+    `${project.days.length > 1 && dayId ? `DAY ${dayIndex(dayId)} · ` : ""}${
+      newLocation ? `${newLocation.toUpperCase()} · NEW` : locationId ? (locationName.get(locationId) ?? "").toUpperCase() : "UNPLACED"
+    }`;
+  // Locations the read suggested because there were none (design.md §10, 23).
+  const suggested = [...new Set(allPicks.map((p) => p.newLocation).filter((n): n is string => !!n))];
 
   const row = (key: string, size: string, subject: string, reason: string, meta: string, onAdd: () => void, mark?: React.ReactNode, note?: string) => {
     const done = added.has(key);
@@ -98,6 +103,13 @@ export function ReadList({ project }: { project: Project }) {
           </div>
         )}
 
+        {suggested.length > 0 && (
+          <p className={styles.note}>
+            No locations yet, so it suggests {suggested.length === 1 ? "one" : inWords(suggested.length)}: {suggested.join(", ")}. Adding a shot creates its
+            location — rename them, or move shots between them, from the list.
+          </p>
+        )}
+
         {required.map((r) => (
           <section key={r.client} aria-label={`Required — ${r.client}`}>
             <h2 className={`${styles.band} ${styles.requiredBand}`}>
@@ -106,7 +118,7 @@ export function ReadList({ project }: { project: Project }) {
             </h2>
             <ul className={styles.rows}>
               {r.picks.map((p) =>
-                row(p.id, p.shot.size, p.shot.subject, p.shot.reason, where(p.locationId, p.dayId), () => addPicks([p]), <RequiredMark label={`Required for ${r.client}`} />, p.alreadyOn ? "ALREADY ON" : undefined),
+                row(p.id, p.shot.size, p.shot.subject, p.shot.reason, where(p.locationId, p.dayId, p.newLocation), () => addPicks([p]), <RequiredMark label={`Required for ${r.client}`} />, p.alreadyOn ? "ALREADY ON" : undefined),
               )}
             </ul>
           </section>
@@ -118,7 +130,7 @@ export function ReadList({ project }: { project: Project }) {
               <span>FROM YOUR BRIEF</span>
               <span>{String(shots.length).padStart(2, "0")}</span>
             </h2>
-            <ul className={styles.rows}>{shots.map((p) => row(p.id, p.shot.size, p.shot.subject, p.shot.reason, where(p.locationId, p.dayId), () => addPicks([p])))}</ul>
+            <ul className={styles.rows}>{shots.map((p) => row(p.id, p.shot.size, p.shot.subject, p.shot.reason, where(p.locationId, p.dayId, p.newLocation), () => addPicks([p])))}</ul>
           </section>
         )}
 

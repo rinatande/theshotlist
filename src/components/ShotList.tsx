@@ -21,8 +21,16 @@ import ui from "./ui.module.css";
 
 type View = "location" | "beat";
 
+/** Picking several shots to move at once (design.md §10, 23). `ids` is null when not picking. */
+export interface Selection {
+  ids: Set<Id> | null;
+  start: () => void;
+  pick: (ids: Id[], on: boolean) => void;
+  cancel: () => void;
+}
+
 /** The SHOTS tab: S2 by location, P3 by beat, E5 when empty (§8 Shot list). */
-export function ShotList({ project }: { project: Project }) {
+export function ShotList({ project, selection }: { project: Project; selection?: Selection }) {
   const [view, setView] = useState<View>("location");
   const [fresh, setFresh] = useState<Id | null>(null);
   const [tf, setTf] = useState<TimeFormat>("12h");
@@ -37,6 +45,7 @@ export function ShotList({ project }: { project: Project }) {
 
   const chooseView = (v: View) => {
     setView(v);
+    selection?.cancel();
     try {
       sessionStorage.setItem(`tsl-view-${project.id}`, v);
     } catch {}
@@ -62,7 +71,7 @@ export function ShotList({ project }: { project: Project }) {
     );
   }
 
-  const rowProps = { project, numbers, fresh, onToggle: toggle, tf };
+  const rowProps = { project, numbers, fresh, onToggle: toggle, tf, selection };
 
   return (
     <>
@@ -144,6 +153,7 @@ interface RowProps {
   fresh: Id | null;
   onToggle: (id: Id) => void;
   tf: TimeFormat;
+  selection?: Selection;
 }
 
 function ByLocation(props: RowProps) {
@@ -162,6 +172,7 @@ function ByLocation(props: RowProps) {
       {clients.map((client) => (
         <section key={client} aria-label={`Required — ${client}`}>
           <h2 className={styles.requiredBand}>REQUIRED — {client.toUpperCase()}</h2>
+          <AllRow shots={required.filter((s) => s.required!.client === client)} name={`required — ${client}`} selection={props.selection} />
           {required.filter((s) => s.required!.client === client).map((s) => (
             <ShotRow key={s.id} shot={s} {...props} />
           ))}
@@ -186,9 +197,11 @@ function ByLocation(props: RowProps) {
             ))}
             {unplaced.length > 0 && (
               <>
-                <h3 className={styles.band}>
-                  <span>UNPLACED</span>
+                <h3 className={styles.bandPick}>
+                  <span className={styles.bandPickName}>UNPLACED</span>
+                  <SelectButton name="Unplaced" selection={props.selection} />
                 </h3>
+                <AllRow shots={unplaced} name="unplaced" selection={props.selection} />
                 {unplaced.map((s) => (
                   <ShotRow key={s.id} shot={s} {...props} />
                 ))}
@@ -247,7 +260,9 @@ function LocationGroup({ location, shots, ...props }: RowProps & { location: Loc
             <span className={styles.sr}> — edit location</span>
           </span>
         </Link>
+        {shots.length > 0 && <SelectButton name={location.name} selection={props.selection} />}
       </h3>
+      {shots.length > 0 && <AllRow shots={shots} name={location.name} selection={props.selection} />}
       {shots.length === 0 ? (
         <p className={styles.emptyLocation}>
           No shots here yet.{" "}
@@ -308,12 +323,37 @@ function ByBeat(props: RowProps) {
 
 // ─── A row (§7 Shot row) ──────────────────────────────────────────────────────
 
-function ShotRow({ shot, project, numbers, fresh, onToggle }: RowProps & { shot: Shot }) {
+function ShotRow({ shot, project, numbers, fresh, onToggle, selection }: RowProps & { shot: Shot }) {
   const exposed = shot.status === "exposed";
   const dropped = shot.status === "dropped";
   const n = numbers.get(shot.id);
   const meta = [shot.lens?.toUpperCase(), shot.support ? supportLabel(shot.support) : undefined].filter(Boolean).join(" · ");
   const muted = exposed || dropped;
+
+  if (selection?.ids) {
+    const on = selection.ids.has(shot.id);
+    return (
+      <label className={`${muted ? `${styles.row} ${styles.done}` : styles.row}`}>
+        <span className={styles.rowLink}>
+          <span className={styles.no}>
+            <input type="checkbox" className={styles.tick} checked={on} onChange={(e) => selection.pick([shot.id], e.target.checked)} />
+          </span>
+          <span className={styles.size}>{shot.size}</span>
+          <span className={styles.stack}>
+            <span className={muted ? styles.subjectDone : styles.subject}>
+              {shot.required && <span className={styles.sr}>Required: </span>}
+              {shot.subject}
+            </span>
+            {meta && <span className={styles.meta}>{meta}</span>}
+          </span>
+        </span>
+        <span className={styles.status}>
+          <StatusMark exposed={exposed} />
+          <span className={styles.sr}>{exposed ? ", exposed" : dropped ? ", dropped" : ""}</span>
+        </span>
+      </label>
+    );
+  }
 
   return (
     <div className={muted ? `${styles.row} ${styles.done}` : styles.row}>
@@ -415,3 +455,30 @@ function EmptyList({ project }: { project: Project }) {
   );
 }
 
+
+// ─── Picking several (design.md §10, 23) ─────────────────────────────────────
+
+function SelectButton({ name, selection }: { name: string; selection?: Selection }) {
+  if (!selection || selection.ids) return null;
+  return (
+    <button type="button" className={styles.bandSelect} onClick={selection.start}>
+      SELECT<span className={styles.sr}> shots in {name}</span>
+    </button>
+  );
+}
+
+/** The bulk row says it's a bulk row, as wrap's does (§5.12). */
+function AllRow({ shots, name, selection }: { shots: Shot[]; name: string; selection?: Selection }) {
+  if (!selection?.ids || shots.length === 0) return null;
+  const ids = shots.map((s) => s.id);
+  const all = ids.every((id) => selection.ids!.has(id));
+  return (
+    <label className={styles.allRow}>
+      <input type="checkbox" className={styles.tick} checked={all} onChange={(e) => selection.pick(ids, e.target.checked)} />
+      <span>
+        ALL {shots.length}
+        <span className={styles.sr}> in {name}</span>
+      </span>
+    </label>
+  );
+}
