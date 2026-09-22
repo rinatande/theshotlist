@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { RequiredMark, StatusMark } from "@/components/Marks";
 import { NotHere } from "@/components/NotHere";
 import ui from "@/components/ui.module.css";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
-import { toggleExposed } from "@/lib/shots";
+import { deleteConsequence, deleteShot, duplicateShot, toggleExposed } from "@/lib/shots";
 import { audioLabel, movementLabel, supportLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import { saveProject, useProject } from "@/lib/useProject";
@@ -14,6 +15,7 @@ import styles from "./Shot.module.css";
 
 /** S3 Shot detail: the spec you check at the camera (§8). */
 function ShotDetail() {
+  const router = useRouter();
   const { project, params } = useProject();
   const shotId = params.get("shot") ?? "";
   const [tf, setTf] = useState<TimeFormat>("12h");
@@ -84,6 +86,35 @@ function ShotDetail() {
             <p className={styles.note}>{shot.note}</p>
           </div>
         )}
+
+        {/* Here rather than in edit, so neither needs the form opened first (§5.13). */}
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.actionRow}
+            onClick={async () => {
+              const [next, copy] = duplicateShot(project, shot.id);
+              await saveProject(next);
+              router.push(`/shot?id=${project.id}&shot=${copy}`);
+            }}
+          >
+            <span className={styles.actionTitle}>DUPLICATE</span>
+            <span className={styles.actionHint}>Same spec, next number. For a second take, or the same insert somewhere else.</span>
+          </button>
+          <button
+            type="button"
+            className={`${styles.actionRow} ${styles.warn}`}
+            onClick={async () => {
+              // States its consequence rather than confirming (§5.13). Leave first,
+              // so this screen never renders a shot that's gone.
+              router.replace(list);
+              await saveProject(deleteShot(project, shot.id));
+            }}
+          >
+            <span className={styles.actionTitle}>DELETE</span>
+            <span className={styles.actionHint}>{deleteConsequence(project, shot.id)}</span>
+          </button>
+        </div>
       </div>
 
       <div className={`${ui.footer} ${styles.footer}`}>

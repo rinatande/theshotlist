@@ -5,10 +5,10 @@ import { Suspense } from "react";
 import { ShotForm } from "@/components/ShotForm";
 import { NotHere } from "@/components/NotHere";
 import ui from "@/components/ui.module.css";
-import { clearFlag, deleteShot, duplicateShot, updateShot } from "@/lib/shots";
+import { clearFlag, updateShot } from "@/lib/shots";
 import { saveProject, useProject } from "@/lib/useProject";
 
-/** S6 Edit shot: add, field for field, plus duplicate and delete (§5.13). */
+/** S6 Edit shot: add, field for field (§5.13). Duplicate and delete are on shot detail. */
 function EditShot() {
   const router = useRouter();
   const { project, params } = useProject();
@@ -17,7 +17,6 @@ function EditShot() {
   const shot = project?.shots.find((s) => s.id === shotId);
   if (!project || !shot) return <NotHere href={project ? `/project?id=${project.id}` : "/"} />;
 
-  const list = `/project?id=${project.id}`;
   const detail = `/shot?id=${project.id}&shot=${shot.id}`;
 
   return (
@@ -40,17 +39,6 @@ function EditShot() {
       onSubmit={async (input) => {
         await saveProject(updateShot(project, shot.id, input));
         router.replace(detail);
-      }}
-      onDuplicate={async () => {
-        const [next, copy] = duplicateShot(project, shot.id);
-        await saveProject(next);
-        router.replace(`/shot/edit?id=${project.id}&shot=${copy}`);
-      }}
-      onDelete={async () => {
-        // States its consequence in place rather than confirming (§5.13).
-        // Leave first, so this screen never renders a shot that's gone.
-        router.replace(list);
-        await saveProject(deleteShot(project, shot.id));
       }}
       onClearFlag={async () => {
         await saveProject(clearFlag(project, shot.id));

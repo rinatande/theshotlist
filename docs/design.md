@@ -498,7 +498,7 @@ Locations could be created, edited, reordered and deleted long before the shot �
 
 Both keep following the size, support and subject until the person picks one, and then stay put. The rules live in `src/lib/suggest.ts`.
 
-**Edit mirrors add**, field for field, so there is nothing new to learn. Two additions at the foot:
+**Edit mirrors add**, field for field, so there is nothing new to learn. Two actions sit on **shot detail**, under the spec and the note — not in edit, so a shot can be duplicated or deleted without opening the form first (Rina, build-journal 22 Sep; the S6 board still shows them in edit):
 
 - **Duplicate** — same spec, next number. The common real need: a second take of the same setup, or the same insert at another location.
 - **Delete** — which states its consequence rather than letting you find it: *"Shots below move up — 04 becomes 03. Anything already exposed keeps its mark."* Consistent with §5.10, where a number is a position and not an identity.

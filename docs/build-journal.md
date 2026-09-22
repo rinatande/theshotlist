@@ -99,3 +99,10 @@ Rules: record it honestly, including when the AI was plainly wrong. Small wordin
 **Rina:** "what does sync for audio mean?"
 **Changed:** Her question showed the label was film-set jargon (synchronised sound), the kind CLAUDE.md rules out. It's now `SPEECH` / `NATURAL SOUND` / `NO SOUND`, with a line under it saying what the choice means ("Someone talks on camera — check the mic is on before you roll."). She picked this option out of three plainer label sets.
 **Kind:** bug caught
+
+### 2026-09-22 · M3 · Duplicate and delete move to shot detail
+
+**Proposed:** As specced (§5.13, board S6): DUPLICATE and DELETE sit at the foot of edit shot, so edit mirrors add plus two additions.
+**Rina:** "Can we move duplicate and delete function for shots one level up? so it sits on a shot detail page under the shot details instead of user having to edit shot first to delete or duplicate."
+**Changed:** DUPLICATE and DELETE are on shot detail (S3), under the spec table and note, each still stating its consequence. Edit shot is now exactly add shot (plus clearing a flag). design.md §5.13 and §8 Shot detail updated.
+**Kind:** design call

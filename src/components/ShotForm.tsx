@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { runningOrder } from "@/lib/runningOrder";
-import { coverageGap, deleteConsequence, findDuplicate, numberIfAdded, type ShotInput } from "@/lib/shots";
+import { coverageGap, findDuplicate, numberIfAdded, type ShotInput } from "@/lib/shots";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { AUDIO, MOVEMENTS, suggestAudio, suggestMovement, SUPPORTS } from "@/lib/suggest";
 import type { Audio, Movement, Project, Shot, ShotSize } from "@/lib/types";
@@ -20,17 +20,16 @@ interface Props {
   initial: ShotInput;
   cancelHref: string;
   onSubmit: (input: ShotInput) => void;
-  onDuplicate?: () => void;
-  onDelete?: () => void;
   onClearFlag?: () => void;
 }
 
 /**
  * Add shot (S4) and edit shot (S6): the same screen, field for field (§5.13).
+ * Duplicate and delete live on shot detail, not here.
  * Movement and audio are filled in by the app and follow the other fields
  * until the person picks one themselves.
  */
-export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onDuplicate, onDelete, onClearFlag }: Props) {
+export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClearFlag }: Props) {
   const [draft, setDraft] = useState<ShotInput>(initial);
   // Once touched, a suggestion stops following the other fields. Editing an existing shot starts touched.
   const [ownMovement, setOwnMovement] = useState(!!shot?.movement);
@@ -153,21 +152,11 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onDupli
           </div>
         )}
 
-        {editing && (
+        {editing && shot.flagNote && shot.status !== "exposed" && (
           <div className={styles.actions}>
-            {shot.flagNote && shot.status !== "exposed" && (
-              <button type="button" className={styles.actionRow} onClick={onClearFlag}>
-                <span className={styles.actionTitleWarn}>! {shot.flagNote.toUpperCase()}</span>
-                <span className={styles.actionHint}>Clear the flag. The shot goes back to not shot.</span>
-              </button>
-            )}
-            <button type="button" className={styles.actionRow} onClick={onDuplicate}>
-              <span className={styles.actionTitle}>DUPLICATE</span>
-              <span className={styles.actionHint}>Same spec, next number. For a second take, or the same insert somewhere else.</span>
-            </button>
-            <button type="button" className={`${styles.actionRow} ${styles.warn}`} onClick={onDelete}>
-              <span className={styles.actionTitle}>DELETE</span>
-              <span className={styles.actionHint}>{deleteConsequence(project, shot.id)}</span>
+            <button type="button" className={styles.actionRow} onClick={onClearFlag}>
+              <span className={styles.actionTitleWarn}>! {shot.flagNote.toUpperCase()}</span>
+              <span className={styles.actionHint}>Clear the flag. The shot goes back to not shot.</span>
             </button>
           </div>
         )}
