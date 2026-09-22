@@ -491,6 +491,13 @@ Unshot shots never evaporate. A planning tool that silently discards what you di
 
 Locations could be created, edited, reordered and deleted long before the shot — the app's central object — could be changed at all.
 
+**Movement and sound are filled in by the app.** Add shot draws no field for either, but the detail table shows both, so the app works them out when the shot is created and shows them as chip rows, pre-selected and labelled *suggested*:
+
+- **Movement** — STATIC, SLOW PAN, SLOW PUSH IN, PULL BACK, TRACKING, FOLLOW, HANDHELD, REVEAL. Words in the subject decide first (*walking* → tracking on a gimbal, follow handheld; *reveal*, *door* → reveal; *pull back*, *drone* → pull back), then support and size (tripod → static, or a slow pan on a wide view; gimbal → slow push in; handheld → still on inserts and close-ups).
+- **Sound** — `SPEECH` (someone talks on camera: check the mic), `NATURAL SOUND` (no talking, but record the place), `NO SOUND` (music or voice-over goes over it). From the treatment and the shot: talking to camera and interview framings get speech, silent gets natural sound, narrated gets none except on wides. A line under the chips says what the selected one means. *(Labels chosen by Rina over "sync / ambient", which was set jargon — build-journal, 22 Sep.)*
+
+Both keep following the size, support and subject until the person picks one, and then stay put. The rules live in `src/lib/suggest.ts`.
+
 **Edit mirrors add**, field for field, so there is nothing new to learn. Two additions at the foot:
 
 - **Duplicate** — same spec, next number. The common real need: a second take of the same setup, or the same insert at another location.
@@ -647,7 +654,7 @@ Size as a five-way segmented control (WS / MS / CU / OTS / INS) — the fastest 
 
 *States:* editing an existing shot (same screen, `SAVE` instead of `ADD TO LIST`) · duplicate-shot warning.
 
-*Rules:* a **coverage gap** is a size with no shots at the chosen location (*"You have no INS at the headland yet."*). A **duplicate** is a shot matching an existing one on size, subject (ignoring case and spacing), location, lens and support — the warning says which number it matches and still lets you add it, since a second take is legitimate.
+*Rules:* a **coverage gap** is a size the chosen location has none of yet — never the size being added, since that shot fills its own gap, and only once the location already has shots (*"You have no INS at the headland yet."*). It appears once a subject is typed. A **duplicate** is a shot matching an existing one on size, subject (ignoring case and spacing), location, lens and support — the warning says which number it matches and still lets you add it, since a second take is legitimate.
 
 ### Settings
 Grouped rows under `--band` headers: **Appearance / Shot lists / Data**. Appearance holds the theme control (§9). Data holds offline storage, call-sheet export, and the PWA install prompt. Version and offline status in the footer.
@@ -749,7 +756,7 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 19. **Redoing the list when gear arrives.** Gear is stubbed in v0, so suggestions are gear-free. When gear lands (v1), adding it to a project with a generated list should offer to redo the list for the new kit — same add-or-replace choice as reading the brief again (B10). Not drawn.
 20. **Place chips from capital letters will misfire.** The offline rule in §5.6 turns any capitalised mid-sentence word into a place chip, so brand and people's names come through as places. Cheap to dismiss, but worth watching how often it happens.
 21. **Place names leave the device for the sun-times lookup** (§5.10). It's one short request per name, with no brief text, but it is a network call the rest of the offline path doesn't make, and the privacy note should say so the first time.
-22. **Four glyphs the boards use aren't in the font we can get.** Google's build of JetBrains Mono has no `✓` (U+2713), `★` (U+2605) or `⋯` (U+22EF) at all, and serves `←` (U+2190) in no subset. All four are drawn by a system fallback font today — including the `[✓]` and `[★]` status marks, the most-seen glyphs in the app. Options: self-host upstream JetBrains Mono if it has them (needs a subsetting step), or draw these four as inline SVG sized to the mono cell. Found by the M0 proof page's glyph check.
+22. **Four glyphs the boards use aren't in the font we can get — resolved.** See Appendix B: upstream JetBrains Mono self-hosted, ★ drawn. Original note: Google's build of JetBrains Mono has no `✓` (U+2713), `★` (U+2605) or `⋯` (U+22EF) at all, and serves `←` (U+2190) in no subset. All four are drawn by a system fallback font today — including the `[✓]` and `[★]` status marks, the most-seen glyphs in the app. Options: self-host upstream JetBrains Mono if it has them (needs a subsetting step), or draw these four as inline SVG sized to the mono cell. Found by the M0 proof page's glyph check.
 
 ---
 
@@ -774,7 +781,11 @@ A's palette and B's structure are what survived. A's serif, condensed display fa
 JetBrains Mono (wght 400,500,700) — the only family the shipped design uses
 ```
 
-Self-host, subset to Latin + the glyphs used in status codes, and precache in the service worker so type renders offline. One family, three weights, one file per weight.
+Self-hosted from JetBrains' own release (OFL; `src/fonts/`), three weights, one woff2 per weight (about 93 KB each), precached by the service worker so type renders offline.
+
+**Why not Google's build.** It was the plan (`next/font/google`), and the M0 proof page's glyph check showed it leaves out `✓` (U+2713) and `⋯` (U+22EF) entirely and serves `←` (U+2190) in no subset — the exposed mark, the project-actions button and every back link were being drawn by a fallback font. The upstream font has those, plus `⋮` (drag handles) and `✕` (chip remove). It isn't subset: that would need a font tool, and the whole file is small enough.
+
+**★ is drawn.** Neither build has U+2605. The upstream font's only star, `✶`, reads as an asterisk at row size, and the phone's fallback star is heavier and larger than the brackets and different on every phone. So `[★]` is the brackets in the font around an inline SVG star one mono cell wide, at the brackets' weight, in `currentColor` (`<Star />`). Rina chose this over the other two (build-journal, 22 Sep).
 
 ---
 

@@ -278,6 +278,18 @@ The blocked version, for an outstanding `[★]`, has an escape: `WRAP ANYWAY —
 
 ---
 
+### 2.20 The font didn't have the status marks — 22 Sep
+
+**What broke.** Appendix B specified JetBrains Mono subset to "Latin + the glyphs used in status codes". The build's first page carried a check that measured every non-ASCII glyph the boards use, and it showed the premise was false: Google's build of the font has no `✓` and no `⋯`, serves `←` in no subset, and no build has `★`. The app's signature marks — the thing §4.4 calls load-bearing — were being drawn by whatever font each phone fell back to.
+
+**Options.** Accept the fallback. Self-host the upstream font (it has `✓ ⋯ ← ⋮ ✕`). For `★`: the fallback, the font's own `✶`, or a drawn star. All three stars were rendered side by side in the real font.
+
+**Decision. [R]** Upstream JetBrains Mono, self-hosted, three weights. `★` drawn as an inline SVG one mono cell wide at the brackets' weight — `✶` read as an asterisk at row size, and the fallback looked borrowed. Rina picked the drawn star from the comparison.
+
+**Why it's evidence.** A spec assumption tested by the first line of code rather than trusted. The check was cheap — a canvas measurement on a throwaway page — and it caught a defect that would have shipped invisibly on the designer's own machine, where a system font happened to have the glyphs. It's also a case of the design's own rule ("one family") being defended in code when the easy path was to let the browser quietly break it.
+
+---
+
 ## 3. Artifact inventory
 
 | Artifact | Where | Case study use |

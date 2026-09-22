@@ -15,7 +15,20 @@ const withSerwist = withSerwistInit({
   swDest: "public/sw.js",
   // Every page, so a cold launch with no signal opens the app and can go
   // anywhere in it (§3). Pages read their data from the device, not the server.
-  additionalPrecacheEntries: ["/", "/new", "/project", "/project/edit", "/settings", "/gear"].map((url) => ({
+  additionalPrecacheEntries: [
+    "/",
+    "/new",
+    "/project",
+    "/project/edit",
+    "/shot",
+    "/shot/new",
+    "/shot/edit",
+    "/location/new",
+    "/location/edit",
+    "/order",
+    "/settings",
+    "/gear",
+  ].map((url) => ({
     url,
     revision,
   })),

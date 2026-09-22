@@ -1,13 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { AutoTheme } from "@/components/AutoTheme";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
-// The only typeface (§4.2). next/font downloads it at build time and serves it
-// from our own origin, so the service worker can precache it for offline use.
-const mono = JetBrains_Mono({
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
+// The only typeface (§4.2), self-hosted from JetBrains' own release (OFL, see
+// src/fonts/OFL.txt). Google's build leaves out ✓ ⋯ ← ⋮ ✕, which the status
+// marks and controls need (design.md Appendix B). Served from our origin, so
+// the service worker precaches it for offline use.
+const mono = localFont({
+  src: [
+    { path: "../fonts/JetBrainsMono-Regular.woff2", weight: "400" },
+    { path: "../fonts/JetBrainsMono-Medium.woff2", weight: "500" },
+    { path: "../fonts/JetBrainsMono-Bold.woff2", weight: "700" },
+  ],
   variable: "--font-jetbrains-mono",
   display: "swap",
 });
@@ -36,7 +42,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <AutoTheme />
+      </body>
     </html>
   );
 }

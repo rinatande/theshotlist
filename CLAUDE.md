@@ -22,7 +22,7 @@ The design is finished. This repo turns it into a working app. **Don't redesign;
 - **CSS Modules + `tokens.css`.** No Tailwind, no CSS-in-JS. Components reference tokens only — never a raw hex. That's what keeps night a pure token swap (§4.1).
 - **IndexedDB via Dexie** for all data. Local-first: every screen is a client component reading from the device. There is no server data.
 - **Serwist (`@serwist/next`)** for the service worker and offline caching. Web app manifest with `display: standalone` and a maskable icon.
-- **JetBrains Mono** via `next/font/google` — the only typeface (§4.2).
+- **JetBrains Mono**, self-hosted from JetBrains' release via `next/font/local` (`src/fonts/`) — the only typeface (§4.2). Google's build lacks `✓ ⋯ ← ⋮ ✕`; `★` isn't in either, so it's drawn (`<Star />`).
 - **Vitest** for pure logic. **Playwright** for the core route once it exists.
 - **Deploy on Vercel.** The one piece of server code — the brief read (M6) — becomes a Route Handler there.
 

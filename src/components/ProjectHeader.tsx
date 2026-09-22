@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { formatLine } from "@/lib/labels";
+import { progress } from "@/lib/status";
 import type { Project } from "@/lib/types";
 import { useOfflineReady } from "@/lib/useOfflineReady";
 import styles from "./ProjectHeader.module.css";
@@ -27,6 +28,8 @@ interface Props {
  */
 export function ProjectHeader({ project, tab, onTab, onActions }: Props) {
   const offlineReady = useOfflineReady();
+  const { exposed, planned } = progress(project);
+  const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
     <header className={styles.header}>
@@ -44,6 +47,18 @@ export function ProjectHeader({ project, tab, onTab, onActions }: Props) {
         </button>
       </div>
       <p className={styles.format}>{formatLine(project.format)}</p>
+
+      {planned > 0 && (
+        <div className={styles.meter}>
+          <span className={styles.meterLabel}>EXPOSED</span>
+          <span className={styles.track} aria-hidden="true">
+            <span className={styles.fill} style={{ width: `${Math.round((exposed / planned) * 100)}%` }} />
+          </span>
+          <span className={exposed === planned ? styles.countDone : styles.count}>
+            {pad(exposed)}/{pad(planned)}
+          </span>
+        </div>
+      )}
 
       <nav className={styles.tabs} aria-label="Project">
         {TABS.map((t) => (

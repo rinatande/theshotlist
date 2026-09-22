@@ -96,3 +96,44 @@
   color: var(--accent);
   border-bottom-color: var(--accent);
 }
+
+/* Progress meter (§7): label, 4px track, tabular count. All exposed is the
+   payoff: the meter fills and the count turns --ok (§8 Shot list). */
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--s-3);
+}
+
+.meterLabel {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+}
+
+.track {
+  flex: 1;
+  height: 4px;
+  background: var(--track);
+}
+
+.fill {
+  display: block;
+  height: 4px;
+  background: var(--ok);
+  transition: width var(--t-state) var(--ease);
+}
+
+.count,
+.countDone {
+  font-size: var(--text-13);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.countDone {
+  color: var(--ok);
+}

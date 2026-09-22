@@ -138,6 +138,23 @@ export type Capability =
   | 'light'
   | 'power';    // a power bank — long lapses
 
+// ─── Place (§5.10) ───────────────────────────────────────────────────────────
+
+/**
+ * Where something is on the globe, for sun times. Worked out once — from the
+ * place name when there's signal, or the phone's location — then kept, so
+ * everything downstream works offline.
+ */
+export interface Coords {
+  lat: number;
+  lng: number;
+  /** IANA zone the place is in, so sun times read in local time there. */
+  timeZone: string;
+  source: "name" | "device";
+  /** The `where` text this was looked up from; a changed name looks it up again. */
+  from?: string;
+}
+
 // ─── Structure: days and locations (§5.9, §5.10) ─────────────────────────────
 
 export interface Day {
@@ -161,6 +178,7 @@ export interface Location {
   startTime?: ClockMinutes;   // with a time: sorts by the clock
   dayId?: Id;                 // only on multi-day projects
   order: number;              // drag order — used for locations with no start time
+  coords?: Coords;
 }
 
 // ─── Shots (§4.4, §5.12, §5.13) ─────────────────────────────────────────────
@@ -175,6 +193,15 @@ export type ShotStatus = 'unshot' | 'exposed' | 'flagged' | 'dropped';
 
 export type ShotSource = 'template' | 'brief' | 'manual';
 
+/** v0 support, before gear exists (§8 Add shot). */
+export type Support = 'handheld' | 'tripod' | 'gimbal';
+
+/** What the shot needs from sound (§5.13). Filled in by the app; the person can change it. */
+export type Audio = 'speech' | 'natural' | 'none';
+
+export type Movement =
+  | 'static' | 'slow-pan' | 'push-in' | 'pull-back' | 'tracking' | 'follow' | 'handheld' | 'reveal';
+
 export interface Deliverable {
   client: string;         // "Sable Outdoor", "Nagi Coffee"
 }
@@ -185,8 +212,11 @@ export interface Shot {
   subject: string;        // "Hands on the rope"
   lensId?: Id;            // references a GearItem — a reference, not a string (§6.4)
   supportId?: Id;
-  movement?: string;      // "SLOW PUSH IN"
-  audio?: string;
+  /** v0, before gear: the lens as typed, "35mm". Gear chips replace it later. */
+  lens?: string;
+  support?: Support;
+  movement?: Movement;    // suggested by the app, changeable (§5.13)
+  audio?: Audio;
   note?: string;
   refIds?: Id[];          // look-board references
 
@@ -246,6 +276,7 @@ export interface Project {
   startDate?: IsoDate;
   dayCount: number;       // asked at creation (§5.9). 1 → no day layer in the UI.
   where?: string;
+  coords?: Coords;
   cast: Cast;
 
   kitId?: Id;             // the kit it started from — kept, to show "Doc day +2"

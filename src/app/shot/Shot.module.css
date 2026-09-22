@@ -1,0 +1,108 @@
+.header {
+  padding: calc(var(--s-5) + env(safe-area-inset-top)) var(--gutter) var(--s-3);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.position {
+  font-size: var(--text-13);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sizeChip {
+  padding: 5px 8px;
+  border: 1px solid var(--ink);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.where {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+}
+
+/* Shot detail title: 20px/700, sentence case (§4.2). */
+.title,
+.titleDone {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.titleDone {
+  color: var(--ink-muted);
+  text-decoration: line-through;
+}
+
+.state {
+  margin: 0;
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  color: var(--ok);
+}
+
+.flag {
+  margin: 0;
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--warn);
+}
+
+/* The spec table: hairline rows, the thing you check at the camera. */
+.spec {
+  margin: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.specRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-13);
+}
+
+.specRow dt {
+  color: var(--ink-muted);
+  letter-spacing: 0.08em;
+}
+
+.specRow dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+.note {
+  margin: var(--s-2) 0 0;
+  font-size: var(--text-15);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* EDIT beside MARK EXPOSED, sharing the width. */
+.footer {
+  flex-direction: row;
+}
+
+.footer > * {
+  flex: 1 1 0;
+}

@@ -1,0 +1,337 @@
+/* ---- Plan bar ---------------------------------------------------------- */
+
+.planBar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.toggle {
+  flex-shrink: 0;
+}
+
+.order {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  color: var(--accent);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}
+
+.count,
+.countOver {
+  margin-left: auto;
+  font-size: var(--text-13);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.countOver {
+  color: var(--warn);
+}
+
+/* ---- Column header (§7): 34 / 44 / 1fr / 34 ---------------------------- */
+
+.columns {
+  display: grid;
+  grid-template-columns: 34px 44px minmax(0, 1fr) 34px;
+  padding: 7px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+}
+
+.right {
+  text-align: right;
+}
+
+.list {
+  flex: 1 0 auto;
+}
+
+/* ---- Bands ------------------------------------------------------------- */
+
+.band,
+.requiredBand,
+.bandWrap {
+  margin: 0;
+  background: var(--band);
+  color: var(--ink-faint);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+}
+
+.band {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 7px var(--gutter);
+}
+
+.requiredBand {
+  padding: 7px var(--gutter);
+  color: var(--accent);
+}
+
+.bandLink {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--target);
+  padding: 0 var(--gutter);
+  color: inherit;
+  text-decoration: none;
+}
+
+.bandName {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.bandTime {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A day sits above its locations: ink rule, not a fill, so it doesn't read as another location. */
+.dayBand {
+  margin: 0;
+  padding: 14px var(--gutter) 8px;
+  border-bottom: 1px solid var(--ink);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+}
+
+.emptyDay,
+.emptyLocation {
+  margin: 0;
+  padding: 13px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-13);
+  color: var(--ink-muted);
+}
+
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  margin: -12px 0;
+  color: var(--accent);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}
+
+/* ---- Shot row (§7) ----------------------------------------------------- */
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  align-items: center;
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.rowLink {
+  display: grid;
+  grid-template-columns: 34px 44px minmax(0, 1fr);
+  align-items: baseline;
+  padding: 13px 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.no {
+  font-size: var(--text-13);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.size {
+  font-size: var(--text-12);
+  font-weight: 700;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.subject {
+  font-size: var(--text-15);
+  overflow-wrap: anywhere;
+}
+
+/* Exposed: muted ink plus a strike-through — never opacity (§3). */
+.done .no,
+.done .size,
+.done .meta {
+  color: var(--ink-muted);
+}
+
+.subjectDone {
+  font-size: var(--text-15);
+  color: var(--ink-muted);
+  text-decoration: line-through;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  font-size: var(--text-11);
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.flag {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--warn);
+}
+
+/* 44×44, overlapping the row's padding so the row doesn't grow (§7). */
+.status {
+  justify-self: end;
+  width: var(--target);
+  height: var(--target);
+  margin-right: -5px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border: 0;
+  background: none;
+  font-size: var(--text-13);
+  cursor: pointer;
+}
+
+.status:disabled {
+  cursor: default;
+}
+
+/* ---- Advisory (§7 suggestion block) ------------------------------------ */
+
+.advisory {
+  margin: var(--s-4) var(--gutter);
+  padding: 13px 14px;
+  border: 1px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* ---- Empty list (E5) --------------------------------------------------- */
+
+.empty {
+  padding: var(--s-5) 0 var(--s-6);
+}
+
+.emptyLead {
+  margin: 0 var(--gutter) var(--s-4);
+  font-size: var(--text-15);
+  line-height: 1.55;
+}
+
+.routes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.route {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: 14px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.routeNo {
+  width: 22px;
+  flex-shrink: 0;
+  font-size: var(--text-13);
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.routeText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.routeTitle,
+.routeTitleMuted {
+  font-size: var(--text-15);
+  font-weight: 700;
+}
+
+.routeTitleMuted {
+  color: var(--ink-muted);
+}
+
+.routeLine {
+  font-size: var(--text-12);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.routeSoon {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+}
+
+.chevron {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.alt {
+  margin: var(--s-5) var(--gutter) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.altText {
+  margin: 0;
+  font-size: var(--text-13);
+  color: var(--ink-muted);
+}
+
+.emptyFoot {
+  margin: var(--s-5) var(--gutter) 0;
+  font-size: var(--text-12);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

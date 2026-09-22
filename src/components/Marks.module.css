@@ -1,0 +1,54 @@
+/* One mono cell (0.6em) wide, sitting on the text baseline like a glyph. */
+.star {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  vertical-align: -0.02em;
+  fill: currentColor;
+}
+
+.required {
+  color: var(--accent);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.unshot {
+  color: var(--ink-muted);
+  font-weight: 700;
+  white-space: pre;
+}
+
+.exposed {
+  color: var(--ok);
+  font-weight: 700;
+  white-space: pre;
+}
+
+.cell {
+  display: inline-block;
+}
+
+/* The payoff: the tick fills left to right (§3). Reduced motion sets --t-state to 0. */
+.wipe {
+  display: inline-block;
+  animation: wipe var(--t-state) var(--ease) both;
+}
+
+@keyframes wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

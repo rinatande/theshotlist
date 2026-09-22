@@ -92,3 +92,10 @@ Rules: record it honestly, including when the AI was plainly wrong. Small wordin
 **Rina:** "I think movement should be auto suggested when the shot is created, depending on what the app thinks is best." On audio she asked for a recommendation, and whether it's needed at all.
 **Changed:** Movement is suggested when a shot is created (rules proposed in the M3 plan, awaiting her go). Audio is still open.
 **Kind:** design call
+
+### 2026-09-22 · M3 · "What does sync for audio mean?"
+
+**Proposed:** An audio choice on every shot, labelled `SYNC` / `AMBIENT` / `NONE`, filled in by the app from the treatment and the shot.
+**Rina:** "what does sync for audio mean?"
+**Changed:** Her question showed the label was film-set jargon (synchronised sound), the kind CLAUDE.md rules out. It's now `SPEECH` / `NATURAL SOUND` / `NO SOUND`, with a line under it saying what the choice means ("Someone talks on camera — check the mic is on before you roll."). She picked this option out of three plainer label sets.
+**Kind:** bug caught

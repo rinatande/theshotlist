@@ -1,0 +1,60 @@
+.whereRow {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.whereRow > input {
+  flex: 1;
+  min-width: 0;
+}
+
+.current {
+  flex-shrink: 0;
+  min-height: var(--target-btn);
+  padding: 0 var(--s-3);
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
+
+.timeRow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.time {
+  max-width: 11em;
+}
+
+.here {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--rule);
+}
+
+.hereCount {
+  font-size: var(--text-13);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A text-weight destructive row: states its consequence, no dialog (§5.10). */
+.delete {
+  min-height: var(--target);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--warn);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
