@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { deviceCoords } from "@/lib/place";
 import { todayIso } from "@/lib/status";
 import { sunInstants } from "@/lib/sun";
-import { readThemeChoice, SUN_EVENT, SUN_KEY, syncThemeColor, THEME_EVENT, type CachedSun } from "@/lib/theme";
+import { readThemeChoice, SUN_EVENT, SUN_KEY, syncThemeColor, THEME_EVENT, themeLocked, type CachedSun } from "@/lib/theme";
 import type { Coords } from "@/lib/types";
 
 /**
@@ -19,9 +19,10 @@ export function AutoTheme() {
 
     async function resolve() {
       clearTimeout(timer);
-      if (readThemeChoice() !== "auto") return;
+      if (readThemeChoice() !== "auto" || themeLocked()) return;
 
       const coords = await whereYouAre();
+      if (themeLocked()) return; // shoot mode or wrap opened while this was looking
       const root = document.documentElement;
       if (!coords) {
         root.removeAttribute("data-theme"); // prefers-color-scheme takes over

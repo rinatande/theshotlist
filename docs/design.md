@@ -500,6 +500,24 @@ Unshot shots never evaporate. A planning tool that silently discards what you di
 
 **Wrap is only ever chosen.** Exposing the last shot doesn't send you to wrap — you might want to go back over the list or add something. Shoot mode says everything's through and offers `+ ADD SHOT` and `WRAP`.
 
+**As built (M5), where the boards were silent — Rina's go, 22 Sep:**
+
+- **"Today"** is the first day that isn't wrapped. Dates are ignored even when set, because shoots slip. Once every day is wrapped, `SHOOT MODE` leaves the shot list and the project shows as wrapped on Projects.
+- **A flagged shot leaves the queue** and waits for wrap. N4's `!` on a NEXT row doesn't occur as built.
+- **Skips last for the visit** to that day: leave shoot mode and come back, and the order holds.
+- **The phone is kept awake** in shoot mode (the Wake Lock API), where the browser allows it.
+- **Flags must be decided** before `WRAP` works. The disabled button says why: *"Decide the flagged shot first."* Not-shot shots default to the next day, or to dropping on the last day.
+- **Changing one not-shot shot** opens a small sheet: each later day, or `DROP`. The bulk chip always means the next day.
+- **Where moved shots land.** Moved and reshot shots go to the new day's `UNPLACED`, because their location belongs to the old day. A reshot flag keeps its note.
+- **An outstanding `[★]` on the last day** isn't dropped. It stays `[ ]` and outstanding, as W2 promises.
+- **The day's record.** A wrapped day's band on the shot list reads `WRAPPED · SEE THE DAY ›` (a strip at the top on a one-day shoot). It opens the day's record, grouped:
+  - `STILL OPEN`
+  - `DROPPED`, each with `UN-DROP`, and `MOVE ›` to a later day
+  - `EXPOSED`
+
+  The record isn't drawn; the boards should add it.
+- **The middle-day sentence** follows W1 when the rest of the list covers the cut (*"…There's nothing you have to chase tomorrow."*). It says so plainly when it won't: *"Even with the rest of the list it's nine short — worth adding a few for tomorrow."*
+
 ### 5.13 Editing a shot
 
 Locations could be created, edited, reordered and deleted long before the shot — the app's central object — could be changed at all.

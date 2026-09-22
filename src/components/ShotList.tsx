@@ -168,6 +168,12 @@ function ByLocation(props: RowProps) {
 
   return (
     <div className={styles.list}>
+      {!multi && project.days[0]?.wrappedAt && (
+        <Link href={`/day?id=${project.id}&day=${project.days[0].id}`} className={styles.wrappedStrip}>
+          <span>WRAPPED</span>
+          <span>SEE THE DAY ›</span>
+        </Link>
+      )}
       {/* Pinned above every location, in both views (§5.7). */}
       {clients.map((client) => (
         <section key={client} aria-label={`Required — ${client}`}>
@@ -188,8 +194,16 @@ function ByLocation(props: RowProps) {
           <section key={dayId ?? "all"} aria-label={d ? `Day ${d.index}` : undefined}>
             {d && (
               <h2 className={styles.dayBand}>
-                DAY {d.index}
-                {d.date ? ` · ${shortDate(d.date)}` : ""}
+                <span>
+                  DAY {d.index}
+                  {d.date ? ` · ${shortDate(d.date)}` : ""}
+                </span>
+                {d.wrappedAt && (
+                  // A wrapped day opens as a record, never un-wrapped (§5.12).
+                  <Link href={`/day?id=${project.id}&day=${d.id}`} className={styles.dayLink}>
+                    WRAPPED · SEE THE DAY ›
+                  </Link>
+                )}
               </h2>
             )}
             {locations.map((l) => (

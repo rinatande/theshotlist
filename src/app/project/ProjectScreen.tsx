@@ -10,6 +10,7 @@ import { ShotList, type Selection } from "@/components/ShotList";
 import ui from "@/components/ui.module.css";
 import { db } from "@/lib/db";
 import { fillCoords } from "@/lib/place";
+import { currentDay } from "@/lib/shoot";
 import { readTimeFormat } from "@/lib/timeFormat";
 import type { Id } from "@/lib/types";
 import { useProject } from "@/lib/useProject";
@@ -68,9 +69,17 @@ export function ProjectScreen() {
             <SelectFooter count={[...picked].filter((id) => project.shots.some((s) => s.id === id)).length} onMove={() => setMoving(true)} onCancel={() => setPicked(null)} />
           ) : (
             <div className={ui.footer}>
-              <Link href={`/shot/new?id=${project.id}`} className={ui.primary}>
-                + ADD SHOT
-              </Link>
+              {/* Two actions in the thumb zone (§8 Shot list). Shoot mode goes once every day is wrapped. */}
+              <div className={styles.actions}>
+                {project.shots.length > 0 && currentDay(project) && (
+                  <Link href={`/shoot?id=${project.id}`} className={`${ui.secondary} ${styles.shoot}`}>
+                    SHOOT MODE
+                  </Link>
+                )}
+                <Link href={`/shot/new?id=${project.id}`} className={ui.primary}>
+                  + ADD SHOT
+                </Link>
+              </div>
             </div>
           )}
         </>

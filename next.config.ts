@@ -31,6 +31,9 @@ const withSerwist = withSerwistInit({
     "/suggest",
     "/settings",
     "/gear",
+    "/shoot",
+    "/wrap",
+    "/day",
   ].map((url) => ({
     url,
     revision,

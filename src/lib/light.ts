@@ -1,4 +1,4 @@
-import { sunTimes, type SunTimes } from "./sun";
+import { clockIn, dateIn, sunTimes, type SunTimes } from "./sun";
 import { formatClock, type TimeFormat } from "./timeFormat";
 import type { ClockMinutes, Coords, Id, IsoDate, Location, Project } from "./types";
 
@@ -84,5 +84,21 @@ export function runningOrderLight(project: Project, dayLocations: Location[], tf
   if (start >= sun.sunset) return `${last.name} at ${t(start)} is after sunset (${t(sun.sunset)}) — it will be dark.`;
   if (start >= sun.goldenEveningStart - 30)
     return `${last.name} at ${t(start)} is the last of the good light — sunset is ${t(sun.sunset)}. Everything after it will be dark.`;
+  return undefined;
+}
+
+/**
+ * Shoot mode's pinned line (N4): what the sun does next today where you're
+ * shooting, and how long until it does — "LIGHT GOES 6:10 PM · 46 MIN".
+ * Absent after sunset, or with no place to work from.
+ */
+export function lightLeft(project: Project, location: Pick<Location, "coords"> | undefined, now: Date, tf: TimeFormat): string | undefined {
+  const coords = coordsFor(project, location);
+  if (!coords) return undefined;
+  const sun = sunTimes(dateIn(now, coords.timeZone), coords);
+  const m = clockIn(now, coords.timeZone);
+  const left = (d: number) => (d < 60 ? `${d} MIN` : `${Math.floor(d / 60)} H${d % 60 ? ` ${d % 60} MIN` : ""}`);
+  if (sun.sunrise !== undefined && m < sun.sunrise) return `SUNRISE ${formatClock(sun.sunrise, tf)} · ${left(sun.sunrise - m)}`;
+  if (sun.sunset !== undefined && m < sun.sunset) return `LIGHT GOES ${formatClock(sun.sunset, tf)} · ${left(sun.sunset - m)}`;
   return undefined;
 }

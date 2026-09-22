@@ -77,3 +77,25 @@ export function readCachedSun(): CachedSun | null {
     return null;
   }
 }
+
+/**
+ * Shoot mode and wrap are night only, by design (§8): lock the theme while
+ * one is open, and give back whatever was there when it closes. Auto leaves
+ * a locked theme alone.
+ */
+export function lockNight(): () => void {
+  const root = document.documentElement;
+  const before = root.getAttribute("data-theme");
+  root.dataset.themeLock = "night";
+  root.setAttribute("data-theme", "night");
+  syncThemeColor();
+  return () => {
+    delete root.dataset.themeLock;
+    if (before) root.setAttribute("data-theme", before);
+    else root.removeAttribute("data-theme");
+    syncThemeColor();
+    window.dispatchEvent(new Event(THEME_EVENT));
+  };
+}
+
+export const themeLocked = () => document.documentElement.dataset.themeLock !== undefined;

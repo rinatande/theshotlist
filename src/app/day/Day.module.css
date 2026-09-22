@@ -1,0 +1,180 @@
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--s-5) var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.count {
+  margin: 0;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.got {
+  font-size: var(--text-31);
+  font-weight: 700;
+  color: var(--ok);
+}
+
+.of {
+  font-size: var(--text-20);
+  color: var(--ink-muted);
+}
+
+.label {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+}
+
+.lead {
+  margin: 0;
+  font-size: var(--text-15);
+  line-height: 1.55;
+}
+
+.band {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 7px var(--gutter);
+  background: var(--band);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-faint);
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row,
+.dropRow {
+  display: grid;
+  grid-template-columns: 34px 44px minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0;
+  padding: 13px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.dropRow {
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-right: 0;
+  min-height: 52px;
+}
+
+.no {
+  font-size: var(--text-13);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.size {
+  font-size: var(--text-12);
+  font-weight: 700;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.subject {
+  font-size: var(--text-15);
+  overflow-wrap: anywhere;
+}
+
+/* Exposed and dropped: muted ink plus strike-through, never opacity (§3). */
+.subjectDone,
+.struck {
+  font-size: var(--text-15);
+  color: var(--ink-muted);
+  text-decoration: line-through;
+  overflow-wrap: anywhere;
+}
+
+.flag {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--warn);
+}
+
+.actions {
+  display: flex;
+}
+
+.action {
+  min-height: var(--target);
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.action:last-child {
+  padding-right: var(--gutter);
+}
+
+.empty {
+  margin: 0;
+  padding: var(--s-5) var(--gutter);
+  font-size: var(--text-15);
+  color: var(--ink-muted);
+}
+
+.sheetList {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 calc(var(--s-5) + env(safe-area-inset-bottom));
+}
+
+.sheetRow {
+  width: 100%;
+  min-height: var(--target);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 13px var(--gutter);
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sheetLabel {
+  font-size: var(--text-15);
+  font-weight: 700;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

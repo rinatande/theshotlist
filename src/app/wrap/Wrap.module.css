@@ -1,0 +1,423 @@
+/* W1–W3 Wrap. Night only: it's the exit from shoot mode (§8 Wrap). */
+
+.screen {
+  background: var(--ground);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: calc(var(--s-3) + env(safe-area-inset-top)) var(--gutter) var(--s-2);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  font-size: var(--text-12);
+  font-weight: 500;
+  letter-spacing: var(--track-ui);
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--accent);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--s-4) var(--gutter) var(--s-5);
+  border-bottom: 1px solid var(--rule);
+}
+
+.count {
+  margin: 0;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.got {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ok);
+}
+
+.of {
+  font-size: var(--text-28);
+  color: var(--ink-muted);
+}
+
+.countLabel {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+}
+
+.sentence {
+  margin: 6px 0 0;
+  font-size: var(--text-15);
+  line-height: 1.55;
+}
+
+.band {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px var(--gutter);
+  background: var(--band);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-faint);
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.size,
+.sizeWarn {
+  width: 40px;
+  flex-shrink: 0;
+  font-size: var(--text-13);
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.sizeWarn {
+  color: var(--warn);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.subject {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-16);
+  overflow-wrap: anywhere;
+}
+
+.flag {
+  font-size: var(--text-11);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--warn);
+}
+
+.note {
+  font-size: var(--text-11);
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+
+/* ---- Clients ---------------------------------------------------------- */
+
+.delivered {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 14px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.clientName {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  color: var(--ink-muted);
+}
+
+.deliveredCount {
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ok);
+  white-space: nowrap;
+}
+
+/* W2: the deliverable the day can't wrap clean without, in --warn with its words. */
+.outstanding {
+  margin: var(--s-4) var(--gutter) 0;
+  border: 1px solid var(--warn);
+}
+
+.clientWarn {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 10px 12px;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  color: var(--warn);
+}
+
+.contracted {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.warnMark {
+  color: var(--warn);
+  font-size: var(--text-15);
+  font-weight: 700;
+}
+
+.tag {
+  flex-shrink: 0;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+/* ---- Flagged and not shot --------------------------------------------- */
+
+.flagRow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.bulk {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.bulkRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.all {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  color: var(--ink-muted);
+}
+
+.missRow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 0 0 var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  min-height: 52px;
+}
+
+.where,
+.whereWarn {
+  flex-shrink: 0;
+  min-height: var(--target);
+  padding: 0 var(--gutter) 0 var(--s-3);
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.whereWarn {
+  color: var(--warn);
+}
+
+.lastLine {
+  margin: 0;
+  padding: 12px var(--gutter);
+  font-size: var(--text-13);
+  line-height: 1.55;
+  border-bottom: 1px solid var(--rule);
+}
+
+.lastRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  padding: 13px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.legend {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px var(--gutter);
+}
+
+.legendRow {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.legendKey,
+.legendKeyAccent {
+  width: 72px;
+  flex-shrink: 0;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+
+.legendKeyAccent {
+  color: var(--accent);
+}
+
+.legendText {
+  margin: 0;
+  flex: 1;
+  font-size: var(--text-12);
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+.inline {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-block;
+  padding: 12px 0;
+  margin: -12px 0;
+}
+
+.foot {
+  margin: 0;
+  padding: var(--s-4) var(--gutter);
+  font-size: var(--text-12);
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+/* ---- Footer ----------------------------------------------------------- */
+
+.footer {
+  margin-top: auto;
+}
+
+.wrapButton,
+.shootNow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  border: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: inherit;
+  font-size: var(--text-15);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.shootNow {
+  min-height: 52px;
+  font-size: 14px;
+}
+
+.blockedLine {
+  margin: 0;
+  font-size: var(--text-13);
+  line-height: 1.55;
+}
+
+.small {
+  margin: 0;
+  font-size: var(--text-11);
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+
+/* ---- Sheet ------------------------------------------------------------ */
+
+.sheetList {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 calc(var(--s-5) + env(safe-area-inset-bottom));
+}
+
+.sheetRow {
+  width: 100%;
+  min-height: var(--target);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 13px var(--gutter);
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sheetLabel {
+  font-size: var(--text-15);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.sheetNow {
+  color: var(--accent);
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* RequiredMark draws in the accent; an outstanding one is a warning (W2). */
+.warnMark span,
+.whereWarn span {
+  color: var(--warn);
+}
