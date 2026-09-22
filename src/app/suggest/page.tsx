@@ -55,8 +55,37 @@ function List({ project, fromBrief }: { project: Project; fromBrief: boolean }) 
   };
 
   const heading = chips.length ? `SUGGESTED — ${chips.slice(0, 3).map((c) => c.label).join(", ")}` : "SUGGESTED";
-  const shown = expanded ? result.suggestions : result.suggestions.slice(0, FIRST);
+  // Coverage built from the brief's own actions, shown whole; templates collapse after a few.
+  const own = result.suggestions.filter((s) => s.fromBrief);
+  const others = result.suggestions.filter((s) => !s.fromBrief);
+  const shown = expanded ? others : others.slice(0, FIRST);
   const short = result.suggestions.length < result.room;
+
+  const row = (s: Suggestion) => {
+    const done = added.has(s.templateId);
+    const where = s.locationId ? locationName.get(s.locationId)?.toUpperCase() : "UNPLACED";
+    const day = project.days.length > 1 ? `DAY ${dayIndex(s.dayId)} · ` : "";
+    return (
+      <li key={s.templateId} className={styles.row}>
+        <span className={styles.size}>{s.size}</span>
+        <span className={styles.stack}>
+          <span className={done ? styles.subjectDone : styles.subject}>{s.subject}</span>
+          <span className={styles.reason}>{s.reason}</span>
+          <span className={styles.meta}>
+            {day}
+            {where}
+          </span>
+        </span>
+        {done ? (
+          <span className={styles.added}>ADDED</span>
+        ) : (
+          <button type="button" className={styles.plus} aria-label={`Add ${s.subject}`} onClick={() => add([s])}>
+            +
+          </button>
+        )}
+      </li>
+    );
+  };
 
   return (
     <div className={ui.screen}>
@@ -74,41 +103,28 @@ function List({ project, fromBrief }: { project: Project; fromBrief: boolean }) 
           </p>
         ) : (
           <>
-            <h2 className={styles.band}>
-              <span>{heading}</span>
-              <span>{String(result.suggestions.length).padStart(2, "0")}</span>
-            </h2>
-            <ul className={styles.rows}>
-              {shown.map((s) => {
-                const done = added.has(s.templateId);
-                const where = s.locationId ? locationName.get(s.locationId)?.toUpperCase() : "UNPLACED";
-                const day = project.days.length > 1 ? `DAY ${dayIndex(s.dayId)} · ` : "";
-                return (
-                  <li key={s.templateId} className={styles.row}>
-                    <span className={styles.size}>{s.size}</span>
-                    <span className={styles.stack}>
-                      <span className={done ? styles.subjectDone : styles.subject}>{s.subject}</span>
-                      <span className={styles.reason}>{s.reason}</span>
-                      <span className={styles.meta}>
-                        {day}
-                        {where}
-                      </span>
-                    </span>
-                    {done ? (
-                      <span className={styles.added}>ADDED</span>
-                    ) : (
-                      <button type="button" className={styles.plus} aria-label={`Add ${s.subject}`} onClick={() => add([s])}>
-                        +
-                      </button>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-            {!expanded && result.suggestions.length > FIRST && (
-              <button type="button" className={styles.more} onClick={() => setExpanded(true)}>
-                + {result.suggestions.length - FIRST} MORE
-              </button>
+            {own.length > 0 && (
+              <section aria-labelledby="own">
+                <h2 id="own" className={styles.band}>
+                  <span>FROM YOUR BRIEF</span>
+                  <span>{String(own.length).padStart(2, "0")}</span>
+                </h2>
+                <ul className={styles.rows}>{own.map(row)}</ul>
+              </section>
+            )}
+            {others.length > 0 && (
+              <section aria-labelledby="others">
+                <h2 id="others" className={styles.band}>
+                  <span>{own.length ? "ALSO WORTH GETTING" : heading}</span>
+                  <span>{String(others.length).padStart(2, "0")}</span>
+                </h2>
+                <ul className={styles.rows}>{shown.map(row)}</ul>
+                {!expanded && others.length > FIRST && (
+                  <button type="button" className={styles.more} onClick={() => setExpanded(true)}>
+                    + {others.length - FIRST} MORE
+                  </button>
+                )}
+              </section>
             )}
           </>
         )}

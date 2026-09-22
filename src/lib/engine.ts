@@ -1,4 +1,5 @@
 import templates from "@/data/templates.json";
+import { coverageFor, findActions } from "./actions";
 import { dayBudgets, projectBudget } from "./budget";
 import { capabilities } from "./capabilities";
 import type { QuotedChip } from "./chips";
@@ -25,6 +26,10 @@ export interface Suggestion {
   locationId?: Id;
   dayId?: Id;
   score: number;
+  /** Built from the brief's own actions rather than a template. */
+  fromBrief?: boolean;
+  /** For placing brief coverage, which has no template to read keywords from. */
+  keywords?: string[];
 }
 
 export interface SuggestResult {
@@ -73,9 +78,21 @@ export function suggest(
     }
 
     // Rank (§6.2 step 2): what the brief says, what the kit unlocks, how specific the template is.
+    // What the brief mentions outweighs everything else; with a brief, a template
+    // it doesn't touch sinks below the ones it does.
     let score = 0;
-    for (const k of t.keywords ?? []) if (brief && mentions(brief, k)) score += 3;
-    if (t.light !== "any" && lights.has(t.light)) score += 3;
+    let relevant = false;
+    for (const k of t.keywords ?? []) {
+      if (brief && mentions(brief, k)) {
+        score += 6;
+        relevant = true;
+      }
+    }
+    if (t.light !== "any" && lights.has(t.light)) {
+      score += 4;
+      relevant = true;
+    }
+    if (brief && !relevant) score -= 3;
     if (met && t.unlockedBy && caps.has(t.unlockedBy)) score += 2;
     if (t.treatments.length) score += 1.5;
     if (t.genres.length) score += 0.5;
@@ -100,6 +117,15 @@ export function suggest(
   const sizeCount = new Map<string, number>();
   for (const s of project.shots) sizeCount.set(s.size, (sizeCount.get(s.size) ?? 0) + 1);
   const chosen: Suggestion[] = [];
+
+  // The brief's own actions go first, in the order they happen: they're the
+  // shots only this brief could ask for. Templates fill the rest.
+  for (const c of coverageFor(findActions(opts.brief ?? ""))) {
+    if (chosen.length >= limit) break;
+    if (onList.has(c.id) || !personAllowed(c.person, presence)) continue;
+    chosen.push({ templateId: c.id, size: c.size, subject: c.subject, reason: c.reason, beat: c.beat, light: "any", fallback: false, score: 100, fromBrief: true, keywords: c.keywords });
+    sizeCount.set(c.size, (sizeCount.get(c.size) ?? 0) + 1);
+  }
   const pool = [...candidates];
   while (chosen.length < limit && pool.length) {
     let best = 0;
@@ -166,8 +192,8 @@ function place(project: Project, chosen: Suggestion[]): Suggestion[] {
   };
 
   return chosen.map((s) => {
-    const t = template.get(s.templateId)!;
-    const byWord = ordered.find((l) => (t.keywords ?? []).some((k) => mentions(words(`${l.name} ${l.where ?? ""}`), k)));
+    const keys = s.keywords ?? template.get(s.templateId)?.keywords ?? [];
+    const byWord = ordered.find((l) => keys.some((k) => mentions(words(`${l.name} ${l.where ?? ""}`), k)));
     const location = byLight(s.light, timed) ?? byWord;
     if (location) {
       if (multi && location.dayId) given.set(location.dayId, (given.get(location.dayId) ?? 0) + 1);

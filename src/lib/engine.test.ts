@@ -92,6 +92,39 @@ describe("suggest (§6.2)", () => {
   });
 });
 
+describe("coverage from the brief (build-journal, 22 Sep)", () => {
+  const vlog = project({ format: { genre: "personal", treatment: "silent", delivery: "short", aspect: "9:16" } });
+  const brief = "Aesthetic vlog of me descaling and flushing coffee machine at home then making a latte.";
+
+  it("puts Rina's coffee brief's own actions first, in order", () => {
+    const r = suggest(vlog, { brief, chips: matchChips(brief) });
+    const top = r.suggestions.slice(0, 5).map((s) => s.subject);
+    expect(top[0]).toBe("Home — the whole set-up, wide");
+    expect(top).toContain("Descaling the coffee machine");
+    expect(r.suggestions.some((s) => s.subject === "The finished latte")).toBe(true);
+    expect(r.suggestions.filter((s) => s.fromBrief).length).toBeGreaterThanOrEqual(10);
+  });
+
+  it("still fills the rest from templates, up to the budget", () => {
+    const r = suggest(vlog, { brief });
+    expect(r.suggestions.some((s) => !s.fromBrief)).toBe(true);
+    expect(r.suggestions.length).toBeLessThanOrEqual(r.room);
+  });
+
+  it("places brief coverage in a location whose name matches", () => {
+    const withHome = project({ ...vlog, locations: [loc("home", 0, { name: "Home kitchen" })] });
+    const setup = suggest(withHome, { brief }).suggestions.find((s) => s.subject.startsWith("Home —"));
+    expect(setup?.locationId).toBe("home");
+  });
+
+  it("doesn't suggest the same coverage twice once it's on the list", () => {
+    const first = suggest(vlog, { brief });
+    const after = addSuggestions(vlog, first.suggestions.slice(0, 3), "brief", new Date(0));
+    const again = suggest(after, { brief }).suggestions.map((s) => s.templateId);
+    for (const s of first.suggestions.slice(0, 3)) expect(again).not.toContain(s.templateId);
+  });
+});
+
 describe("placing and adding", () => {
   it("puts sunrise shots in the morning location and golden ones in the evening", () => {
     const p = project({

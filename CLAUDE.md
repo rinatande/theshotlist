@@ -40,7 +40,7 @@ Both themes. Installable. Fully usable offline. **Gear, look board, cast, per-da
 
 ## Milestones
 
-Work in order. Each one ends with something that runs, a commit, and a short note to Rina about what's worth looking at.
+Work in order. Each one ends with something that runs, a commit, and a short note to Rina about what's worth looking at. **Order changed 22 Sep (Rina):** M6, the online read, comes before M5 — the generated list is the point of the app, so it has to be good before shoot mode.
 
 **M0 — Scaffold.** The folder isn't empty, so run `create-next-app` (TypeScript, App Router, `src/` dir, ESLint, no Tailwind) into a temporary directory and move the result in **without overwriting anything already here**. Wire up `tokens.css`, the font, the manifest and the service worker. A single page proving both themes: Auto follows `prefers-color-scheme`; `data-theme` on `<html>` overrides it. Deploy to Vercel. *Done when:* it installs to a phone home screen and opens with no signal.
 

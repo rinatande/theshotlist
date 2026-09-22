@@ -120,3 +120,10 @@ Rules: record it honestly, including when the AI was plainly wrong. Small wordin
 **Rina:** "once you add any type of shot to a project, you aren't able to add a new location. Can you please fix this."
 **Changed:** `+ LOCATION` now sits at the foot of the shot list (at the foot of each day, on a multi-day shoot), so a location can always be added from where the list is. design.md §5.10 entry points updated.
 **Kind:** bug caught
+
+### 2026-09-22 · M4 · Coverage from the brief's own actions, and the read before shoot mode
+
+**Proposed:** Three options for generic suggestions — (A) offline coverage built from the actions named in the brief, (B) bring the online read (M6) forward, (C) both, A first. Milestones still in order: M5 shoot mode, then M6.
+**Rina:** "C and maybe we can do m6 before m5 as I feel like the whole purpose of this app is based around the generated shot list from the brief being amazing or atleast usable."
+**Changed:** Offline action coverage is built now; M6 (the online read) moves ahead of M5 (shoot mode and wrap). CLAUDE.md milestone order updated.
+**Kind:** plan rejected
