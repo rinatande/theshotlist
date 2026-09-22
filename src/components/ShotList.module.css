@@ -371,3 +371,17 @@
 .briefEmpty {
   color: var(--ink-muted);
 }
+
+/* The standing way to add a location, at the foot of the list or of each day. */
+.addLocation {
+  display: flex;
+  align-items: center;
+  min-height: var(--target);
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  color: var(--accent);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}

@@ -106,3 +106,17 @@ Rules: record it honestly, including when the AI was plainly wrong. Small wordin
 **Rina:** "Can we move duplicate and delete function for shots one level up? so it sits on a shot detail page under the shot details instead of user having to edit shot first to delete or duplicate."
 **Changed:** DUPLICATE and DELETE are on shot detail (S3), under the spec table and note, each still stating its consequence. Edit shot is now exactly add shot (plus clearing a flag). design.md §5.13 and §8 Shot detail updated.
 **Kind:** design call
+
+### 2026-09-22 · M4 · Suggestions ignore what the brief is about
+
+**Proposed:** The offline engine as built for M4: brief words only re-rank a fixed template library (§5.6, §6.2), so the list can only ever contain shots someone wrote a template for.
+**Rina:** "I tested a brief to generate shots 'Aesthetic vlog of me descaling and flushing coffee machine at home then making a latte.'. The shot list is too generic and has nothing about descaling or flushing the coffee machine, or even making the coffee. not very usable. is there a way to make it better?"
+**Changed:** Nothing yet — options put to Rina (offline coverage built from the brief's own actions; bringing the online read, M6, forward; or both).
+**Kind:** bug caught
+
+### 2026-09-22 · M3 · No way to add a location once the list has shots
+
+**Proposed:** Entry points as specced in §5.10: `+ LOCATION` on the empty shot list and on the running-order screen. Once a shot existed, the empty list was gone, and the running order was two taps away behind `ORDER`, with nothing on the list pointing there.
+**Rina:** "once you add any type of shot to a project, you aren't able to add a new location. Can you please fix this."
+**Changed:** `+ LOCATION` now sits at the foot of the shot list (at the foot of each day, on a multi-day shoot), so a location can always be added from where the list is. design.md §5.10 entry points updated.
+**Kind:** bug caught

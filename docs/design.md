@@ -434,7 +434,7 @@ With neither — offline before a lookup, permission refused — the light lines
 
 **Day count belongs to the project, not the location.** The new-location screen used to ask *which day* on a project that only had one — a question about the shoot's shape, asked in the wrong place. It's now set at project creation (§5.9), and the day chips appear on a location only when the project has more than one day.
 
-**Entry points:** tap a location band on the shot list to edit it; `ORDER` in the plan bar for the running order; `+ LOCATION` from the empty shot list and from the running-order screen.
+**Entry points:** tap a location band on the shot list to edit it; `ORDER` in the plan bar for the running order; `+ LOCATION` from the empty shot list, from the running-order screen, and at the foot of the shot list (the foot of each day on a multi-day shoot) — added in the build, because once a list had shots the only way in was two taps deep behind `ORDER` (build-journal, 22 Sep).
 
 **Time format** is a settings row — `12-HOUR` / `24-HOUR` — and it replaces the old *default setup naming* row, which had nothing left to name. Times are written the way the user reads them: `6:10 AM` by default, `0610` for anyone who prefers it.
 

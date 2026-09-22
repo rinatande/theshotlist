@@ -194,13 +194,18 @@ function ByLocation(props: RowProps) {
                 ))}
               </>
             )}
-            {d && locations.length === 0 && unplaced.length === 0 && (
+            {d && locations.length === 0 && unplaced.length === 0 ? (
               <p className={styles.emptyDay}>
                 Nothing planned for this day yet.{" "}
                 <Link href={`/location/new?id=${project.id}&day=${dayId}`} className={styles.inlineLink}>
                   + LOCATION
                 </Link>
               </p>
+            ) : (
+              // Always a way to add a location from the list itself, not only from ORDER (§5.10).
+              <Link href={`/location/new?id=${project.id}${dayId ? `&day=${dayId}` : ""}`} className={styles.addLocation}>
+                + LOCATION{d ? ` ON DAY ${d.index}` : ""}
+              </Link>
             )}
           </section>
         );
