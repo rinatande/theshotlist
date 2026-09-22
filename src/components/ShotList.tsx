@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { beatLabel, ROLES, shotsByBeat } from "@/lib/beats";
+import { projectBrief } from "@/lib/brief";
 import { projectBudget } from "@/lib/budget";
 import { budgetLabel, shortDate } from "@/lib/labels";
 import { runningOrder } from "@/lib/runningOrder";
@@ -66,6 +67,7 @@ export function ShotList({ project }: { project: Project }) {
   return (
     <>
       <PlanBar project={project} view={view} onView={chooseView} planned={planned} over={over} />
+      <BriefStrip project={project} />
       <div className={styles.columns} aria-hidden="true">
         <span>NO.</span>
         <span>SIZE</span>
@@ -117,6 +119,20 @@ function PlanBar({ project, view, onView, planned, over }: { project: Project; v
         <span className={styles.sr}> shots planned, budget {budgetLabel(b)}</span>
       </span>
     </div>
+  );
+}
+
+// ─── Brief strip (after B4) ───────────────────────────────────────────────────
+
+/** The way back to the brief once a list exists — one line, like the day list's brief strip. */
+function BriefStrip({ project }: { project: Project }) {
+  const text = projectBrief(project)?.text.trim();
+  return (
+    <Link href={`/brief?id=${project.id}`} className={styles.briefStrip}>
+      <span className={styles.briefLabel}>BRIEF</span>
+      <span className={text ? styles.briefText : styles.briefEmpty}>{text || "None yet — write one for better suggestions"}</span>
+      <span aria-hidden="true">›</span>
+    </Link>
   );
 }
 
@@ -329,14 +345,16 @@ function EmptyList({ project }: { project: Project }) {
   const b = projectBudget(project);
   const routes: { href?: string; title: string; line: string; soon: boolean }[] = [
     {
+      href: `/brief?id=${project.id}`,
       title: "Suggest from your brief",
-      line: "Write a line or three about the day. Best results — it picks up brand deliverables, the light, the mood.",
-      soon: true,
+      line: "Write a line or three about the day. Best results — it picks up the light, the place, the mood.",
+      soon: false,
     },
     {
+      href: `/suggest?id=${project.id}`,
       title: "Suggest from your format",
       line: "Shots that suit this kind of video and its length, with no brief needed.",
-      soon: true,
+      soon: false,
     },
     {
       href: `/shot/new?id=${project.id}`,

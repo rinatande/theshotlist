@@ -68,6 +68,8 @@ function ShotDetail() {
           </p>
         )}
         {shot.flagNote && !exposed && <p className={styles.flag}>! {shot.flagNote.toUpperCase()}</p>}
+        {/* Why a suggested shot is here — the line that ties it to the brief or the kit (§6.2). */}
+        {shot.reason && <p className={styles.reason}>{shot.reason}</p>}
 
         {spec.length > 0 && (
           <dl className={styles.spec}>

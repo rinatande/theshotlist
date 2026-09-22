@@ -1,0 +1,105 @@
+.band {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 7px var(--gutter);
+  background: var(--band);
+  color: var(--ink-faint);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: start;
+  padding: 13px 0 13px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.size {
+  padding-top: 2px;
+  font-size: var(--text-12);
+  font-weight: 700;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.subject {
+  font-size: var(--text-15);
+  overflow-wrap: anywhere;
+}
+
+.subjectDone {
+  font-size: var(--text-15);
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+}
+
+/* The reason line is the feature (§6.2): body-sized enough to be read. */
+.reason {
+  font-size: var(--text-13);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.meta {
+  font-size: var(--text-11);
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.plus {
+  width: var(--target);
+  height: var(--target);
+  margin-top: -10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: var(--text-20);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.added {
+  padding-top: 3px;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ok);
+}
+
+.more {
+  min-height: var(--target);
+  margin: 0 var(--gutter);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
+
+.note {
+  margin: 0;
+  padding: var(--s-3) var(--gutter);
+  font-size: var(--text-13);
+  line-height: 1.55;
+  color: var(--ink-muted);
+}

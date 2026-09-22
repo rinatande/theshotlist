@@ -335,3 +335,39 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* ---- Brief strip ------------------------------------------------------- */
+
+.briefStrip {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--target);
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.briefLabel {
+  flex-shrink: 0;
+  font-size: var(--text-11);
+  letter-spacing: var(--track-label);
+}
+
+.briefText,
+.briefEmpty {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-13);
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.briefEmpty {
+  color: var(--ink-muted);
+}

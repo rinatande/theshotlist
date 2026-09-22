@@ -321,4 +321,6 @@ export interface TemplateShot {
   /** When a requirement is missing, a rewritten version is offered instead of dropping it (§6.2 step 4). */
   fallback?: { subject: string; reason: string };
   keywords?: string[];        // brief words that boost this template offline
+  /** Drafted by Claude Code (22 Sep) for Rina to edit or delete; remove the flag once it's hers. */
+  draft?: boolean;
 }

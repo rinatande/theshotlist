@@ -1,0 +1,134 @@
+.brief {
+  height: auto;
+  min-height: 160px;
+  padding: var(--s-3);
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.matched {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Quoted chips are outlines: words you typed, low stakes (§5.6). */
+.chip {
+  padding: 7px 9px;
+  border: 1px solid var(--rule);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.routes {
+  list-style: none;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.route {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: 14px var(--gutter);
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+div.route {
+  cursor: default;
+}
+
+.routeNo {
+  width: 22px;
+  flex-shrink: 0;
+  font-size: var(--text-13);
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.routeText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.routeTitle,
+.routeTitleMuted {
+  font-size: var(--text-15);
+  font-weight: 700;
+}
+
+.routeTitleMuted {
+  color: var(--ink-muted);
+}
+
+.routeLine {
+  font-size: var(--text-12);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.chevron {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.skip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.skipText {
+  margin: 0;
+  font-size: var(--text-13);
+  color: var(--ink-muted);
+}
+
+.sheetList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 60dvh;
+  overflow-y: auto;
+}
+
+.sheetRow {
+  width: 100%;
+  min-height: var(--target);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px var(--gutter);
+  border: 0;
+  border-top: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sheetTitle {
+  font-size: var(--text-15);
+  font-weight: 500;
+}

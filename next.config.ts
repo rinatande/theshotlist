@@ -26,6 +26,9 @@ const withSerwist = withSerwistInit({
     "/location/new",
     "/location/edit",
     "/order",
+    "/brief",
+    "/brief/read",
+    "/suggest",
     "/settings",
     "/gear",
   ].map((url) => ({
