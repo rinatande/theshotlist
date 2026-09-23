@@ -9,16 +9,16 @@ import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { projectBrief, setBriefText } from "@/lib/brief";
 import { bagLine } from "@/lib/gear";
-import { matchChips, type QuotedChip } from "@/lib/chips";
 import { db } from "@/lib/db";
 import { MAX_BRIEF } from "@/lib/read";
 import { readsLeft } from "@/lib/readClient";
 import type { Project } from "@/lib/types";
 import { useLive } from "@/lib/useLive";
+import { useOnline } from "@/lib/useOnline";
 import { saveProject, useProject } from "@/lib/useProject";
 import styles from "./Brief.module.css";
 
-/** Matching waits for a pause in typing — never per keystroke (§5.6). */
+/** The brief saves on a pause in typing, not on every key. */
 const PAUSE_MS = 600;
 
 /** B0 (nothing written) and B1 (written): one project brief in v0. */
@@ -32,21 +32,22 @@ function BriefScreen() {
 
 function Editor({ project, onGenerate }: { project: Project; onGenerate: () => void }) {
   const [text, setText] = useState(projectBrief(project)?.text ?? "");
-  const [chips, setChips] = useState<QuotedChip[]>(() => matchChips(text));
   const [copying, setCopying] = useState(false);
   const [placeholder, setPlaceholder] = useState("");
   const area = useRef<HTMLTextAreaElement>(null);
   const [left, setLeft] = useState<{ available: boolean; remaining: number } | null>(null);
+  const online = useOnline();
+  // Asked again when signal comes back, so the screen never shows a stale "no signal".
   useEffect(() => {
-    readsLeft().then(setLeft);
-  }, []);
+    // A check that fails with signal reads as unavailable, not as "checking…" forever.
+    readsLeft().then((l) => setLeft(l ?? { available: false, remaining: 0 }));
+  }, [online]);
   const others = useLive(() => db.projects.toArray(), []);
   const pastBriefs = (others ?? []).filter((p) => p.id !== project.id && projectBrief(p)?.text.trim());
 
-  // Match and save on a pause in typing, not on every key.
+  // Save on a pause in typing, not on every key.
   useEffect(() => {
     const timer = setTimeout(async () => {
-      setChips(matchChips(text));
       const latest = await db.projects.get(project.id);
       if (latest && (projectBrief(latest)?.text ?? "") !== text) await saveProject(setBriefText(latest, text));
     }, PAUSE_MS);
@@ -54,6 +55,15 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
   }, [text, project.id]);
 
   const empty = text.trim().length === 0;
+  // Generating is the read, and only the read (Rina, 23 Sep): no signal or no reads, no generating.
+  const canRead = online && !!left?.available && left.remaining > 0;
+  const why = !online
+    ? "No signal. Generating reads your brief online — connect to generate."
+    : left && !left.available
+      ? "Generating isn't available right now."
+      : left?.remaining === 0
+        ? "No reads left today — they come back tomorrow."
+        : undefined;
   const focus = (hint: string) => {
     setPlaceholder(hint);
     area.current?.focus();
@@ -79,23 +89,6 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
             onChange={(e) => setText(e.target.value)}
           />
           <p className={ui.hint}>A sentence or three paragraphs — both work. Say what has to be captured and what the day feels like.</p>
-        </div>
-
-        <div className={styles.matched} aria-live="polite">
-          <span className={ui.boxHeading}>MATCHED AS YOU TYPE</span>
-          {chips.length > 0 ? (
-            <ul className={styles.chips}>
-              {chips.map((c) => (
-                <li key={c.label} className={styles.chip}>
-                  {c.label}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={ui.boxTextMuted}>
-              Nothing yet. A place, a time of day or a client name will show up here as you write — matched on the device, before anything is sent anywhere.
-            </p>
-          )}
         </div>
 
         {empty ? (
@@ -150,33 +143,30 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
               </li>
             </ol>
             <div className={styles.skip}>
-              <p className={styles.skipText}>No brief? The list still builds from your format — blunter, but it works.</p>
-              <Link href={`/suggest?id=${project.id}`} className={ui.textLink}>
-                SKIP ›
+              <p className={styles.skipText}>No brief? Add shots by hand instead.</p>
+              <Link href={`/shot/new?id=${project.id}`} className={ui.textLink}>
+                ADD A SHOT ›
               </Link>
             </div>
           </>
         ) : (
-          left?.available ? (
+          canRead ? (
             <div className={ui.box}>
-              <span className={ui.boxHeading}>ONLINE</span>
+              <span className={ui.boxHeading}>READ ONCE</span>
               <p className={ui.boxText}>
-                Your brief is read in full once, when you generate — not as you type. You&apos;ll see what it read before anything is built. Sent once to be
-                read, not stored by this app. Offline it falls back to the matching above and still works.
+                Your brief is read in full once, when you generate — not as you type. You&apos;ll see what it read before anything is built. Sent once to be read, not stored by this app.
               </p>
-              <p className={ui.hint}>
-                {left.remaining === 0
-                  ? "No full reads left today — it will match on this phone instead."
-                  : left.remaining === 1
-                    ? "1 full read left today."
-                    : `${left.remaining} full reads left today.`}
-              </p>
+              <p className={ui.hint}>{left!.remaining === 1 ? "1 full read left today." : `${left!.remaining} full reads left today.`}</p>
             </div>
           ) : (
-            <div className={ui.box}>
-              <span className={ui.boxHeading}>ON THIS PHONE</span>
-              <p className={ui.boxText}>Matched here, free and offline. With signal, generating reads the whole brief instead — client deliverables included.</p>
-            </div>
+            why && (
+              <div className={ui.box}>
+                <span className={ui.boxHeadingWarn}>{!online ? "NO SIGNAL" : left?.remaining === 0 ? "NO READS LEFT TODAY" : "CAN'T GENERATE"}</span>
+                <p className={ui.boxText}>
+                  {why} Your brief is saved, and everything else works as usual — shots can be added by hand, and the list goes with you offline.
+                </p>
+              </div>
+            )
           )
         )}
 
@@ -200,6 +190,19 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
             <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="gen-why">
               GENERATE SHOTS
             </button>
+          </>
+        ) : !canRead ? (
+          <>
+            <p className={ui.hint} id="gen-why">
+              {/* The box above says why in full; this is the button's short reason. */}
+              {!online ? "Needs signal to generate." : left?.remaining === 0 ? "No reads left today." : (why ?? "Checking for reads…")}
+            </p>
+            <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="gen-why">
+              GENERATE SHOTS
+            </button>
+            <Link href={`/shot/new?id=${project.id}`} className={ui.secondary}>
+              + ADD A SHOT BY HAND
+            </Link>
           </>
         ) : (
           <button

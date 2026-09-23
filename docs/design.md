@@ -51,7 +51,7 @@ Mobile-first, responsive up to desktop, **built as an installable PWA** so it li
 
 - Everything works at 375px wide. Single-file-per-route, no heavy framework lock-in.
 - `manifest.json` with maskable icon, `display: standalone`, `theme_color` matching the active theme (updated by the theme switch so the OS chrome follows).
-- Service worker, offline-first. **Shoots happen where there's no signal.** A shot list already opened is fully readable and checkable offline; edits queue and sync later. The Settings screen shows how many projects are cached.
+- Service worker, offline-first. **Shoots happen where there's no signal.** A shot list already opened is fully readable and checkable offline; edits queue and sync later. **Generating a list is the one exception (Rina, 23 Sep):** it's the online read, so you set up with signal the day before, and the shoot itself needs none. The Settings screen shows how many projects are cached.
 - Safe-area insets respected. Primary actions live in the bottom thumb zone, never the top corners.
 - No hover-dependent affordances. Anything revealed on hover on desktop has a visible or long-press equivalent on touch.
 
@@ -292,7 +292,9 @@ Genre, treatment and format describe the *kind* of video. The brief describes *t
 
 **The v0 screens, as built.** The prompt reads *"What are you shooting?"* (the board's *"…today?"* is per-day wording). B0's third route is *Copy a brief from a past project* (the board's *Copy day 1's brief* needs per-day briefs). Until the full read exists (M6), B1's ONLINE box is an **ON THIS PHONE** note saying matching is local and a fuller read comes later, and B9 shows only the quoted chips, each droppable. After B9 comes **B2**, the suggestions with their reason lines, a `+` on each and `ADD ALL N` — nothing lands on the list until it's added. Once written, the brief is reached from a one-line **brief strip** under the shot list's plan bar (after B4's brief strip). SKIP, and E5's *Suggest from your format*, go straight to B2 with no brief.
 
-**How it becomes shots — hybrid, and the split matters.**
+**How it becomes shots — online only, since 23 Sep (Rina).** Generating is the online read and nothing else. The offline path below — keyword chips, templates, the brief's actions covered generically — was removed after testing on real briefs: it was "so out of context and pretty much unusable". Offline, the brief is kept and saved, `GENERATE` is disabled with the reason (*"No signal. Generating reads your brief online — connect to generate."*), and shots are added by hand. Out of reads says so the same way. A read that fails offers `TRY AGAIN` and `+ ADD A SHOT BY HAND`, and never builds a phone-made list. B2 shows only what the read found; the template library under it is gone. The history of the hybrid is kept below and in case-study-log 2.27.
+
+*Superseded — the hybrid as designed:* **How it becomes shots — hybrid, and the split matters.**
 
 | | Offline | Online |
 |---|---|---|
@@ -300,7 +302,7 @@ Genre, treatment and format describe the *kind* of video. The brief describes *t
 | Gets you | Time of day, weather, obvious subjects, named genres | Specifics: "say the name out loud" becomes its own shot, "interview the owner" pulls a sit-down |
 | Guarantee | Always works | Better, never required |
 
-This preserves the offline-first promise from §3: **a brief typed in a valley with no signal still produces a list.** The screen says plainly which mode it's in rather than silently degrading, and a brief written offline is re-read when signal returns, offering the extra shots it found rather than rewriting what you already have.
+*(Superseded 23 Sep.)* This preserved the offline-first promise from §3: **a brief typed in a valley with no signal still produces a list.** The screen says plainly which mode it's in rather than silently degrading, and a brief written offline is re-read when signal returns, offering the extra shots it found rather than rewriting what you already have.
 
 **When each one runs — and this is the whole cost question.** The two paths are not the same interaction and shouldn't be drawn as one.
 
@@ -312,9 +314,9 @@ This preserves the offline-first promise from §3: **a brief typed in a valley w
 
 Firing the read per keystroke would mean hundreds of requests to watch someone type three paragraphs. It never happens on input. The result is cached against the brief text, so reopening the screen and generating again with nothing changed costs nothing.
 
-**Where the offline chips come from.** A keyword → chip dictionary, `src/data/chips.json`, edited by hand like the templates. Each chip has a label, a kind and the words that trigger it — `SUNRISE` from *sunrise, dawn, first light, early morning*. Kinds: time, weather, treatment, mood, subject, work. Place names can't be listed in advance, so one rule covers them: a capitalised word that isn't the first word of a sentence, and isn't in the dictionary, becomes a `place` chip. It will sometimes catch a brand name; quoted chips are tappable, so a wrong one costs a tap.
+*(Removed 23 Sep, with the brief screen's MATCHED AS YOU TYPE box; `chips.json` is kept, unused.)* **Where the offline chips come from.** A keyword → chip dictionary, `src/data/chips.json`, edited by hand like the templates. Each chip has a label, a kind and the words that trigger it — `SUNRISE` from *sunrise, dawn, first light, early morning*. Kinds: time, weather, treatment, mood, subject, work. Place names can't be listed in advance, so one rule covers them: a capitalised word that isn't the first word of a sentence, and isn't in the dictionary, becomes a `place` chip. It will sometimes catch a brand name; quoted chips are tappable, so a wrong one costs a tap.
 
-**Coverage from the brief's own actions.** Templates only know the shots someone wrote, so a brief about descaling a coffee machine got none of it (Rina, build-journal 22 Sep). Offline, the app now finds the actions a brief names — *descaling and flushing the coffee machine*, *then making a latte* — and covers each as a short sequence in the person's own words: the whole of it, the hands, the moment it visibly works; or, for moving through a place, wide, following, feet. A wide of the set-up opens it, and a task that makes something ends on the finished thing. These sit first on B2 under **FROM YOUR BRIEF**, with templates after under **ALSO WORTH GETTING**. It's rough on purpose — no dictionary, no network — and it can only phrase coverage generically; knowing what descaling actually looks like is the online read's job (M6).
+*(Removed 23 Sep.)* **Coverage from the brief's own actions.** Templates only know the shots someone wrote, so a brief about descaling a coffee machine got none of it (Rina, build-journal 22 Sep). Offline, the app now finds the actions a brief names — *descaling and flushing the coffee machine*, *then making a latte* — and covers each as a short sequence in the person's own words: the whole of it, the hands, the moment it visibly works; or, for moving through a place, wide, following, feet. A wide of the set-up opens it, and a task that makes something ends on the finished thing. These sit first on B2 under **FROM YOUR BRIEF**, with templates after under **ALSO WORTH GETTING**. It's rough on purpose — no dictionary, no network — and it can only phrase coverage generically; knowing what descaling actually looks like is the online read's job (M6).
 
 **What generating builds.** Suggestions fill to the **top** of the budget range, not the bottom — easier to cut from a full list than to invent on set. Each lands in a location where one fits: a template's `light` matches it to a timed location (`sunrise` → the earliest start, `golden` / `blue` → the latest), and its keywords match location names. Anything that fits nowhere goes to `UNPLACED` — on a multi-day shoot, spread across the days in proportion to each day's budget rather than piled onto day 1. Time-of-day chips from the brief also rank templates with that `light` higher. Templates already on the list are never suggested again, and when fewer templates fit than the budget has room for, B2 says so plainly rather than padding.
 
@@ -635,9 +637,9 @@ A count of withheld suggestions is shown, without listing them: *"Four more that
 
 **As built (v1):**
 - **Ranking.** A template the kit unlocks scores +3.
-- **Offline coverage deepens with the budget.** Each action the brief names is covered 3 ways for a reel (the whole, hands, the moment it works), 6 for a short cut (the set-up laid out, over the shoulder, from above), and 9 for a mid-length cut or longer (what makes the sound, me watching it, the pause after). Movement gets the same treatment. The coffee brief at 5–10 minutes reaches 52, inside its 48–64 budget.
+- *(Removed 23 Sep with offline generation.)* **Offline coverage deepened with the budget.** Each action the brief names is covered 3 ways for a reel (the whole, hands, the moment it works), 6 for a short cut (the set-up laid out, over the shoulder, from above), and 9 for a mid-length cut or longer (what makes the sound, me watching it, the pause after). Movement gets the same treatment. The coffee brief at 5–10 minutes reaches 52, inside its 48–64 budget.
 - **With a brief, a shot that needs gear must also be relevant to the brief:** its keywords or its light. Otherwise it doesn't appear at all. The first version offered any shot the gear could make, so a coffee vlog got a drone top-down (Rina, 23 Sep, build journal). Gear-free basics still fill the list.
-- **SUGGEST SHOTS FROM THIS KIT goes through the brief when there is one.** That means the read with signal, which knows the gear and the frame rate, or the brief's words offline. G5/G6 as drawn (format and kit alone) is only for a project with no brief, and says what a brief would add.
+- **SUGGEST SHOTS FROM THIS KIT is the read.** It only shows when the project has a brief, and it says so above the button: *"This reads your brief again with this kit, so it may use one of today's full reads (4 left). You choose what's added — nothing on your list is replaced unless you say so."* With no brief it says *"Write a brief first — shots for this kit come from reading it."* Offline or out of reads it's disabled with the reason. G5/G6's kit-only screen is gone (Rina, 23 Sep).
 - **The brief screen shows what generating will know.** It carries a `GEAR` line with what's coming and the frame rate, one tap from the GEAR tab.
 - **The withheld line** names the two capabilities the withheld templates most often need, and appears on every suggestion screen.
 - **Item names.** A reason line names the item as you wrote it. Only the starter kits' generic names ("Camera body") drop their capital mid-sentence.
@@ -742,7 +744,7 @@ Grouped rows under `--band` headers: **Appearance / Shot lists / Data**. Appeara
 ### Brief screens
 Four boards: **empty** (nothing written — three ways in, `GENERATE` disabled), **written**, **what it read** (the confirm phase), and **read again** (add or replace). Specified in §5.6.
 
-*States:* offline (keyword matching only, stated on screen) · no brief on a day in a multi-day project · a brief that produced nothing usable.
+*States:* offline (generating disabled, the reason stated on screen; add by hand) · no brief on a day in a multi-day project · a brief that produced nothing usable.
 
 ### New project screens
 Two steps, and step 1 exists in three states on the canvas: **first ever project**, **empty**, and **filled**. Step 2 carries length, aspect, the start date, the day count (§5.9) and the `WHAT THAT SETS UP` summary of budget and structure. Specified in §5.1–5.3.
@@ -835,7 +837,7 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
     - **With a list already there,** `SUGGEST SHOTS FROM THIS KIT` offers only what the gear earns, up to eight or the budget's room, with `ADD N NEW`. It never offers a replace.
     - **With an empty list,** it fills to the top of the budget as usual.
     - **The other suggestion screens** use the shoot's gear automatically.
-20. **Place chips from capital letters will misfire.** The offline rule in §5.6 turns any capitalised mid-sentence word into a place chip, so brand and people's names come through as places. Cheap to dismiss, but worth watching how often it happens.
+20. **Place chips from capital letters will misfire — moot since 23 Sep:** the offline chips are gone. The offline rule in §5.6 turns any capitalised mid-sentence word into a place chip, so brand and people's names come through as places. Cheap to dismiss, but worth watching how often it happens.
 21. **Place names leave the device for the sun-times lookup** (§5.10). It's one short request per name, with no brief text, but it is a network call the rest of the offline path doesn't make, and the privacy note should say so the first time.
 22. **Four glyphs the boards use aren't in the font we can get — resolved.** See Appendix B: upstream JetBrains Mono self-hosted, ★ drawn. Original note: Google's build of JetBrains Mono has no `✓` (U+2713), `★` (U+2605) or `⋯` (U+22EF) at all, and serves `←` (U+2190) in no subset. All four are drawn by a system fallback font today — including the `[✓]` and `[★]` status marks, the most-seen glyphs in the app. Options: self-host upstream JetBrains Mono if it has them (needs a subsetting step), or draw these four as inline SVG sized to the mono cell. Found by the M0 proof page's glyph check.
 23. **No way to move shots in bulk — resolved.** Generating before any location exists is the common case, and every shot landed in `UNPLACED`; placing them meant editing each one (Rina, 40 shots, 22 Sep). Now:

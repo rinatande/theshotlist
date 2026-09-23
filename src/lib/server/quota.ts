@@ -106,20 +106,20 @@ export async function reserve(s: Store, who: Who, estimateUsd = 0.1): Promise<De
   const spendKey = `spend:${day}`;
   const spent = await s.get(spendKey);
   if (spent + estimateUsd > LIMITS.dailyBudgetUsd) {
-    return { ok: false, message: `Today's full reads are used up across the app. Matched on this phone instead — it resets in about ${hoursUntilReset()} hours.` };
+    return { ok: false, message: `Today's reads are used up across the app. They reset in about ${hoursUntilReset()} hours — you can still add shots by hand.` };
   }
 
   const invite = who.invite?.toLowerCase();
   if (invite && inviteCodes().has(invite)) {
     const first = await s.setIfAbsent(`invite:first:${invite}`, Date.now(), LIMITS.inviteDays * DAY * 2);
     if (Date.now() - first > LIMITS.inviteDays * DAY * 1000) {
-      return { ok: false, message: "This invite link has run its course. Matched on this phone instead." };
+      return { ok: false, message: "This invite link has run its course. You can still add shots by hand." };
     }
     const usedKey = `invite:used:${invite}`;
     const used = await s.incr(usedKey, 1, LIMITS.inviteDays * DAY * 2);
     if (used > LIMITS.inviteReads) {
       await s.incr(usedKey, -1, LIMITS.inviteDays * DAY * 2);
-      return { ok: false, message: "This invite link's full reads are used up. Matched on this phone instead." };
+      return { ok: false, message: "This invite link's reads are used up. You can still add shots by hand." };
     }
     return {
       ok: true,
@@ -138,7 +138,7 @@ export async function reserve(s: Store, who: Who, estimateUsd = 0.1): Promise<De
   };
   if (deviceUsed > LIMITS.perDevice || addressUsed > LIMITS.perAddress) {
     await undo();
-    return { ok: false, message: `That's today's ${LIMITS.perDevice} full reads on this phone. Matched on this phone instead — more in about ${hoursUntilReset()} hours.` };
+    return { ok: false, message: `That's today's ${LIMITS.perDevice} reads on this phone. More in about ${hoursUntilReset()} hours — you can still add shots by hand.` };
   }
   return { ok: true, remaining: LIMITS.perDevice - deviceUsed, charge: async () => {}, refund: undo };
 }

@@ -187,3 +187,16 @@ The "not drawn" notes in design.md (§5.12 as built; §10 item 23) now point at 
 
 design.md §5.6 and §6.2; case-study-log 2.26.
 **Kind:** bug caught
+
+### 2026-09-23 · v1 gear · Drop offline generation
+
+**Proposed:** Keep the offline path from §3 and §5.6: when there's no signal, no reads left or a short read, generate from templates and the brief's words, and fill a short read from the library under TO REACH THE BUDGET.
+**Rina:** "I feel like we could almost remove the offline mode, where offline now should just be able to read and use the app as is without being able to generate the shot list. You can manually add them but the generation of the offline ones are just so out of context and pretty much unusable / not useful. Users can set up everything the day before and then on shoot day go offline mode if they need." On the gear screen: SUGGEST SHOTS FROM THIS KIT should only show when there's a brief, "and there should be a warning that it may take a full read". On the library fill: "the 12 shots … from a library, were pretty useless and too generic with no context so we don't need them."
+**Changed:** Her go on all of it ("go with your recommendations"). Generating is the read, and only the read:
+- **Offline, or out of reads:** GENERATE is disabled with the reason, the brief is kept, and shots are added by hand. A failed read offers TRY AGAIN and + ADD A SHOT BY HAND.
+- **Removed:** the brief screen's MATCHED AS YOU TYPE, E5's "Suggest from your format", the template list, the library fill and the kit-only screen. The engine, action coverage and chip matching are deleted; `templates.json` stays for guessing beats and `chips.json` stays unused.
+- **A read that comes back short** is asked once more for the missing shots, still one read against the limit.
+- **SUGGEST SHOTS FROM THIS KIT** needs a brief and warns it may use a read.
+
+CLAUDE.md's offline rule, design.md §3 and §5.6; case-study-log 2.27.
+**Kind:** design call

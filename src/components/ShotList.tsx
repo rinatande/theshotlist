@@ -410,12 +410,6 @@ function EmptyList({ project }: { project: Project }) {
       soon: false,
     },
     {
-      href: `/suggest?id=${project.id}`,
-      title: "Suggest from your format",
-      line: "Shots that suit this kind of video and its length, with no brief needed.",
-      soon: false,
-    },
-    {
       href: `/shot/new?id=${project.id}`,
       title: "Add one by hand",
       line: "You already know the shot. Type it and move on.",
@@ -426,7 +420,7 @@ function EmptyList({ project }: { project: Project }) {
   return (
     <div className={styles.empty}>
       <p className={styles.emptyLead}>
-        Nothing on the list yet. Three ways in. The first one gives the best results, because it knows what today actually is.
+        Nothing on the list yet. Two ways in. The first gives the best results, because it reads what today actually is — it needs signal.
       </p>
       <ol className={styles.routes}>
         {routes.map((r, i) => (

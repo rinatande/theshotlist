@@ -131,3 +131,21 @@ describe("turning a read into shots", () => {
     expect(clearUnshot(list).shots.map((x) => x.id)).toEqual(["done", "gone"]);
   });
 });
+
+describe("the backstop for a short read", () => {
+  it("asks for the top of the range, never under the bottom", async () => {
+    const { shotTarget, topUpPrompt } = await import("./read");
+    expect(shotTarget({ budget: { min: 48, max: 64 }, planned: 4 })).toEqual({ room: 60, floor: 44 });
+    expect(topUpPrompt(26, 48, 64)).toContain("You returned 26 shots, but this cut needs at least 48 and ideally 64.");
+    expect(topUpPrompt(26, 48, 64)).toContain("38 more shots");
+  });
+
+  it("adds the top-up's shots and skips any it repeated", async () => {
+    const { mergeTopUp } = await import("./read");
+    const first: ReadResult = { ...RESULT, shots: [s("Steam off the cup")] };
+    const more: ReadResult = { quoted: [], inferred: [], deliverables: [], locations: [], shots: [s("steam off the cup "), s("Hands on the grinder"), s("Someone pouring")] };
+    // "Someone pouring" is already a deliverable in RESULT, so it's a repeat too.
+    expect(mergeTopUp(first, more).shots.map((x) => x.subject)).toEqual(["Steam off the cup", "Hands on the grinder"]);
+    expect(mergeTopUp(first, more).deliverables).toEqual(first.deliverables);
+  });
+});

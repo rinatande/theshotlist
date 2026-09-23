@@ -14,7 +14,7 @@ The design is finished. This repo turns it into a working app. **Don't redesign;
 | `docs/build-journal.md` | Every time Rina corrected or redirected you, and what changed. Read it before starting a milestone — it's how she works. |
 | `src/styles/tokens.css` | The eleven colour tokens (day + night), type, space, targets, motion. Ready to use. |
 | `src/lib/types.ts` | The data model. Ready to use. |
-| `src/data/templates.json` | Starter shot templates for the offline suggestion engine. Rina edits these. |
+| `src/data/templates.json` | Shot templates. Since 23 Sep only used to guess a hand-added shot's beat — the offline engine that suggested from them was removed. Kept for Rina to mine for the read's examples. `chips.json` is kept the same way, unused. Don't wire either back into generating. |
 
 ## Stack
 
@@ -36,7 +36,7 @@ Projects → new project → empty list → brief → what it read → shot list
 
 Also in v0: project edit and delete (the `⋯` sheet, §5.14) and a minimal Settings (theme, time format, storage — §8).
 
-Both themes. Installable. Fully usable offline. **Gear, look board, cast, per-day briefs and adding days are stubbed**: the tab or screen exists and loads, with a line saying it's coming, but the core route never depends on them.
+Both themes. Installable. Fully usable offline — except generating, which is the online read (Rina, 23 Sep). **Gear, look board, cast, per-day briefs and adding days are stubbed**: the tab or screen exists and loads, with a line saying it's coming, but the core route never depends on them.
 
 ## Milestones
 
@@ -55,7 +55,7 @@ Work in order. Each one ends with something that runs, a commit, and a short not
 
 **M3 — The shot list.** `E5` empty, `S2` (location/beat toggle), `S4` add, `S3` detail, `S6` edit, `E3`/`S7` running order, `E1`/`E2` locations. Status column is `[ ]` / `[✓]` only; a flag is a `!` line under the subject (§4.4). `[★]` counts toward the budget but is never numbered (§5.7). Coverage gap and duplicate rules are in §8 Add shot. Sun times (§5.10): calculated on the device, coordinates from a one-time place-name lookup or the phone's location; Auto follows sunset from here (§9).
 
-**M4 — Brief, offline.** `B0` empty, `B1` written, `B9` what it read, `B2` shots from your brief — offline this shows **quoted chips only**. Keyword matching runs on the device, debounced on a pause in typing, **never per keystroke and never over the network** (§5.6). Chips come from `src/data/chips.json` plus the capitalised-word place rule. `GENERATE SHOTS` builds a list from templates × format × packed gear × cast presence (§6.2), filled to the **top** of the budget and placed into locations by light and keywords. Every suggestion carries its reason line; with no gear packed (v0), suggestions are gear-free and the line says why the shot works rather than naming an item.
+**M4 — Brief, offline.** *(Its offline generation was removed 23 Sep — see the offline rule below.)* `B0` empty, `B1` written, `B9` what it read, `B2` shots from your brief — offline this shows **quoted chips only**. Keyword matching runs on the device, debounced on a pause in typing, **never per keystroke and never over the network** (§5.6). Chips come from `src/data/chips.json` plus the capitalised-word place rule. `GENERATE SHOTS` builds a list from templates × format × packed gear × cast presence (§6.2), filled to the **top** of the budget and placed into locations by light and keywords. Every suggestion carries its reason line; with no gear packed (v0), suggestions are gear-free and the line says why the shot works rather than naming an item.
 
 **M5 — Shoot mode and wrap.** `N4` shoot mode (night theme, one shot at a time, 72px `GOT IT`). `SKIP` sends a shot to the end of the queue; `FLAG` asks for a note; the counter is the exposed count; the last shot doesn't auto-wrap. `W1` middle day, `W2` blocked by a `[★]`, `W3` last day (§5.12). Wrap closes a **day**, never a project. `MOVE` and `RESHOOT TOMORROW` only exist when a later day does; `DROP` is reversible.
 
@@ -90,7 +90,7 @@ Each of these was a real defect or a deliberate decision. The spec section says 
 - **Shot numbers are derived, not stored.** A number is a position. (§5.10)
 - **Wrap never deletes.** Dropped shots stay in the day's record and can be un-dropped. (§5.12)
 - **The budget is a ceiling, not a target.** Under budget: silent. Over: one advisory at the foot, once. Never a per-shot warning, never praise for shooting more. (§5.2)
-- **Offline first.** Nothing on the core route may need a network. The brief read is an enhancement; the keyword path must always work.
+- **Offline first, except generating (changed 23 Sep, Rina).** Everything on the core route works with no signal — reading, editing, adding shots by hand, shoot mode, wrap — except generating, which is the online read. When it can't happen, say why and offer to add shots by hand; never build a list on the phone from templates. (Superseded: "the keyword path must always work" — it was too generic to use. case-study-log 2.27.)
 - **Words from the spec, not film-set jargon.** "Location", not "setup". "Start time", not "call time". The spec's copy is deliberate; use it verbatim where it exists.
 
 ## Working with Rina

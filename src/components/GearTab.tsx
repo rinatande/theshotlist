@@ -5,7 +5,10 @@ import { projectBrief } from "@/lib/brief";
 import { db } from "@/lib/db";
 import { kitDiff, togglePacked } from "@/lib/gear";
 import type { Project } from "@/lib/types";
+import { readsLeft } from "@/lib/readClient";
 import { useLive } from "@/lib/useLive";
+import { useOnline } from "@/lib/useOnline";
+import { useEffect, useState } from "react";
 import { saveProject } from "@/lib/useProject";
 import { EmptyGear } from "./EmptyGear";
 import styles from "./Gear.module.css";
@@ -19,6 +22,11 @@ import ui from "./ui.module.css";
  * (Rina, 23 Sep).
  */
 export function GearTab({ project }: { project: Project }) {
+  const online = useOnline();
+  const [left, setLeft] = useState<{ available: boolean; remaining: number } | null>(null);
+  useEffect(() => {
+    readsLeft().then(setLeft);
+  }, [online]);
   const data = useLive(async () => ({ count: await db.gear.count(), kits: await db.kits.toArray() }), []);
   if (!data) return <div className={ui.flush} aria-busy="true" />;
   if (data.count === 0 && project.gear.length === 0) return <EmptyGear project={project} />;
@@ -88,12 +96,48 @@ export function GearTab({ project }: { project: Project }) {
       </div>
 
       <div className={ui.footer}>
-        {/* With a brief, the kit's shots come through it — the read with signal, the brief's words without —
-            so they fit the shoot, not just the bag (Rina, 23 Sep). */}
-        <Link href={projectBrief(project)?.text.trim() ? `/brief/read?id=${project.id}` : `/suggest?id=${project.id}&from=gear`} className={ui.primary}>
-          SUGGEST SHOTS FROM THIS KIT
-        </Link>
+        <SuggestFromKit project={project} online={online} left={left} />
       </div>
+    </>
+  );
+}
+
+/**
+ * Shots for this kit come from reading the brief with it — so the button
+ * only shows with a brief, and says it may cost a read (Rina, 23 Sep). A read
+ * of the same brief and gear is reused for free; a changed kit reads again.
+ */
+function SuggestFromKit({ project, online, left }: { project: Project; online: boolean; left: { available: boolean; remaining: number } | null }) {
+  if (!projectBrief(project)?.text.trim())
+    return (
+      <>
+        <p className={ui.hint}>Write a brief first — shots for this kit come from reading it.</p>
+        <Link href={`/brief?id=${project.id}`} className={ui.secondary}>
+          WRITE THE BRIEF
+        </Link>
+      </>
+    );
+  const why = !online ? "No signal — reading needs a connection." : left && (!left.available || left.remaining === 0) ? "No reads left today." : undefined;
+  if (why)
+    return (
+      <>
+        <p className={ui.hint} id="kit-why">
+          {why} Your gear is saved; suggest from it when you can read again.
+        </p>
+        <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="kit-why">
+          SUGGEST SHOTS FROM THIS KIT
+        </button>
+      </>
+    );
+  return (
+    <>
+      <p className={ui.hint}>
+        This reads your brief again with this kit, so it may use one of today&apos;s full reads
+        {left ? ` (${left.remaining} left)` : ""}. You choose what&apos;s added — nothing on your list is replaced unless you say so.
+      </p>
+      <Link href={`/brief/read?id=${project.id}`} className={ui.primary}>
+        SUGGEST SHOTS FROM THIS KIT
+      </Link>
     </>
   );
 }

@@ -42,8 +42,8 @@ describe("what gear unlocks", () => {
     expect([...capabilities([zv1])].sort()).toEqual(["fast", "tele", "wide"]);
   });
 
-  it("explains an item before you've felt it, counting only what's new", () => {
-    expect(unlocksLine(eightyFive.specs, [fx30, sigma])).toMatch(/^Tight inserts and compressed backgrounds\. .+ will start appearing\.$/);
+  it("explains an item before you've felt it, and says when it adds nothing new", () => {
+    expect(unlocksLine(eightyFive.specs, [fx30, sigma])).toBe("Tight inserts and compressed backgrounds. The read plans shots around it, and names it where it earns one.");
     expect(unlocksLine(eightyFive.specs, [fx30, sigma, eightyFive])).toMatch(/already covers that/);
     expect(unlocksLine({ category: "camera", mount: "E" })).toMatch(/^Nothing new on its own/);
   });

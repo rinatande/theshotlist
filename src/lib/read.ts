@@ -183,6 +183,32 @@ Deliverables: only shots a client or brand explicitly requires, grouped under th
 
 Budget: the shot budget is how many shots the edit of this length needs — a count to hit, not a ceiling to stay under. Return the number of shots you're asked for (deliverables count toward it), and never fewer than the minimum you're given. A longer cut doesn't need more topics; it needs coverage. Shoot each moment of the brief several ways — a wide that places it, a medium on the action, close-ups and inserts of the hands and the objects, the detail that shows it worked, a cutaway to the place around it, a way in and a way out — and add the in-between shots an edit leans on: arriving, the light changing, textures, time passing, the room at rest. Every shot must still belong to this brief; never repeat anything already on the list.`;
 
+/** What the read is asked for: the top of the range, and never fewer than the bottom (§5.6). */
+export function shotTarget(c: Pick<ReadContext, "budget" | "planned">): { room: number; floor: number } {
+  return { room: Math.max(0, c.budget.max - c.planned), floor: Math.max(0, c.budget.min - c.planned) };
+}
+
+/** The follow-up when a read comes back short: the missing number, nothing repeated. */
+export function topUpPrompt(count: number, floor: number, room: number): string {
+  return [
+    `You returned ${count} shots, but this cut needs at least ${floor} and ideally ${room}.`,
+    `Return the same JSON with ${room - count} more shots in "shots" — new moments from the brief, or new coverage of the ones you planned (another angle, a detail, a way in or out). Don't repeat any shot above.`,
+    'Leave "quoted", "inferred", "deliverables" and "locations" empty; only "shots" is used.',
+  ].join("\n");
+}
+
+/** Adds a top-up's shots to the first read, skipping any it repeated. */
+export function mergeTopUp(first: ReadResult, more: ReadResult): ReadResult {
+  const seen = new Set([...first.shots, ...first.deliverables.flatMap((d) => d.shots)].map((s) => s.subject.trim().toLowerCase()));
+  const extra = more.shots.filter((s) => {
+    const k = s.subject.trim().toLowerCase();
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  return { ...first, shots: [...first.shots, ...extra] };
+}
+
 /** How the frame rate reads to the model — nothing when it's left to the camera. */
 function frameRateLine(fr?: number | "mixed"): string[] {
   if (fr === undefined || fr === "mixed") return [];
@@ -193,8 +219,7 @@ function frameRateLine(fr?: number | "mixed"): string[] {
 export function readPrompt(req: ReadRequest): string {
   const c = req.context;
   // Fill to the top of the range (§5.6); the bottom is the floor the read must reach (Rina, 23 Sep).
-  const room = Math.max(0, c.budget.max - c.planned);
-  const floor = Math.max(0, c.budget.min - c.planned);
+  const { room, floor } = shotTarget(c);
   return [
     `Project: ${c.format} (treatment: ${c.treatment}).`,
     `Budget: ${c.budget.min}–${c.budget.max} shots for the whole cut. ${c.planned} already planned. Return ${room} shots (deliverables included), and at least ${floor}.`,

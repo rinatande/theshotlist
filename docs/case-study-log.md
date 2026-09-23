@@ -396,6 +396,22 @@ On Rina's brief and settings, the read went from 26 (48 on a re-run of the old p
 
 **Why it's evidence.** The same principle needed opposite phrasing depending on who it was addressed to. That's a design-engineering problem specifically: the spec was right, and the prompt translated it wrongly. It was caught by the designer testing her own real use case against a number she knew — the budget she had set.
 
+### 2.27 Giving up the offline list — 23 Sep
+
+**What broke.** §3 and §5.6 promised that "a brief typed in a valley with no signal still produces a list", with keyword chips, templates and the brief's actions covered generically on the phone. It was built, tested and tuned: coverage that grew with the budget, gear shots that needed the brief's backing, and the library filling a short read. Rina then used it on her own briefs next to the online read and called the phone's lists "so out of context and pretty much unusable". A library fill of twelve shots under a short read was "too generic with no context". The offline promise was producing lists nobody would shoot from.
+
+**Options.**
+- Keep improving the offline engine: more templates, smarter matching.
+- Keep it as a labelled fallback.
+- Drop offline generation, and keep everything else offline.
+
+**Decision. [R]** Drop it. Rina's reasoning was about how the app is actually used: "Users can set up everything the day before and then on shoot day go offline mode if they need."
+- **Generating is the read only.** Offline or out of reads, the app says why and offers to add shots by hand.
+- **A short read** is backstopped by asking the read for the missing shots, never by the library.
+- **The engine code is deleted.** The template and chip data are kept, unused, for the read's examples later.
+
+**Why it's evidence.** It's the design's founding promise, dropped on evidence rather than defended out of loyalty to the spec. The promise was sound as an idea — shoots happen where there's no signal — but it bundled two things: *using* the list offline, which matters on the day, and *making* it offline, which happens the day before at a desk. Splitting them kept what mattered and removed what didn't work. It also shows the other side of 2.21 to 2.26: several rounds of making the offline engine better were worth less than one honest look at whether anyone would use its output.
+
 ---
 
 ## 3. Artifact inventory

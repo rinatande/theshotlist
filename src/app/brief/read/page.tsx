@@ -1,13 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { RequiredMark } from "@/components/Marks";
 import { NotHere } from "@/components/NotHere";
 import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
-import { projectBrief, saveRead, setDropped, setQuoted } from "@/lib/brief";
-import { matchChips } from "@/lib/chips";
+import { projectBrief, saveRead, setDropped } from "@/lib/brief";
 import { db } from "@/lib/db";
 import type { ReadFailure } from "@/lib/read";
 import { runRead } from "@/lib/readClient";
@@ -16,13 +16,14 @@ import { saveProject, useProject } from "@/lib/useProject";
 import styles from "../Brief.module.css";
 import read from "./Read.module.css";
 
-type State = { phase: "reading" } | { phase: "read"; cached: boolean; remaining: number } | { phase: "local"; failure: ReadFailure };
+type State = { phase: "reading" } | { phase: "read"; cached: boolean; remaining: number } | { phase: "failed"; failure: ReadFailure };
 
 /**
  * B9 What it read (§5.6). GENERATE lands here: with signal it reads the whole
  * brief once — or reuses the last read of the same brief, for free — and
  * shows what it took before anything is built. Offline, over a limit, or if
- * the read fails, it shows the on-phone match and says why.
+ * the read fails, it says why and offers to try again or add shots by hand —
+ * there's no phone-only list any more (Rina, 23 Sep).
  */
 function WhatItRead() {
   const { project } = useProject();
@@ -33,22 +34,23 @@ function WhatItRead() {
 
 function Review({ project }: { project: Project }) {
   const [state, setState] = useState<State>({ phase: "reading" });
-  const started = useRef(false);
+  const [attempt, setAttempt] = useState(0);
+  const started = useRef(-1);
 
-  // One read per visit, never two — React may run effects twice in development.
+  // One read per attempt, never two — React may run effects twice in development.
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
+    if (started.current === attempt) return;
+    started.current = attempt;
     (async () => {
       const outcome = await runRead(project);
-      if (!outcome.ok) return setState({ phase: "local", failure: outcome.failure });
+      if (!outcome.ok) return setState({ phase: "failed", failure: outcome.failure });
       if (!outcome.cached) {
         const latest = (await db.projects.get(project.id)) ?? project;
         await saveProject(saveRead(latest, { hash: outcome.hash, model: outcome.response.model, result: outcome.response.result }));
       }
       setState({ phase: "read", cached: outcome.cached, remaining: outcome.response.remaining });
     })();
-  }, [project]);
+  }, [project, attempt]);
 
   const back = { label: "← EDIT BRIEF", href: `/brief?id=${project.id}` };
 
@@ -61,7 +63,7 @@ function Review({ project }: { project: Project }) {
             Reading your brief…
           </p>
           <p className={ui.boxTextMuted}>
-            This takes about half a minute. It reads the whole thing once — not as you type — and nothing is built until you&apos;ve seen what it took.
+            Half a minute for a reel, up to a minute or so for a longer cut. It reads the whole thing once — not as you type — and nothing is built until you&apos;ve seen what it took.
           </p>
         </div>
       </div>
@@ -70,7 +72,17 @@ function Review({ project }: { project: Project }) {
 
   const brief = projectBrief(project);
   if (state.phase === "read" && brief?.read) return <FullRead project={project} state={state} back={back} />;
-  return <LocalRead project={project} failure={state.phase === "local" ? state.failure : { reason: "offline" }} back={back} />;
+  return (
+    <Failed
+      project={project}
+      failure={state.phase === "failed" ? state.failure : { reason: "error", message: "The read didn't come back." }}
+      back={back}
+      onRetry={() => {
+        setState({ phase: "reading" });
+        setAttempt((a) => a + 1);
+      }}
+    />
+  );
 }
 
 // ─── Full read (online) ───────────────────────────────────────────────────────
@@ -201,76 +213,40 @@ function Droppable({ label, off, filled, onToggle }: { label: string; off: boole
 
 // ─── On the phone (offline, over a limit, or the read failed) ────────────────
 
-const WHY: Record<ReadFailure["reason"], string> = {
-  offline: "No signal, so this is matched on the phone. Generate again with signal for the full read.",
-  limit: "",
-  declined: "",
-  busy: "",
-  error: "",
-  unconfigured: "",
-};
-
-function LocalRead({ project, failure, back }: { project: Project; failure: ReadFailure; back: { label: string; href: string } }) {
-  const router = useRouter();
-  const text = projectBrief(project)?.text ?? "";
-  const chips = matchChips(text);
-  const [dropped, setDroppedState] = useState<Set<string>>(() => {
-    const kept = projectBrief(project)?.extraction?.quoted.map((c) => c.label);
-    return new Set(kept ? chips.map((c) => c.label).filter((l) => !kept.includes(l)) : []);
-  });
-  const toggle = (label: string) =>
-    setDroppedState((d) => {
-      const next = new Set(d);
-      if (next.has(label)) next.delete(label);
-      else next.add(label);
-      return next;
-    });
-  const why = failure.reason === "offline" ? WHY.offline : failure.message;
+/**
+ * When the read can't happen. Nothing is built from the phone's own matching:
+ * it was too generic to use (Rina, 23 Sep). The brief is kept, nothing is
+ * charged, and shots can still be added by hand.
+ */
+function Failed({ project, failure, back, onRetry }: { project: Project; failure: ReadFailure; back: { label: string; href: string }; onRetry: () => void }) {
+  const offline = failure.reason === "offline";
+  const limit = failure.reason === "limit";
+  const why = offline ? "No signal. Generating reads your brief online, so it needs a connection." : failure.message;
 
   return (
     <div className={ui.screen}>
       <StepHeader label="What it read" back={back} />
 
       <div className={ui.body}>
-        <p className={read.lead}>
-          Here&apos;s what it matched in your brief. Drop anything wrong before it builds the list — a misread here becomes a wrong shot on the day.
-        </p>
-
-        <div className={styles.matched}>
-          <span className={ui.boxHeading}>FROM YOUR WORDS</span>
-          {chips.length > 0 ? (
-            <>
-              <ul className={styles.chips}>
-                {chips.map((c) => (
-                  <li key={c.label}>
-                    <Droppable label={c.label} off={dropped.has(c.label)} onToggle={() => toggle(c.label)} />
-                  </li>
-                ))}
-              </ul>
-              <p className={ui.hint}>Tap one to drop it. Dropped words don&apos;t steer the list.</p>
-            </>
-          ) : (
-            <p className={ui.boxTextMuted}>Nothing matched — the list will build from what the brief describes, and your format.</p>
-          )}
-        </div>
-
+        <p className={read.lead}>{offline ? "Couldn't read your brief without signal." : limit ? "No reads left for now." : "The read didn't work this time."}</p>
         <div className={ui.box}>
-          <span className={ui.boxHeading}>ON THIS PHONE</span>
+          <span className={ui.boxHeadingWarn}>{offline ? "NO SIGNAL" : limit ? "LIMIT" : "NOT READ"}</span>
           <p className={ui.boxText}>{why}</p>
         </div>
+        <p className={ui.boxTextMuted}>
+          Your brief is saved. Everything else works as usual — add shots by hand now, or generate again {offline ? "once you have signal" : limit ? "when reads come back" : "in a moment"}.
+        </p>
       </div>
 
       <div className={ui.footer}>
-        <button
-          type="button"
-          className={ui.primary}
-          onClick={async () => {
-            await saveProject(setQuoted(project, chips.filter((c) => !dropped.has(c.label))));
-            router.push(`/suggest?id=${project.id}&from=brief`);
-          }}
-        >
-          BUILD THE LIST
-        </button>
+        {!limit && (
+          <button type="button" className={ui.primary} onClick={onRetry}>
+            TRY AGAIN
+          </button>
+        )}
+        <Link href={`/shot/new?id=${project.id}`} className={limit ? ui.primary : ui.secondary}>
+          + ADD A SHOT BY HAND
+        </Link>
       </div>
     </div>
   );

@@ -1,8 +1,6 @@
 import starterKits from "@/data/starterKits.json";
-import templates from "@/data/templates.json";
 import { capabilities } from "./capabilities";
-import { capitalise, inWords } from "./words";
-import type { Capability, FilterType, GearCategory, GearItem, GearSpecs, Id, Kit, Project, TemplateShot } from "./types";
+import type { Capability, FilterType, GearCategory, GearItem, GearSpecs, Id, Kit, Project } from "./types";
 
 /**
  * Gear (design.md §6) as pure functions: labels, what an item unlocks,
@@ -106,7 +104,6 @@ const WHAT: Record<Capability, string> = {
   polariser: "Through water and glass without the reflection, and a deeper sky.",
 };
 
-const ALL = templates as TemplateShot[];
 
 /**
  * G2's UNLOCKS block: what adding this item does to your suggestions — the
@@ -121,8 +118,8 @@ export function unlocksLine(specs: GearSpecs, library: GearItem[] = []): string 
   const fresh = mine.filter((c) => !have.has(c));
   const lead = mine.map((c) => WHAT[c])[0];
   if (fresh.length === 0) return `${lead} Your gear already covers that, so suggestions won't change.`;
-  const opened = ALL.filter((t) => t.requires.some((r) => fresh.includes(r)) && t.requires.every((r) => have.has(r) || mine.includes(r))).length;
-  return `${lead} ${opened === 0 ? "Suggestions will name it where it earns a shot." : `${opened === 1 ? "One more suggestion" : `${capitalise(inWords(opened))} more suggestions`} will start appearing.`}`;
+  // Suggestions come from the read, which is told what's coming and names it where it earns a shot.
+  return `${lead} The read plans shots around it, and names it where it earns one.`;
 }
 
 
@@ -204,35 +201,6 @@ export function specsComplete(specs: GearSpecs): boolean {
     default:
       return true;
   }
-}
-
-const NEED: Record<Capability, string> = {
-  tripod: "a tripod",
-  tele: "a longer lens",
-  wide: "a wider lens",
-  fast: "a faster lens",
-  macro: "a macro lens",
-  gimbal: "a gimbal",
-  slider: "a slider",
-  drone: "a drone",
-  mic: "a mic",
-  lav: "a lav",
-  slowmo: "a camera that shoots slow motion",
-  light: "a light",
-  power: "a power bank",
-  nd: "an ND filter",
-  polariser: "a polariser",
-};
-
-/**
- * The count of withheld suggestions, without listing them (§6.2): "Four more
- * that need a tripod or a longer lens. Add gear to this shoot and they appear."
- */
-export function needsLine(count: number, needs: Capability[]): string | undefined {
-  if (count === 0) return undefined;
-  const what = needs.slice(0, 2).map((c) => NEED[c]);
-  const phrase = what.length === 2 ? `${what[0]} or ${what[1]}` : (what[0] ?? "more gear");
-  return `${capitalise(inWords(count))} more that ${count === 1 ? "needs" : "need"} ${phrase}. Add gear to this shoot and ${count === 1 ? "it appears" : "they appear"}.`;
 }
 
 /** S4's lens chips: every lens the shoot is bringing, including a camera's own — "18—50", "85", "15 MACRO". */

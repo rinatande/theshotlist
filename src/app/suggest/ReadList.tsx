@@ -7,10 +7,7 @@ import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { projectBudget } from "@/lib/budget";
 import { db } from "@/lib/db";
-import { addSuggestions, suggest, type Suggestion } from "@/lib/engine";
 import { budgetLabel } from "@/lib/labels";
-import { projectBrief } from "@/lib/brief";
-import { matchChips } from "@/lib/chips";
 import { currentRead } from "@/lib/readClient";
 import { addReadPicks, clearUnshot, readPicks, type ReadPick } from "@/lib/readShots";
 import type { Project } from "@/lib/types";
@@ -20,9 +17,9 @@ import styles from "./Suggest.module.css";
 
 /**
  * B2 after an online read, and B10 when a list already exists (§5.6):
- * required shots under their client, then the read's shots, then the
- * template library, collapsed. Nothing lands until it's added; replacing is
- * never the default and says exactly what it clears.
+ * required shots under their client, then the read's shots — nothing from a
+ * template library (Rina, 23 Sep). Nothing lands until it's added; replacing
+ * is never the default and says exactly what it clears.
  */
 export function ReadList({ project }: { project: Project }) {
   const router = useRouter();
@@ -32,29 +29,15 @@ export function ReadList({ project }: { project: Project }) {
   // Worked out once, so adding one doesn't reshuffle the rest.
   const [start] = useState(() => project);
   const { required, shots } = useMemo(() => readPicks(start, read), [start, read]);
-  // A read that comes back short of the budget's minimum is filled from the library,
-  // matched to the brief, so the list is never half of what the cut needs (Rina, 23 Sep).
-  const [fill] = useState(() => {
-    const offered = required.reduce((n, r) => n + r.picks.filter((p) => !p.alreadyOn).length, 0) + shots.length;
-    const planned = start.shots.filter((s) => s.status !== "dropped").length;
-    return Math.max(0, projectBudget(start).min - planned - offered);
-  });
-  const [library] = useState(() => {
-    const text = projectBrief(start)?.text ?? "";
-    return suggest(start, { brief: text, chips: matchChips(text), coverage: false, limit: Math.max(12, fill) }).suggestions;
-  });
   const [added, setAdded] = useState<Set<string>>(new Set());
-  const [showLibrary, setShowLibrary] = useState(fill > 0);
 
   const live = start.shots.filter((s) => s.status !== "dropped");
   const exposed = live.filter((s) => s.status === "exposed").length;
   const existing = live.length > 0; // B10: there's a list already
   const allPicks = [...required.flatMap((r) => r.picks.filter((p) => !p.alreadyOn)), ...shots];
   const pendingRead = allPicks.filter((p) => !added.has(p.id));
-  const fillPicks = library.slice(0, fill);
-  const pendingFill = fillPicks.filter((s) => !added.has(s.templateId));
-  const pendingCount = pendingRead.length + pendingFill.length;
-  const offeredCount = allPicks.length + fillPicks.length;
+  const pendingCount = pendingRead.length;
+  const offeredCount = allPicks.length;
   const b = projectBudget(project);
   const planned = project.shots.filter((s) => s.status !== "dropped").length;
   const locationName = new Map(project.locations.map((l) => [l.id, l.name]));
@@ -65,12 +48,6 @@ export function ReadList({ project }: { project: Project }) {
     await saveProject(addReadPicks(latest, picks));
     setAdded((a) => new Set([...a, ...picks.map((p) => p.id)]));
   };
-  const addLibrary = async (picks: Suggestion[]) => {
-    const latest = (await db.projects.get(project.id)) ?? project;
-    await saveProject(addSuggestions(latest, picks, "template"));
-    setAdded((a) => new Set([...a, ...picks.map((p) => p.templateId)]));
-  };
-
   const where = (locationId?: string, dayId?: string, newLocation?: string) =>
     `${project.days.length > 1 && dayId ? `DAY ${dayIndex(dayId)} · ` : ""}${
       newLocation ? `${newLocation.toUpperCase()} · NEW` : locationId ? (locationName.get(locationId) ?? "").toUpperCase() : "UNPLACED"
@@ -152,27 +129,6 @@ export function ReadList({ project }: { project: Project }) {
 
         {allPicks.length === 0 && <p className={styles.note}>Everything this read suggested is already on your list.</p>}
 
-        {library.length > 0 &&
-          (showLibrary ? (
-            <section aria-labelledby="library">
-              <h2 id="library" className={styles.band}>
-                <span>{fill > 0 ? "TO REACH THE BUDGET" : "ALSO FROM THE LIBRARY"}</span>
-                <span>{String(library.length).padStart(2, "0")}</span>
-              </h2>
-              {fill > 0 && (
-                <p className={styles.note}>
-                  The read gave {allPicks.length}; a cut this length needs at least {b.min}. The first {fill} below, matched to your brief, are added with the rest.
-                </p>
-              )}
-              <ul className={styles.rows}>
-                {library.map((s) => row(s.templateId, s.size, s.subject, s.reason, where(s.locationId, s.dayId), () => addLibrary([s])))}
-              </ul>
-            </section>
-          ) : (
-            <button type="button" className={styles.more} onClick={() => setShowLibrary(true)}>
-              + {library.length} MORE FROM THE LIBRARY
-            </button>
-          ))}
       </div>
 
       <div className={ui.footer}>
@@ -196,7 +152,6 @@ export function ReadList({ project }: { project: Project }) {
               className={ui.primary}
               onClick={async () => {
                 await addPicks(pendingRead);
-                if (pendingFill.length) await addLibrary(pendingFill);
                 router.replace(list);
               }}
             >
@@ -208,7 +163,7 @@ export function ReadList({ project }: { project: Project }) {
                 className={ui.secondary}
                 onClick={async () => {
                   const latest = (await db.projects.get(project.id)) ?? project;
-                  await saveProject(addSuggestions(addReadPicks(clearUnshot(latest), pendingRead), pendingFill, "template"));
+                  await saveProject(addReadPicks(clearUnshot(latest), pendingRead));
                   router.replace(list);
                 }}
               >
