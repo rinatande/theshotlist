@@ -354,6 +354,13 @@ function StepTwo({ mode, draft, onDraft, dayChange, onBack, onSubmit }: Props) {
             <p className={ui.boxText}>{dayChangeText(dayChange)}</p>
           </div>
         )}
+        {mode === "new" && (
+          // P2's kit line, left out in v0 until gear existed. The kit is picked on the GEAR tab.
+          <div className={ui.box}>
+            <span className={ui.boxHeading}>NEXT</span>
+            <p className={ui.boxTextMuted}>Pick a gear kit, and the app will suggest shots that fit both this format and what you packed.</p>
+          </div>
+        )}
         <button type="button" className={ui.primary} onClick={onSubmit}>
           {mode === "new" ? "CREATE PROJECT" : "SAVE"}
         </button>

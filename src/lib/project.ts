@@ -49,7 +49,7 @@ export function createProject(
     dayCount: Math.max(1, input.dayCount),
     where: input.where?.trim() || undefined,
     cast: defaultCast(),
-    gearIds: [],
+    gear: [],
     packedIds: [],
     days: makeDays(input.dayCount, input.startDate, newId),
     locations: [],

@@ -95,7 +95,9 @@ export interface Cast {
 export type GearCategory = 'camera' | 'lens' | 'support' | 'light' | 'audio' | 'power' | 'grip' | 'drone';
 
 export type GearSpecs =
-  | { category: 'camera'; mount?: string; stabilised?: boolean; batteries?: number; cardSlots?: number; lowLightIso?: number; maxFps?: number }
+  | { category: 'camera'; mount?: string; stabilised?: boolean; batteries?: number; cardSlots?: number; lowLightIso?: number; maxFps?: number;
+      /** A phone or compact: the lens it can't take off, counted as a lens (v1, Rina 23 Sep). */
+      builtInLens?: { focalMin: number; focalMax: number; maxAperture: number; macro?: boolean } }
   | { category: 'lens'; focalMin: number; focalMax: number; maxAperture: number; macro?: boolean; stabilised?: boolean; mount?: string }
   | { category: 'support'; type: 'tripod' | 'gimbal' | 'slider' | 'monopod'; maxLoadKg?: number; maxHeightCm?: number; fluidHead?: boolean }
   | { category: 'light'; outputW?: number; colour?: 'daylight' | 'bi' | 'rgb'; battery?: boolean }
@@ -295,8 +297,13 @@ export interface Project {
   cast: Cast;
 
   kitId?: Id;             // the kit it started from — kept, to show "Doc day +2"
-  gearIds: Id[];          // the set edited for this shoot
-  packedIds: Id[];        // subset ticked as in the bag
+  /**
+   * What's coming on this shoot: copies of library items, keeping their ids.
+   * A snapshot, not a pointer — selling a lens never rewrites last year's
+   * list (§8 Gear screens). Suggestions use all of it (Rina, 23 Sep).
+   */
+  gear: GearItem[];
+  packedIds: Id[];        // IN THE BAG: the packing checklist, nothing more
 
   days: Day[];            // length === dayCount
   locations: Location[];

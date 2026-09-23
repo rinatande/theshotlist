@@ -1,0 +1,263 @@
+/* Gear screens (§6.3): bands and rows in the shot list's grammar. */
+
+.band {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 7px var(--gutter);
+  background: var(--band);
+  color: var(--ink-faint);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.linkRow,
+.checkRow {
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 12px var(--gutter);
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--text-15);
+  overflow-wrap: anywhere;
+}
+
+.nameDone {
+  font-size: var(--text-15);
+  color: var(--ink-muted);
+  text-decoration: line-through;
+  overflow-wrap: anywhere;
+}
+
+.spec,
+.line {
+  flex-shrink: 0;
+  font-size: var(--text-11);
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.line {
+  flex-shrink: 1;
+}
+
+.lineAccent {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.kitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  min-height: 56px;
+  padding: 12px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.kitName {
+  font-size: var(--text-15);
+  font-weight: 500;
+}
+
+.kitCount {
+  flex-shrink: 0;
+  font-size: var(--text-13);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.addRow {
+  display: flex;
+  align-items: center;
+  min-height: var(--target);
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  color: var(--accent);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}
+
+.header {
+  padding: calc(var(--s-5) + env(safe-area-inset-top)) var(--gutter) var(--s-4);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ---- E6: nothing in the bag yet ------------------------------------------ */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--gutter) var(--s-6);
+}
+
+.emptyLead {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.emptyText {
+  margin: 0;
+  font-size: var(--text-15);
+  line-height: 1.55;
+}
+
+.starters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.starter {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 64px;
+  padding: 14px 0;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.starterText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.starterName {
+  font-size: var(--text-15);
+  font-weight: 700;
+}
+
+.starterLine {
+  font-size: var(--text-13);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.chevron {
+  color: var(--accent);
+  font-size: var(--text-20);
+}
+
+.or {
+  margin: 0;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+/* ---- G4: the Gear tab --------------------------------------------------- */
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: 14px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.summaryText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kitHead {
+  font-size: var(--text-15);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.diff {
+  color: var(--accent);
+}
+
+.edit {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  color: var(--accent);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}
+
+.note {
+  margin: 0;
+  padding: var(--s-4) var(--gutter);
+  font-size: var(--text-13);
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+/* SAVE AS NEW KIT beside DONE (G3). */
+.footerRow {
+  display: flex;
+  gap: 10px;
+}
+
+.footerRow > button {
+  flex: 1 1 0;
+}

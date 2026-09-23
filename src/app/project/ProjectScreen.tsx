@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ProjectActions } from "@/components/ProjectActions";
 import { ProjectHeader, type Tab } from "@/components/ProjectHeader";
 import { MoveSheet } from "@/components/MoveSheet";
+import { GearTab } from "@/components/GearTab";
 import { ShotList, type Selection } from "@/components/ShotList";
 import ui from "@/components/ui.module.css";
 import { db } from "@/lib/db";
@@ -16,16 +17,14 @@ import type { Id } from "@/lib/types";
 import { useProject } from "@/lib/useProject";
 import styles from "./Project.module.css";
 
-const COMING: Record<Exclude<Tab, "shots">, string> = {
-  look: "The look board is coming. It's where references for this shoot will live.",
-  gear: "Gear is coming. Until then, shots are planned without it — lens is typed, support is picked.",
-};
+const LOOK_COMING = "The look board is coming. It's where references for this shoot will live.";
 
-/** A project behind its header and tabs (§7). SHOTS is the shot list; LOOK and GEAR are stubs. */
+/** A project behind its header and tabs (§7). SHOTS is the shot list, GEAR the gear tab; LOOK is a stub. */
 export function ProjectScreen() {
   const router = useRouter();
-  const { id, project } = useProject();
-  const [tab, setTab] = useState<Tab>("shots");
+  const { id, project, params } = useProject();
+  // ?tab=gear brings you back to the tab you left from (the gear screens use it).
+  const [tab, setTab] = useState<Tab>(() => (params.get("tab") === "gear" ? "gear" : "shots"));
   const [actions, setActions] = useState(false);
   const [picked, setPicked] = useState<Set<Id> | null>(null);
   const [moving, setMoving] = useState(false);
@@ -83,9 +82,11 @@ export function ProjectScreen() {
             </div>
           )}
         </>
+      ) : tab === "gear" ? (
+        <GearTab project={project} />
       ) : (
         <div className={ui.body}>
-          <p className={styles.coming}>{COMING[tab]}</p>
+          <p className={styles.coming}>{LOOK_COMING}</p>
         </div>
       )}
 

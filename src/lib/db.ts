@@ -21,6 +21,22 @@ export class ShotListDB extends Dexie {
       gear: "id, specs.category",
       kits: "id",
     });
+    // v1 gear: a project keeps copies of its gear, not ids into the library.
+    this.version(2)
+      .stores({
+        projects: "id, updatedAt, createdAt, startDate",
+        gear: "id, specs.category",
+        kits: "id",
+      })
+      .upgrade((tx) =>
+        tx
+          .table("projects")
+          .toCollection()
+          .modify((p: Project & { gearIds?: string[] }) => {
+            p.gear = p.gear ?? [];
+            delete p.gearIds;
+          }),
+      );
   }
 }
 

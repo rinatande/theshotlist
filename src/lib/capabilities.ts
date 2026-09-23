@@ -20,12 +20,11 @@ export function capabilities(packed: GearItem[]): Set<Capability> {
     switch (specs.category) {
       case "camera":
         if ((specs.maxFps ?? 0) >= THRESHOLDS.slowmoMinFps) caps.add("slowmo");
+        // A phone or compact's lens counts like any other lens.
+        if (specs.builtInLens) lensCaps(specs.builtInLens, caps);
         break;
       case "lens":
-        if (specs.focalMin <= THRESHOLDS.wideMaxFocal) caps.add("wide");
-        if (specs.focalMax >= THRESHOLDS.teleMinFocal) caps.add("tele");
-        if (specs.maxAperture <= THRESHOLDS.fastMaxAperture) caps.add("fast");
-        if (specs.macro) caps.add("macro");
+        lensCaps(specs, caps);
         break;
       case "support":
         if (specs.type === "tripod" || specs.type === "gimbal" || specs.type === "slider") caps.add(specs.type);
@@ -48,4 +47,11 @@ export function capabilities(packed: GearItem[]): Set<Capability> {
     }
   }
   return caps;
+}
+
+function lensCaps(lens: { focalMin: number; focalMax: number; maxAperture: number; macro?: boolean }, caps: Set<Capability>): void {
+  if (lens.focalMin <= THRESHOLDS.wideMaxFocal) caps.add("wide");
+  if (lens.focalMax >= THRESHOLDS.teleMinFocal) caps.add("tele");
+  if (lens.maxAperture <= THRESHOLDS.fastMaxAperture) caps.add("fast");
+  if (lens.macro) caps.add("macro");
 }

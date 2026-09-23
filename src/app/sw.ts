@@ -17,7 +17,7 @@ const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   // Pages take their subject from the query (/project?id=…), so one precached
   // page serves every project offline.
-  precacheOptions: { ignoreURLParametersMatching: [/^(id|step|shot|loc|day|beat|view|from)$/] },
+  precacheOptions: { ignoreURLParametersMatching: [/^(id|step|shot|loc|day|beat|view|from|item|kit|cat|back|tab|invite)$/] },
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,

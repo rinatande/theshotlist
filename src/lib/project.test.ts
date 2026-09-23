@@ -26,7 +26,7 @@ describe("createProject", () => {
     const p = createProject({ format: REEL_SILENT, dayCount: 1 }, now, ids);
     expect(p.cast.lead).toBe("me");
     expect(p.cast.leadMember?.presence).toBe("part");
-    expect([p.shots, p.locations, p.briefs, p.gearIds]).toEqual([[], [], [], []]);
+    expect([p.shots, p.locations, p.briefs, p.gear]).toEqual([[], [], [], []]);
   });
 });
 

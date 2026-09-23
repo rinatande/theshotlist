@@ -588,6 +588,13 @@ Project
 
 Two things matter in that shape. **Specs, not just names** — "Sony 85 f/1.8" tells the app nothing; `focal 85, f1.8` lets it know you can get a compressed CU and shoot past dusk. And **`kitId` is kept after editing**, so the project can say "Doc day +2" and offer to save the variant as a new kit rather than silently drifting.
 
+**As built (v1, Rina's go, 23 Sep):**
+- **A project keeps copies, not ids.** `Project.gear` holds copies of library items, keeping their ids. Deleting or selling a lens changes the library and its kits, never a project's list (§8 Gear screens).
+- **Suggestions use everything you're bringing.** `packedIds` is only the IN THE BAG checklist. The model above made `packed[]` the engine's input, but then nothing would fit your bag until you'd packed it. See case-study-log 2.24.
+- **A camera can have a built-in lens.** A phone or compact records one, and it counts like any other lens.
+- **Categories:** `DRONE` is a category; `GRIP` isn't offered, because it unlocks nothing.
+- **Starter kits** (E6: Pocket, One camera one lens, Full kit) live in `src/data/starterKits.json` as generic items with typical specs. Picking one makes them your own items and kit, to rename. Like the templates, they're drafts for Rina to edit.
+
 ### 6.2 The suggestion engine
 
 Every suggestion is a template shot with declared requirements:
@@ -623,6 +630,13 @@ A count of withheld suggestions is shown, without listing them: *"Four more that
 **Gear appears in two contexts, and the empty state has to exist in both.** Reached from Projects it's the standalone library, with its own `My gear · 0` header. Reached from inside a project it's the third tab, and then it keeps the project header and the `SHOTS / LOOK / GEAR` bar — you are still in Kyoto Morning, and losing that chrome would read as having navigated away. Same content either way; only the frame differs. Both are drawn.
 
 The project-tab version is the more common route to an empty library, because most people meet gear for the first time while setting up a shoot rather than by going looking for a settings screen.
+
+**As built, where the boards are silent:**
+- **The kit screen.** G1's kit rows open a screen with a name and items ticked from the library, by category, with `DELETE KIT`. It's not drawn.
+- **Adding gear mid-shoot.** From *Gear for this shoot*, `+ ADD GEAR TO MY LIBRARY` saves the item and brings it on this shoot too.
+- **A project with gear in the library but none chosen** shows *"No gear chosen for this shoot"* and `CHOOSE GEAR`.
+- **Deleting an item** says projects keep their own copy.
+- **G2's `UNLOCKS`** is worked out from the capability thresholds. It names what the item makes possible, then how many more suggestions it opens beyond gear you already have.
 
 Two suggestion boards are on the canvas deliberately, because the contrast is the argument: the same screen with a pocket kit at a café and with the full rig at a campsite produces almost no overlapping shots.
 

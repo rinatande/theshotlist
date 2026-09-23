@@ -1,0 +1,41 @@
+[
+  {
+    "id": "pocket",
+    "name": "Pocket",
+    "line": "A phone or compact, a mic, a battery. Three items.",
+    "items": [
+      { "name": "Phone", "specs": { "category": "camera", "stabilised": true, "maxFps": 240, "builtInLens": { "focalMin": 13, "focalMax": 77, "maxAperture": 1.8 } } },
+      { "name": "Clip-on mic", "specs": { "category": "audio", "type": "lav", "channels": 1 } },
+      { "name": "Power bank", "specs": { "category": "power", "capacityMah": 10000 } }
+    ]
+  },
+  {
+    "id": "one-camera",
+    "name": "One camera, one lens",
+    "line": "A body, a zoom, a tripod, a mic. Where most people actually are.",
+    "items": [
+      { "name": "Camera body", "specs": { "category": "camera", "stabilised": true, "batteries": 2, "cardSlots": 1, "maxFps": 120 } },
+      { "name": "24—70 f/2.8 zoom", "specs": { "category": "lens", "focalMin": 24, "focalMax": 70, "maxAperture": 2.8 } },
+      { "name": "Travel tripod", "specs": { "category": "support", "type": "tripod", "maxLoadKg": 4, "maxHeightCm": 150 } },
+      { "name": "On-camera mic", "specs": { "category": "audio", "type": "shotgun", "windshield": true } }
+    ]
+  },
+  {
+    "id": "full",
+    "name": "Full kit",
+    "line": "Body, three lenses, tripod, gimbal, lights, audio, power.",
+    "items": [
+      { "name": "Camera body", "specs": { "category": "camera", "stabilised": true, "batteries": 4, "cardSlots": 2, "maxFps": 120 } },
+      { "name": "16—35 f/4 zoom", "specs": { "category": "lens", "focalMin": 16, "focalMax": 35, "maxAperture": 4 } },
+      { "name": "24—70 f/2.8 zoom", "specs": { "category": "lens", "focalMin": 24, "focalMax": 70, "maxAperture": 2.8 } },
+      { "name": "85 f/1.8", "specs": { "category": "lens", "focalMin": 85, "focalMax": 85, "maxAperture": 1.8 } },
+      { "name": "Tripod", "specs": { "category": "support", "type": "tripod", "maxLoadKg": 6, "maxHeightCm": 160, "fluidHead": true } },
+      { "name": "Gimbal", "specs": { "category": "support", "type": "gimbal", "maxLoadKg": 2 } },
+      { "name": "LED panel", "specs": { "category": "light", "outputW": 60, "colour": "bi", "battery": true } },
+      { "name": "Pocket RGB light", "specs": { "category": "light", "outputW": 10, "colour": "rgb", "battery": true } },
+      { "name": "Shotgun mic", "specs": { "category": "audio", "type": "shotgun", "windshield": true } },
+      { "name": "Wireless lavs", "specs": { "category": "audio", "type": "lav", "channels": 2 } },
+      { "name": "Power bank", "specs": { "category": "power", "capacityMah": 20000 } }
+    ]
+  }
+]

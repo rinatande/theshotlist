@@ -345,6 +345,19 @@ Rina's rule: "Code is what's real; the canvas records where the design ended up.
 
 *Artifacts:* `docs/boards/`, 24 updated and 6 new (`SL1`, `SL2`, `WD1`, `N4b`, `W4`, `B1b`); build-journal, 23 Sep.
 
+### 2.24 Packed means what's coming, not what's in the bag — 23 Sep
+
+**What broke.** §6.1 made `packed[]` both the engine's input and, on G4, the packing checklist: `IN THE BAG · 5 / 7`, ticked as items go in. The two jobs happen at different times. You plan a shot list days before a shoot and pack the morning of it. With one list doing both, every suggestion made while planning would be gear-free, because nothing is packed yet. And ticking the bag would quietly change the suggestions.
+
+**Options.**
+- Keep one list and accept gear-free planning.
+- Suggest from the packed items once anything is ticked, and from everything before that.
+- Split the jobs: suggestions from what the shoot is *bringing* (G3's bands), and IN THE BAG as a checklist only.
+
+**Decision. [R]** Split them. `Project.gear` is what's coming, as copies of library items: a snapshot, so selling a lens never rewrites an old list. `packedIds` is only the checklist.
+
+**Why it's evidence.** The model read cleanly on paper, and the clash only showed when the build had to decide what the engine reads *at the moment you plan*. The fix keeps both boards exactly as drawn and changes only what each one is for. It also keeps the §6 principle that gear generates and never polices: a checklist that changed your suggestions would have been gear policing through the back door.
+
 ---
 
 ## 3. Artifact inventory

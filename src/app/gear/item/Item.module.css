@@ -1,0 +1,40 @@
+.specs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.two,
+.three {
+  display: grid;
+  gap: 10px;
+}
+
+.two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.delete {
+  align-self: flex-start;
+  min-height: var(--target);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--warn);
+  font: inherit;
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--gutter) calc(var(--s-5) + env(safe-area-inset-bottom));
+}

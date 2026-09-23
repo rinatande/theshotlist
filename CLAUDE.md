@@ -64,6 +64,17 @@ Work in order. Each one ends with something that runs, a commit, and a short not
 - **Limits (design.md §5.6):** a $2/day ceiling for the whole app, 5 reads/day per phone, 15 per network address, and invite links for 25 reads over 14 days. Rina also sets a spend limit in the Anthropic console. Counters live in Upstash Redis; production refuses reads if no store is configured.
 - **Environment variables (Vercel):** `ANTHROPIC_API_KEY`; Upstash's `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL` / `_TOKEN`); `INVITES` as a comma list of codes; optional overrides `READ_DAILY_BUDGET_USD`, `READ_PER_DEVICE_DAILY`, `READ_PER_ADDRESS_DAILY`, `INVITE_READS`, `INVITE_DAYS`.
 
+## v1 — gear (started 23 Sep)
+
+Gear leaves the stubs (design.md §6). **Stage 1:** E6 in both contexts, G1 My gear, G2 add and edit gear, a kit screen, G3 gear for this shoot, G4 the Gear tab, and P2's kit line. **Stage 2:** gear feeds every suggestion screen (G5/G6 from the Gear tab, the brief, the format, and the online read), S4 lens and support chips from the shoot's gear, more gear-aware template drafts, and add-only suggestions when gear changes (§10 item 19).
+
+Rina's decisions:
+- A project keeps copies of its gear.
+- Suggestions use everything you're bringing, and IN THE BAG is only a checklist.
+- Cameras can have a built-in lens.
+- DRONE is a category; GRIP isn't offered.
+- The read is sent what you're bringing, and a gear change counts as a new read.
+
 ## Rules that must not break
 
 Each of these was a real defect or a deliberate decision. The spec section says why.

@@ -23,7 +23,7 @@ export function project(extra: Partial<Project> = {}): Project {
     format: REEL_SILENT,
     dayCount: 1,
     cast: { lead: "me", supporting: [], operatorPresence: "part" },
-    gearIds: [],
+    gear: [],
     packedIds: [],
     days: [],
     locations: [],
