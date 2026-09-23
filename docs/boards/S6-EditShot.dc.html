@@ -22,7 +22,7 @@ input, select, textarea { font-family: 'JetBrains Mono', ui-monospace, monospace
     <h1 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;">Edit shot · 03</h1>
   </div>
 
-  <div style="flex-grow: 1; overflow: hidden; padding: 18px 20px 0 20px; display: flex; flex-direction: column; gap: 17px;">
+  <div style="flex-grow: 1; overflow: hidden; padding: 16px 20px 0 20px; display: flex; flex-direction: column; gap: 14px;">
 
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <label for="size" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">SHOT SIZE</label>
@@ -59,6 +59,30 @@ input, select, textarea { font-family: 'JetBrains Mono', ui-monospace, monospace
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span id="move" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">MOVEMENT</span>
+      <div role="group" aria-labelledby="move" style="display: flex; gap: 6px; overflow: hidden; white-space: nowrap;">
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px; flex-shrink: 0;">STATIC</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px; flex-shrink: 0;">SLOW PAN</span>
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #1C1714; color: #F2EBDD; padding: 9px 11px; flex-shrink: 0;">SLOW PUSH IN</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px; flex-shrink: 0;">PULL BACK</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px; flex-shrink: 0;">TRACKING</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px; flex-shrink: 0;">FOLLOW</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px; flex-shrink: 0;">HANDHELD</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px; flex-shrink: 0;">REVEAL</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span id="sound" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">SOUND</span>
+      <div role="group" aria-labelledby="sound" style="display: flex; gap: 6px; overflow: hidden; white-space: nowrap;">
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px; flex-shrink: 0;">SPEECH</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 11px; flex-shrink: 0;">NATURAL SOUND</span>
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #1C1714; color: #F2EBDD; padding: 9px 11px; flex-shrink: 0;">NO SOUND</span>
+      </div>
+      <span style="font-size: 11px; line-height: 1.5; color: #6B5F52;">Music or voice-over goes over it.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
       <label for="loc" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">LOCATION</label>
       <div id="loc" style="display: flex; gap: 8px;">
         <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #F2EBDD; background: #A83B2A; padding: 9px 12px;">CLIFF PATH</span>
@@ -69,17 +93,6 @@ input, select, textarea { font-family: 'JetBrains Mono', ui-monospace, monospace
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <label for="note" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">NOTE</label>
       <textarea id="note" rows="3" style="box-sizing: border-box; width: 100%; padding: 10px 12px; font-size: 15px; line-height: 1.5; color: #1C1714; background: #FBF6EA; border: 1px solid #D8CDB8; border-radius: 0; resize: none;">Wait for the rope to take load. Three takes, one with hands leaving frame.</textarea>
-    </div>
-
-    <div style="border: 1px solid #D8CDB8; display: flex; flex-direction: column;">
-      <button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 3px; width: 100%; box-sizing: border-box; text-align: left; padding: 12px 14px; border: none; border-bottom: 1px solid #D8CDB8; background: transparent; cursor: pointer; font-family: inherit; color: #1C1714;">
-        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em;">DUPLICATE</span>
-        <span style="font-size: 11px; line-height: 1.45; color: #6B5F52;">Same spec, next number. For a second take, or the same insert somewhere else.</span>
-      </button>
-      <button type="button" style="display: flex; flex-direction: column; align-items: flex-start; gap: 3px; width: 100%; box-sizing: border-box; text-align: left; padding: 12px 14px; border: none; background: transparent; cursor: pointer; font-family: inherit; color: #8F4F0C;">
-        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em;">DELETE</span>
-        <span style="font-size: 11px; line-height: 1.45; color: #6B5F52;">Shots below move up — 04 becomes 03. Anything already exposed keeps its mark.</span>
-      </button>
     </div>
 
   </div>

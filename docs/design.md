@@ -515,7 +515,7 @@ Unshot shots never evaporate. A planning tool that silently discards what you di
   - `DROPPED`, each with `UN-DROP`, and `MOVE ›` to a later day
   - `EXPOSED`
 
-  The record isn't drawn; the boards should add it.
+  Drawn on the canvas as `WD1` (23 Sep).
 - **The middle-day sentence** follows W1 when the rest of the list covers the cut (*"…There's nothing you have to chase tomorrow."*). It says so plainly when it won't: *"Even with the rest of the list it's nine short — worth adding a few for tomorrow."*
 
 ### 5.13 Editing a shot
@@ -788,10 +788,10 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 20. **Place chips from capital letters will misfire.** The offline rule in §5.6 turns any capitalised mid-sentence word into a place chip, so brand and people's names come through as places. Cheap to dismiss, but worth watching how often it happens.
 21. **Place names leave the device for the sun-times lookup** (§5.10). It's one short request per name, with no brief text, but it is a network call the rest of the offline path doesn't make, and the privacy note should say so the first time.
 22. **Four glyphs the boards use aren't in the font we can get — resolved.** See Appendix B: upstream JetBrains Mono self-hosted, ★ drawn. Original note: Google's build of JetBrains Mono has no `✓` (U+2713), `★` (U+2605) or `⋯` (U+22EF) at all, and serves `←` (U+2190) in no subset. All four are drawn by a system fallback font today — including the `[✓]` and `[★]` status marks, the most-seen glyphs in the app. Options: self-host upstream JetBrains Mono if it has them (needs a subsetting step), or draw these four as inline SVG sized to the mono cell. Found by the M0 proof page's glyph check.
-23. **No way to move shots in bulk — resolved, not drawn.** Generating before any location exists is the common case, and every shot landed in `UNPLACED`; placing them meant editing each one (Rina, 40 shots, 22 Sep). Now:
+23. **No way to move shots in bulk — resolved.** Generating before any location exists is the common case, and every shot landed in `UNPLACED`; placing them meant editing each one (Rina, 40 shots, 22 Sep). Now:
     - **Select and move.** `SELECT` sits on the `UNPLACED` band and on every location band that has shots. It turns every row into a tick box, with a bulk `ALL N` row under each band, the same pattern as wrap's bulk row (§5.12). The footer becomes `MOVE N TO…` and `CANCEL`. `MOVE N TO…` opens a sheet listing each location (by day on a multi-day shoot) and each day's `UNPLACED`, leaving out anywhere every picked shot already is. It also has **OR A NEW LOCATION**: a name, and a day on a multi-day shoot. Moved shots keep their list order and go after what's already there, and numbers follow. Switching to the beat view cancels a selection.
     - **The read suggests locations.** With no locations on the project, the read (§5.6) names the places the shoot happens in and puts each shot in one. B2 shows it as `KITCHEN · NEW` and says so in a line above the list. Adding a shot creates its location once. Offline matching doesn't do this.
-    - The boards should draw select mode on S2 and the move sheet.
+    - Drawn on the canvas as `SL1` (select mode) and `SL2` (the move sheet), 23 Sep.
 
 ---
 

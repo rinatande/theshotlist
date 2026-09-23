@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Move shots</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<style>
+body { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; background: #F2EBDD; }
+a { color: #A83B2A; } a:hover { color: #8A2E20; }
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; color: #1C1714; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column;">
+
+  <div style="padding: 20px 20px 12px 20px; border-bottom: 1px solid #D8CDB8; display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <a href="S1-Projects.dc.html" style="font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none;">← PROJECTS</a>
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #3F5B46;">OFFLINE OK</span>
+    </div>
+    <div style="display: flex; align-items: flex-start; gap: 12px;">
+      <h1 style="margin: 0; flex-grow: 1; min-width: 0; overflow-wrap: anywhere; font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;">Coastal Brand Film</h1>
+      <a href="M1-ProjectMenu.dc.html" aria-label="Project options" style="flex-shrink: 0; width: 44px; height: 44px; margin: -12px -12px -12px 0; display: flex; align-items: center; justify-content: center; color: #1C1714; text-decoration: none;"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg></a>
+    </div>
+    <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.1em; color: #6B5F52;">BRAND · 2—3 MIN · 16:9 · SCRIPTED</span>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #6B5F52;">EXPOSED</span>
+      <div style="flex-grow: 1; height: 4px; background: #E0D5BE;">
+        <div style="width: 33%; height: 4px; background: #3F5B46;"></div>
+      </div>
+      <span style="font-size: 13px; font-weight: 700; color: #3F5B46;">04/12</span>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 20px; padding: 0 20px; border-bottom: 1px solid #D8CDB8;">
+    <span style="padding: 14px 0; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #A83B2A; border-bottom: 2px solid #A83B2A;">SHOTS</span>
+    <a href="D-Paper-Report-Look.dc.html" style="padding: 14px 0; font-size: 12px; font-weight: 500; letter-spacing: 0.12em; color: #6B5F52; text-decoration: none;">LOOK</a>
+    <a href="G4-GearTab.dc.html" style="padding: 14px 0; font-size: 12px; font-weight: 500; letter-spacing: 0.12em; color: #6B5F52; text-decoration: none;">GEAR</a>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; border-bottom: 1px solid #D8CDB8;">
+    <span role="group" aria-label="Group shots by" style="display: flex; border: 1px solid #D8CDB8;">
+      <span style="padding: 6px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; background: #1C1714; color: #F2EBDD;">LOCATION</span>
+      <a href="P3-ShotListBeats.dc.html" style="padding: 6px 12px; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; color: #1C1714; text-decoration: none;">BEAT</a>
+    </span>
+    <span style="display: flex; gap: 10px; align-items: baseline;"><a href="E3-RunningOrder.dc.html" style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-decoration: none;">ORDER</a><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #6B5F52;">12 / 24—32</span></span>
+  </div>
+
+  <div style="flex-grow: 1; overflow: hidden; display: flex; flex-direction: column;">
+
+    <div style="padding: 7px 20px; background: #E9E0CC; display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #4F463A;">
+      <span>UNPLACED</span><span>5 OF 7 PICKED</span>
+    </div>
+
+    <button type="button" role="checkbox" aria-checked="mixed" style="display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; text-align: left; padding: 13px 20px; border: none; border-bottom: 1px solid #1C1714; background: transparent; cursor: pointer; font-family: inherit; color: #1C1714;">
+      <span aria-hidden="true" style="width: 18px; height: 18px; flex-shrink: 0; box-sizing: border-box; border: 1.5px solid #6B5F52;"></span>
+      <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em;">ALL 7</span>
+    </button>
+
+    <button type="button" role="checkbox" aria-checked="true" style="display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; text-align: left; padding: 13px 20px; border: none; border-bottom: 1px solid #D8CDB8; background: #FBF6EA; cursor: pointer; font-family: inherit; color: #1C1714;">
+      <span aria-hidden="true" style="width: 18px; height: 18px; flex-shrink: 0; box-sizing: border-box; background: #1C1714; color: #F2EBDD; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">✓</span>
+      <span style="width: 26px; font-size: 13px; color: #6B5F52;">01</span>
+      <span style="width: 40px; font-size: 13px; font-weight: 700;">WS</span>
+      <span style="flex-grow: 1; font-size: 15px;">Cliff path establisher</span>
+    </button>
+    <button type="button" role="checkbox" aria-checked="true" style="display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; text-align: left; padding: 13px 20px; border: none; border-bottom: 1px solid #D8CDB8; background: #FBF6EA; cursor: pointer; font-family: inherit; color: #1C1714;">
+      <span aria-hidden="true" style="width: 18px; height: 18px; flex-shrink: 0; box-sizing: border-box; background: #1C1714; color: #F2EBDD; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">✓</span>
+      <span style="width: 26px; font-size: 13px; color: #6B5F52;">02</span>
+      <span style="width: 40px; font-size: 13px; font-weight: 700;">MS</span>
+      <span style="flex-grow: 1; font-size: 15px;">Hero walking, tracking</span>
+    </button>
+    <button type="button" role="checkbox" aria-checked="true" style="display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; text-align: left; padding: 13px 20px; border: none; border-bottom: 1px solid #D8CDB8; background: #FBF6EA; cursor: pointer; font-family: inherit; color: #1C1714;">
+      <span aria-hidden="true" style="width: 18px; height: 18px; flex-shrink: 0; box-sizing: border-box; background: #1C1714; color: #F2EBDD; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">✓</span>
+      <span style="width: 26px; font-size: 13px; color: #6B5F52;">03</span>
+      <span style="width: 40px; font-size: 13px; font-weight: 700;">CU</span>
+      <span style="flex-grow: 1; font-size: 15px;">Hands on the rope</span>
+    </button>
+    <button type="button" role="checkbox" aria-checked="true" style="display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; text-align: left; padding: 13px 20px; border: none; border-bottom: 1px solid #D8CDB8; background: #FBF6EA; cursor: pointer; font-family: inherit; color: #1C1714;">
+      <span aria-hidden="true" style="width: 18px; height: 18px; flex-shrink: 0; box-sizing: border-box; background: #1C1714; color: #F2EBDD; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">✓</span>
+      <span style="width: 26px; font-size: 13px; color: #6B5F52;">04</span>
+      <span style="width: 40px; font-size: 13px; font-weight: 700;">OTS</span>
+      <span style="flex-grow: 1; font-size: 15px;">Two-shot, reverse</span>
+    </button>
+    <button type="button" role="checkbox" aria-checked="false" style="display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; text-align: left; padding: 13px 20px; border: none; border-bottom: 1px solid #D8CDB8; background: transparent; cursor: pointer; font-family: inherit; color: #1C1714;">
+      <span aria-hidden="true" style="width: 18px; height: 18px; flex-shrink: 0; box-sizing: border-box; border: 1.5px solid #6B5F52;"></span>
+      <span style="width: 26px; font-size: 13px; color: #6B5F52;">05</span>
+      <span style="width: 40px; font-size: 13px; font-weight: 700;">WS</span>
+      <span style="flex-grow: 1; font-size: 15px;">Drone pull-back</span>
+    </button>
+    <button type="button" role="checkbox" aria-checked="false" style="display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; text-align: left; padding: 13px 20px; border: none; border-bottom: 1px solid #D8CDB8; background: transparent; cursor: pointer; font-family: inherit; color: #1C1714;">
+      <span aria-hidden="true" style="width: 18px; height: 18px; flex-shrink: 0; box-sizing: border-box; border: 1.5px solid #6B5F52;"></span>
+      <span style="width: 26px; font-size: 13px; color: #6B5F52;">06</span>
+      <span style="width: 40px; font-size: 13px; font-weight: 700;">INS</span>
+      <span style="flex-grow: 1; font-size: 15px;">Watch face insert</span>
+    </button>
+    <button type="button" role="checkbox" aria-checked="true" style="display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; text-align: left; padding: 13px 20px; border: none; border-bottom: 1px solid #D8CDB8; background: #FBF6EA; cursor: pointer; font-family: inherit; color: #1C1714;">
+      <span aria-hidden="true" style="width: 18px; height: 18px; flex-shrink: 0; box-sizing: border-box; background: #1C1714; color: #F2EBDD; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">✓</span>
+      <span style="width: 26px; font-size: 13px; color: #6B5F52;">07</span>
+      <span style="width: 40px; font-size: 13px; font-weight: 700;">CU</span>
+      <span style="flex-grow: 1; font-size: 15px;">Boots on wet rock</span>
+    </button>
+
+    <div style="padding: 14px 20px;">
+      <span style="font-size: 12px; line-height: 1.5; color: #6B5F52;">Picked shots keep their order and go after what's already there. Numbers follow.</span>
+    </div>
+
+  </div>
+
+  <div style="padding: 12px 20px 24px 20px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #D8CDB8;">
+    <a href="S2-ShotList.dc.html" style="width: 110px; height: 48px; flex-shrink: 0; border: 1px solid #1C1714; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #1C1714;">CANCEL</a>
+    <a href="SL2-MoveSheet.dc.html" style="flex-grow: 1; height: 48px; background: #A83B2A; color: #F2EBDD; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 700; font-size: 13px; letter-spacing: 0.1em;">MOVE 5 TO…</a>
+  </div>
+
+  <a href="SL1-SelectMode.dc.html" aria-label="Close" style="position: absolute; inset: 0; background: rgba(28, 23, 20, 0.52);"></a>
+  <div role="dialog" aria-modal="true" aria-labelledby="sheet-title" style="position: absolute; left: 0; right: 0; bottom: 0; background: #F2EBDD; border-top: 1px solid #1C1714; display: flex; flex-direction: column; padding-bottom: 20px;">
+    <div style="display: flex; justify-content: center; padding: 10px 0 2px 0;"><span aria-hidden="true" style="width: 36px; height: 4px; background: #D8CDB8;"></span></div>
+    <div style="padding: 10px 20px 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+      <h2 id="sheet-title" style="margin: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">MOVE 5 TO…</h2>
+      <a href="SL1-SelectMode.dc.html" style="padding: 14px 0; margin: -14px 0; font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none; color: #6B5F52;">CLOSE</a>
+    </div>
+    <div style="padding: 7px 20px; background: #E9E0CC; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #4F463A;">DAY 2 · 19 SEP</div>
+    <a href="S2-ShotList.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-top: 1px solid #D8CDB8; text-decoration: none; color: #1C1714;">
+      <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 15px; font-weight: 700;">Cliff path</span><span style="font-size: 11px; letter-spacing: 0.08em; color: #6B5F52;">6:20 AM · 4 SHOTS</span></span>
+      <span style="font-size: 13px; font-weight: 700; color: #6B5F52;">›</span>
+    </a>
+    <a href="S2-ShotList.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-top: 1px solid #D8CDB8; text-decoration: none; color: #1C1714;">
+      <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 15px; font-weight: 700;">Headland</span><span style="font-size: 11px; letter-spacing: 0.08em; color: #6B5F52;">5:40 PM · 2 SHOTS</span></span>
+      <span style="font-size: 13px; font-weight: 700; color: #6B5F52;">›</span>
+    </a>
+    <div style="padding: 7px 20px; background: #E9E0CC; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #4F463A;">DAY 3 · 20 SEP</div>
+    <a href="S2-ShotList.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-top: 1px solid #D8CDB8; text-decoration: none; color: #1C1714;">
+      <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px;"><span style="font-size: 15px; font-weight: 700;">Unplaced</span><span style="font-size: 11px; letter-spacing: 0.08em; color: #6B5F52;">3 SHOTS</span></span>
+      <span style="font-size: 13px; font-weight: 700; color: #6B5F52;">›</span>
+    </a>
+    <div style="padding: 14px 20px 0 20px; border-top: 1px solid #D8CDB8; display: flex; flex-direction: column; gap: 8px;">
+      <label for="newloc" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">OR A NEW LOCATION</label>
+      <div style="display: flex; gap: 8px;">
+        <input id="newloc" type="text" value="" placeholder="Name it" style="flex-grow: 1; min-width: 0; box-sizing: border-box; height: 44px; padding: 0 12px; font-family: inherit; font-size: 16px; color: #1C1714; background: #FBF6EA; border: 1px solid #D8CDB8; border-radius: 0;">
+        <span aria-disabled="true" style="flex-shrink: 0; height: 44px; padding: 0 14px; box-sizing: border-box; display: flex; align-items: center; border: 1px solid #D8CDB8; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #6B5F52;">MOVE HERE</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

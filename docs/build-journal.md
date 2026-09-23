@@ -145,3 +145,25 @@ Rules: record it honestly, including when the AI was plainly wrong. Small wordin
 
 design.md §10 item 23 and §5.6.
 **Kind:** bug caught
+
+### 2026-09-23 · M5 · The canvas synced to the build
+
+**Proposed:** Through M2–M6 the build went past the boards in places. Some screens were never drawn:
+- select mode and the move sheet;
+- a wrapped day's record;
+- shoot mode once everything's through;
+- the sheet for changing one not-shot shot;
+- the brief with no full reads left.
+
+Others shipped differently from their board: B10 keeps exposed shots, flagged shots leave shoot mode's queue, and the brief screens carry the read's privacy line. design.md recorded each gap as "not drawn" or "as built". The canvas still showed the earlier design.
+**Rina:** Synced the design canvas to the build on 23 Sep. "Code is what's real; the canvas records where the design ended up."
+**Changed:** 24 boards in `docs/boards/` updated to match what shipped. Six new boards added:
+- `SL1` select mode;
+- `SL2` move sheet;
+- `WD1` day record;
+- `N4b` shoot mode, everything through;
+- `W4` the not-shot sheet;
+- `B1b` the brief with no full reads left.
+
+The "not drawn" notes in design.md (§5.12 as built; §10 item 23) now point at those boards. See case-study-log 2.23.
+**Kind:** other

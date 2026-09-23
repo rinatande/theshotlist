@@ -317,6 +317,34 @@ There's no sign-in, which keeps §3's "no account needed". The hash covers the b
 
 **Why it's evidence.** A gap only a real run could show: every screen was right on its own, and the fault was in the path between them. Rina found it by using the build rather than reviewing it. The fix came from the existing system, the wrap bulk row and the read's own schema, rather than a new idea.
 
+### 2.23 The canvas follows the code — 23 Sep
+
+**What broke.** Five milestones in, the boards and the build had drifted apart. Each gap was recorded in design.md as "not drawn" or "as built", so nothing was lost. But the canvas still showed the earlier design:
+- B10 replacing exposed shots;
+- N4 with a flagged shot in its queue;
+- no drawing of select mode, the move sheet, a wrapped day's record, shoot mode with everything through, the one-shot wrap sheet, or the brief with no reads left.
+
+A case study that shows the canvas shows a design that didn't ship.
+
+**Options.**
+- Leave the canvas as the original intent and let design.md carry the differences, so the gap is visible but you have to read a spec to find it.
+- Treat the canvas as the source and change the code back to match.
+- Redraw the canvas from the build.
+
+**Decision. [R]** Redraw from the build: 24 boards updated, and six added:
+- `SL1` select mode;
+- `SL2` move sheet;
+- `WD1` day record;
+- `N4b` shoot mode, everything through;
+- `W4` the not-shot sheet;
+- `B1b` the brief with no full reads left.
+
+Rina's rule: "Code is what's real; the canvas records where the design ended up." The original direction is still in the log and the build journal, which say why each board changed.
+
+**Why it's evidence.** It settles which artifact is the source of truth, and says so. The design didn't stop at handoff. Five milestones of decisions made in code went back into the design artifact, rather than leaving the canvas as a record of intent and the spec as a list of exceptions. It also makes the portfolio honest: every board shown is a screen that exists, and the changes between versions are written down (2.14–2.22, and the build journal) rather than silently overwritten.
+
+*Artifacts:* `docs/boards/`, 24 updated and 6 new (`SL1`, `SL2`, `WD1`, `N4b`, `W4`, `B1b`); build-journal, 23 Sep.
+
 ---
 
 ## 3. Artifact inventory
