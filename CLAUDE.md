@@ -66,7 +66,7 @@ Work in order. Each one ends with something that runs, a commit, and a short not
 
 ## v1 — gear (started 23 Sep)
 
-Gear leaves the stubs (design.md §6). **Stage 1:** E6 in both contexts, G1 My gear, G2 add and edit gear, a kit screen, G3 gear for this shoot, G4 the Gear tab, and P2's kit line. **Stage 2:** gear feeds every suggestion screen (G5/G6 from the Gear tab, the brief, the format, and the online read), S4 lens and support chips from the shoot's gear, more gear-aware template drafts, and add-only suggestions when gear changes (§10 item 19).
+Gear leaves the stubs (design.md §6). **Stage 1:** E6 in both contexts, G1 My gear, G2 add and edit gear, a kit screen, G3 gear for this shoot, G4 the Gear tab, and P2's kit line. **Stage 2 (built 23 Sep):** gear feeds every suggestion screen (G5/G6 from the Gear tab, the brief, the format, and the online read), S4 lens and support chips from the shoot's gear, more gear-aware template drafts, and add-only suggestions when gear changes (§10 item 19).
 
 Rina's decisions:
 - A project keeps copies of its gear.

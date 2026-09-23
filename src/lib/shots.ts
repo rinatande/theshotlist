@@ -13,7 +13,10 @@ export interface ShotInput {
   size: ShotSize;
   subject: string;
   lens?: string;
+  /** The shoot's gear item behind the lens chip (§6.4); `lens` keeps the focal as text. */
+  lensId?: Id;
   support?: Support;
+  supportId?: Id;
   movement?: Movement;
   audio?: Audio;
   locationId?: Id;
@@ -51,7 +54,9 @@ export function addShot(p: Project, input: ShotInput, now = new Date(), newId = 
     size: input.size,
     subject: input.subject.trim(),
     lens: clean(input.lens),
+    lensId: input.lensId,
     support: input.support,
+    supportId: input.supportId,
     movement: input.movement,
     audio: input.audio,
     locationId,
@@ -79,7 +84,9 @@ export function updateShot(p: Project, id: Id, input: ShotInput, now = new Date(
           size: input.size,
           subject: input.subject.trim(),
           lens: clean(input.lens),
+          lensId: input.lensId,
           support: input.support,
+          supportId: input.supportId,
           movement: input.movement,
           audio: input.audio,
           note: clean(input.note),

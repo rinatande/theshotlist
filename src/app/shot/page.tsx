@@ -37,8 +37,9 @@ function ShotDetail() {
 
   // Only the rows that say something (§8: the information you check at the camera).
   const spec = [
-    ["LENS", shot.lens?.toUpperCase()],
-    ["SUPPORT", shot.support && supportLabel(shot.support)],
+    // A gear chip is a reference to an item the shoot is bringing (§6.4), so it says which.
+    ["LENS", [shot.lens?.toUpperCase(), project.gear.find((g) => g.id === shot.lensId)?.name].filter(Boolean).join(" · ")],
+    ["SUPPORT", shot.support && [supportLabel(shot.support), project.gear.find((g) => g.id === shot.supportId)?.name].filter(Boolean).join(" · ")],
     ["MOVEMENT", shot.movement && movementLabel(shot.movement)],
     ["SOUND", shot.audio && audioLabel(shot.audio)],
   ].filter(([, v]) => v) as [string, string][];

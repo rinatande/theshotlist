@@ -1,4 +1,5 @@
 import { projectBudget } from "./budget";
+import { specLine } from "./gear";
 import { formatLine } from "./labels";
 import { runningOrder } from "./runningOrder";
 import type { Audio, BeatRole, Light, Movement, Project, ShotSize } from "./types";
@@ -28,6 +29,8 @@ export interface ReadContext {
   locations: { name: string; day?: number; start?: string }[];
   onList: string[];
   onCamera: string;
+  /** What the shoot is bringing, as "Sony 85 f/1.8 (lens: 85 · f1.8)" — names and specs, nothing personal (Rina, 23 Sep). */
+  gear: string[];
 }
 
 export interface ReadRequest {
@@ -90,6 +93,7 @@ export function readContext(project: Project): ReadContext {
     locations: runningOrder(project).map((l) => ({ name: l.name, day: multi ? dayOf(l.dayId) : undefined, start: clock(l.startTime) })),
     onList: project.shots.filter((s) => s.status !== "dropped").slice(0, 80).map((s) => s.subject),
     onCamera: "the videographer themselves, part of it — hands and body are fine, face optional",
+    gear: (project.gear ?? []).map((g) => `${g.name} (${g.specs.category}: ${specLine(g.specs)})`),
   };
 }
 
@@ -159,6 +163,7 @@ What good looks like:
 - Sound: "speech" when someone talks on camera, "natural" when there's no talking but the place's sound is worth recording, "none" only when music or voice-over will cover it entirely. In a silent or observational film, natural sound is the soundtrack — use "natural", not "none".
 - Locations. If location names are given, set each shot's "location" to exactly one of those names where it clearly belongs, else null, and return "locations" empty. If none are given, suggest the places this shoot happens in "locations": short names a person would write on their own list ("Kitchen", "Nagi Coffee", "Higashiyama streets"), in the order they'd be shot, and as few as honestly cover it — usually one to four; a shoot in one room is one location. On a multi-day shoot give each its day, else null. Then set every shot's "location" to one of those names.
 - Set a shot's "day" to the day number only on a multi-day shoot, else null.
+- Gear. If gear is listed, plan only shots that gear can make, and when a piece of it earns a shot, name it in the reason line and say what it buys ("The 85 at f1.8 compresses the flame behind the hands"). Where the kit can't do something the brief wants, rewrite the shot so it can ("No tripod packed — set it on the table edge and hold twenty seconds") rather than dropping it. If no gear is listed, keep every shot possible with just a camera, and make each reason line about why the shot works, not about gear.
 
 Chips:
 - "quoted": places, times of day, moods, subjects, clients and people exactly as they appear in the brief's own words. Never the project settings — no aspect ratios, lengths, shot counts or treatment names unless the brief itself says them.
@@ -177,6 +182,7 @@ export function readPrompt(req: ReadRequest): string {
     c.days.length > 1 ? `Days: ${c.days.map((d) => `day ${d.day}${d.date ? ` (${d.date})` : ""}`).join(", ")}.` : "One day.",
     c.locations.length ? `Locations: ${c.locations.map((l) => `"${l.name}"${l.day ? ` day ${l.day}` : ""}${l.start ? ` from ${l.start}` : ""}`).join("; ")}.` : "No locations yet.",
     `On camera: ${c.onCamera}.`,
+    c.gear?.length ? `Gear coming: ${c.gear.join("; ")}.` : "No gear listed.",
     c.onList.length ? `Already on the list (don't repeat): ${c.onList.map((s) => `"${s}"`).join("; ")}.` : "Nothing on the list yet.",
     "",
     "Brief:",
@@ -185,12 +191,15 @@ export function readPrompt(req: ReadRequest): string {
 }
 
 /**
- * The brief text, hashed. The screen promises a read "won't run again unless
- * you change the brief" (§5.6), so nothing else goes in — adding the read's
- * own shots used to change the planned count and buy a second read.
+ * The brief text and the gear, hashed. The screen promises a read "won't run
+ * again unless you change the brief or your gear" (§5.6), so nothing else goes
+ * in — adding the read's own shots used to change the planned count and buy a
+ * second read. Gear joined in v1 (Rina, 23 Sep); a read with no gear hashes as
+ * it always did, so no saved read is lost.
  */
 export async function readHash(req: ReadRequest): Promise<string> {
-  const bytes = new TextEncoder().encode(JSON.stringify({ model: READ_MODEL, brief: req.brief.trim() }));
+  const gear = [...(req.context.gear ?? [])].sort();
+  const bytes = new TextEncoder().encode(JSON.stringify(gear.length ? { model: READ_MODEL, brief: req.brief.trim(), gear } : { model: READ_MODEL, brief: req.brief.trim() }));
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }

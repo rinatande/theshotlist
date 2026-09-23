@@ -41,6 +41,15 @@ describe("what the read is sent", () => {
     expect(await readHash({ brief: "a brief", context: ctx })).not.toBe(await readHash({ brief: "another", context: ctx }));
   });
 
+  it("reads again when the gear changes, but a read with no gear keeps its old hash", async () => {
+    const none = readContext(project());
+    const withGear = readContext(project({ gear: [{ id: "85", name: "Sony 85 f/1.8", specs: { category: "lens", focalMin: 85, focalMax: 85, maxAperture: 1.8 } }] }));
+    expect(withGear.gear).toEqual(["Sony 85 f/1.8 (lens: 85 · f1.8)"]);
+    expect(await readHash({ brief: "a brief", context: none })).not.toBe(await readHash({ brief: "a brief", context: withGear }));
+    expect(readPrompt({ brief: "a brief", context: withGear })).toContain("Gear coming: Sony 85 f/1.8 (lens: 85 · f1.8).");
+    expect(readPrompt({ brief: "a brief", context: none })).toContain("No gear listed.");
+  });
+
   it("doesn't read again because the list grew — only a changed brief does", async () => {
     const before = readContext(project());
     const after = readContext(project({ shots: [shot("a", 0, { subject: "Tamping" })] }));

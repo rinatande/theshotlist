@@ -190,3 +190,49 @@ export function specsComplete(specs: GearSpecs): boolean {
       return true;
   }
 }
+
+const NEED: Record<Capability, string> = {
+  tripod: "a tripod",
+  tele: "a longer lens",
+  wide: "a wider lens",
+  fast: "a faster lens",
+  macro: "a macro lens",
+  gimbal: "a gimbal",
+  slider: "a slider",
+  drone: "a drone",
+  mic: "a mic",
+  lav: "a lav",
+  slowmo: "a camera that shoots slow motion",
+  light: "a light",
+  power: "a power bank",
+};
+
+/**
+ * The count of withheld suggestions, without listing them (§6.2): "Four more
+ * that need a tripod or a longer lens. Add gear to this shoot and they appear."
+ */
+export function needsLine(count: number, needs: Capability[]): string | undefined {
+  if (count === 0) return undefined;
+  const what = needs.slice(0, 2).map((c) => NEED[c]);
+  const phrase = what.length === 2 ? `${what[0]} or ${what[1]}` : (what[0] ?? "more gear");
+  return `${capitalise(inWords(count))} more that ${count === 1 ? "needs" : "need"} ${phrase}. Add gear to this shoot and ${count === 1 ? "it appears" : "they appear"}.`;
+}
+
+/** S4's lens chips: every lens the shoot is bringing, including a camera's own — "18—50", "85", "15 MACRO". */
+export function lensChips(gear: GearItem[]): { id: Id; label: string; lens: string }[] {
+  return gear.flatMap((g) => {
+    const l = g.specs.category === "lens" ? g.specs : g.specs.category === "camera" ? g.specs.builtInLens : undefined;
+    if (!l) return [];
+    const focal = range(l.focalMin, l.focalMax);
+    return [{ id: g.id, label: `${focal}${l.macro ? " MACRO" : ""}`, lens: `${focal}mm` }];
+  });
+}
+
+/** S4's support chips: handheld, then the shoot's tripods and gimbals by type (by name if there are two of a type). */
+export function supportChips(gear: GearItem[]): { id: string; label: string; support: "handheld" | "tripod" | "gimbal" }[] {
+  const held = gear.flatMap((g) => (g.specs.category === "support" && (g.specs.type === "tripod" || g.specs.type === "gimbal") ? [{ g, type: g.specs.type }] : []));
+  return [
+    { id: "handheld", label: "HANDHELD", support: "handheld" },
+    ...held.map(({ g, type }) => ({ id: g.id, label: held.filter((h) => h.type === type).length > 1 ? g.name.toUpperCase() : type.toUpperCase(), support: type })),
+  ];
+}

@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { lensChips, supportChips } from "@/lib/gear";
 import { runningOrder } from "@/lib/runningOrder";
 import { coverageGap, findDuplicate, numberIfAdded, type ShotInput } from "@/lib/shots";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
@@ -12,6 +14,7 @@ import { StepHeader } from "./StepHeader";
 import ui from "./ui.module.css";
 
 const SIZES: ShotSize[] = ["WS", "MS", "CU", "OTS", "INS"];
+const TYPED = "__typed";
 
 interface Props {
   project: Project;
@@ -44,6 +47,11 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
   const n = editing ? shotNumbers(project).get(shot.id) : numberIfAdded(project, final);
   const label = `${editing ? "Edit shot" : "New shot"}${n !== undefined ? ` · ${formatShotNumber(n)}` : ""}`;
   const ready = draft.subject.trim().length > 0;
+
+  // Gear chips (§6.4) once this shoot has gear; typed lens and fixed supports before that.
+  const lenses = lensChips(project.gear);
+  const typedLens = draft.lens && !draft.lensId ? draft.lens : undefined;
+  const supports = project.gear.length ? supportChips(project.gear) : undefined;
 
   const multi = project.days.length > 1;
   const locations = runningOrder(project);
@@ -84,15 +92,49 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
           />
         </div>
 
-        <div className={ui.field}>
-          <label htmlFor="lens" className={ui.label}>
-            LENS · OPTIONAL
-          </label>
-          <input id="lens" className={ui.input} type="text" value={draft.lens ?? ""} autoComplete="off" placeholder="e.g. 35mm" onChange={(e) => set({ lens: e.target.value })} />
-          <p className={ui.hint}>Typed for now. Once your gear is in, this picks from what you&apos;ve packed.</p>
-        </div>
+        {lenses.length > 0 ? (
+          // §6.4: chips from this shoot's gear, so the spec stays honest. A lens typed before gear stays as its own chip.
+          <div className={styles.gearField}>
+            <Choice
+              label="Lens"
+              options={[...lenses.map((l) => ({ value: l.id, label: l.label })), ...(typedLens ? [{ value: TYPED, label: typedLens.toUpperCase() }] : [])]}
+              value={draft.lensId ?? (typedLens ? TYPED : undefined)}
+              onChange={(id) => {
+                if (id === TYPED) return;
+                const l = lenses.find((x) => x.id === id)!;
+                set(draft.lensId === id ? { lensId: undefined, lens: undefined } : { lensId: id, lens: l.lens });
+              }}
+            />
+            <Link href={`/gear/shoot?id=${project.id}`} className={styles.gearLink}>
+              FROM THIS SHOOT&apos;S GEAR ›
+            </Link>
+          </div>
+        ) : (
+          <div className={ui.field}>
+            <label htmlFor="lens" className={ui.label}>
+              LENS · OPTIONAL
+            </label>
+            <input id="lens" className={ui.input} type="text" value={draft.lens ?? ""} autoComplete="off" placeholder="e.g. 35mm" onChange={(e) => set({ lens: e.target.value, lensId: undefined })} />
+            <p className={ui.hint}>
+              {project.gear.length ? "No lens in this shoot's gear — type it, or add one to the shoot." : "Typed for now. Choose this shoot's gear and it picks from what you're bringing."}
+            </p>
+          </div>
+        )}
 
-        <Choice label="Support" options={SUPPORTS} value={draft.support} onChange={(support) => set({ support: draft.support === support ? undefined : support })} />
+        {supports ? (
+          <Choice
+            label="Support"
+            options={supports.map((s) => ({ value: s.id, label: s.label }))}
+            value={draft.supportId ?? (draft.support === "handheld" ? "handheld" : undefined)}
+            onChange={(id) => {
+              const s = supports.find((x) => x.id === id)!;
+              const same = (draft.supportId ?? draft.support) === id;
+              set(same ? { support: undefined, supportId: undefined } : { support: s.support, supportId: id === "handheld" ? undefined : id });
+            }}
+          />
+        ) : (
+          <Choice label="Support" options={SUPPORTS} value={draft.support} onChange={(support) => set({ support: draft.support === support ? undefined : support })} />
+        )}
 
         <Choice
           label={ownMovement ? "Movement" : "Movement · suggested"}

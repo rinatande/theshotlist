@@ -138,3 +138,44 @@
   flex-direction: column;
   gap: 7px;
 }
+
+/* G5 / G6: the kit the suggestions come from, stated before them. */
+.kit {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+}
+
+.kitName {
+  font-size: var(--text-13);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+}
+
+.kitFormat,
+.kitBag {
+  font-size: var(--text-11);
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+.kitBag {
+  color: var(--ink);
+}
+
+.notShown {
+  margin: var(--s-4) var(--gutter);
+}
+
+.footerRow {
+  display: flex;
+  gap: 10px;
+}
+
+/* Beats ui.primary and ui.secondary's width whatever order the stylesheets load in. */
+.footerRow > a,
+.footerRow > button {
+  flex: 1 1 0;
+}

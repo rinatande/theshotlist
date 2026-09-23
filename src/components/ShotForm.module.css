@@ -63,3 +63,22 @@
   line-height: 1.45;
   color: var(--ink-muted);
 }
+
+/* §6.4: the lens chips with their way into the shoot's gear. */
+.gearField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gearLink {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  color: var(--accent);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}

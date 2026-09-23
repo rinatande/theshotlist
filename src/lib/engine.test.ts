@@ -153,3 +153,71 @@ describe("placing and adding", () => {
     expect(shotNumbers(next).size).toBe(3);
   });
 });
+
+describe("gear shapes the suggestions (§6.2)", () => {
+  const g = (id: string, name: string, specs: GearItem["specs"]): GearItem => ({ id, name, specs });
+  const pocket = [
+    g("zv1", "Sony ZV-1", { category: "camera", builtInLens: { focalMin: 24, focalMax: 70, maxAperture: 1.8 } }),
+    g("mic", "DJI Mic 2", { category: "audio", type: "lav", channels: 2 }),
+    g("anker", "Anker 737", { category: "power", capacityMah: 24000 }),
+  ];
+  const camp = [
+    g("fx30", "Sony FX30", { category: "camera", maxFps: 120 }),
+    g("85", "Sony 85 f/1.8", { category: "lens", focalMin: 85, focalMax: 85, maxAperture: 1.8 }),
+    g("laowa", "Laowa 15 Macro", { category: "lens", focalMin: 15, focalMax: 15, maxAperture: 4, macro: true }),
+    g("befree", "Manfrotto Befree", { category: "support", type: "tripod" }),
+    g("rs3", "DJI RS3 Mini", { category: "support", type: "gimbal" }),
+    g("amaran", "Amaran 60x", { category: "light", outputW: 60, colour: "bi" }),
+    g("anker", "Anker 737", { category: "power", capacityMah: 24000 }),
+  ];
+  const travel = (gear: GearItem[]) => project({ format: { ...REEL_SILENT, genre: "travel" }, gear });
+
+  it("uses what the shoot is bringing, and names the item that earned the shot", () => {
+    const r = suggest(travel(camp));
+    const star = r.suggestions.find((s) => s.templateId === "star-lapse");
+    expect(star?.reason).toContain("Manfrotto Befree");
+    expect(r.suggestions.some((s) => s.reason.includes("Laowa 15 Macro"))).toBe(true);
+  });
+
+  it("rewrites what the kit can't do rather than dropping it, and counts the rest without listing them", () => {
+    const r = suggest(travel(pocket), { limit: 80 });
+    const rest = r.suggestions.find((s) => s.templateId === "rest-wide-room-tone");
+    expect(rest).toMatchObject({ fallback: true, reason: "No tripod packed — set it on the table edge and hold twenty seconds." });
+    expect(r.withheld).toBeGreaterThan(0);
+    expect(r.needs).toContain("tripod");
+  });
+
+  it("a pocket kit and a full rig are different lists", () => {
+    // The gear-free basics fill both, so the lists share some shots; the gear-earned ones differ.
+    const a = new Set(suggest(travel(pocket)).suggestions.map((s) => s.subject));
+    const b = suggest(travel(camp)).suggestions;
+    expect(b.filter((s) => a.has(s.subject)).length).toBeLessThan(b.length * 0.66);
+    expect(b.filter((s) => camp.some((g) => s.reason.includes(g.name))).length).toBeGreaterThanOrEqual(8);
+  });
+
+  it("offers only what the gear earns when the list already exists", () => {
+    const r = suggest({ ...travel(camp), shots: [shot("a", 0)] }, { gearOnly: true, limit: 20 });
+    expect(r.suggestions.length).toBeGreaterThan(0);
+    expect(r.suggestions.every((s) => !s.fallback && !s.fromBrief)).toBe(true);
+  });
+});
+
+describe("needsLine", () => {
+  it("says the board's sentence", async () => {
+    const { needsLine } = await import("./gear");
+    expect(needsLine(4, ["tripod", "tele"])).toBe("Four more that need a tripod or a longer lens. Add gear to this shoot and they appear.");
+    expect(needsLine(1, ["macro"])).toBe("One more that needs a macro lens. Add gear to this shoot and it appears.");
+    expect(needsLine(0, [])).toBeUndefined();
+  });
+});
+
+describe("itemRef", () => {
+  it("lowercases the starter kits' generic names, and leaves anything you named alone", async () => {
+    const { itemRef } = await import("./engine");
+    expect(itemRef("Camera body")).toBe("camera body");
+    expect(itemRef("Sony 85 f/1.8")).toBe("Sony 85 f/1.8");
+    expect(itemRef("DJI RS3 Mini")).toBe("DJI RS3 Mini");
+    expect(itemRef("Manfrotto Befree")).toBe("Manfrotto Befree");
+    expect(itemRef("Peak travel tripod")).toBe("Peak travel tripod");
+  });
+});

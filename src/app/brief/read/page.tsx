@@ -157,8 +157,8 @@ function FullRead({ project, state, back }: { project: Project; state: { cached:
           <span className={ui.boxHeading}>{state.cached ? "READ ALREADY" : "READ ONCE"}</span>
           <p className={ui.boxText}>
             {state.cached
-              ? "Read earlier from this same brief, so it didn't run again — reopening this costs nothing."
-              : "One request, just now. It won't run again unless you change the brief — reopening this costs nothing."}{" "}
+              ? "Read earlier from this same brief and gear, so it didn't run again — reopening this costs nothing."
+              : "One request, just now. It won't run again unless you change the brief or your gear — reopening this costs nothing."}{" "}
             Sent once to be read. Not stored by this app.
           </p>
           {state.remaining >= 0 && <p className={ui.hint}>{state.remaining === 1 ? "1 full read left today." : `${state.remaining} full reads left today.`}</p>}

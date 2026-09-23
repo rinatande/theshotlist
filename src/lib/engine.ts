@@ -1,3 +1,4 @@
+import starterKits from "@/data/starterKits.json";
 import templates from "@/data/templates.json";
 import { coverageFor, findActions } from "./actions";
 import { dayBudgets, projectBudget } from "./budget";
@@ -38,6 +39,8 @@ export interface SuggestResult {
   room: number;
   /** Templates that would fit if gear were packed, with no gear-free version. */
   withheld: number;
+  /** What the withheld ones are waiting for, most-needed first — for "Four more that need a tripod…" (§6.2). */
+  needs: Capability[];
 }
 
 const ALL = templates as TemplateShot[];
@@ -55,15 +58,18 @@ const mentions = (text: string, keyword: string) =>
 
 export function suggest(
   project: Project,
-  opts: { chips?: QuotedChip[]; brief?: string; packed?: GearItem[]; limit?: number } = {},
+  opts: { chips?: QuotedChip[]; brief?: string; packed?: GearItem[]; limit?: number; gearOnly?: boolean } = {},
 ): SuggestResult {
-  const caps = capabilities(opts.packed ?? []);
+  // Everything the shoot is bringing, not only what's ticked into the bag (Rina, 23 Sep).
+  const packed = opts.packed ?? project.gear ?? [];
+  const caps = capabilities(packed);
   const brief = words(opts.brief ?? "");
   const lights = new Set((opts.chips ?? []).map((c) => c.light).filter(Boolean) as Light[]);
   const presence = project.cast.leadMember?.presence ?? (project.cast.lead === "no-one" ? "none" : "part");
   const onList = new Set(project.shots.map((s) => s.templateId).filter(Boolean));
 
   let withheld = 0;
+  const missing = new Map<Capability, number>();
   const candidates: Suggestion[] = [];
   for (const t of ALL) {
     if (onList.has(t.id)) continue; // never suggest what's already there
@@ -74,8 +80,11 @@ export function suggest(
     const met = t.requires.every((r) => caps.has(r as Capability));
     if (!met && !t.fallback) {
       withheld++;
+      for (const r of t.requires) if (!caps.has(r)) missing.set(r, (missing.get(r) ?? 0) + 1);
       continue;
     }
+    // When gear arrives on a list that already exists, offer only what the gear earns (§10, 19).
+    if (opts.gearOnly && !(met && t.requires.length > 0)) continue;
 
     // Rank (§6.2 step 2): what the brief says, what the kit unlocks, how specific the template is.
     // What the brief mentions outweighs everything else; with a brief, a template
@@ -93,16 +102,17 @@ export function suggest(
       relevant = true;
     }
     if (brief && !relevant) score -= 3;
-    if (met && t.unlockedBy && caps.has(t.unlockedBy)) score += 2;
+    // Packing the 85 should visibly change what you're offered (§6.2 step 2).
+    if (met && t.unlockedBy && caps.has(t.unlockedBy)) score += 3;
     if (t.treatments.length) score += 1.5;
     if (t.genres.length) score += 0.5;
 
-    const unlocking = met && t.unlockedBy ? opts.packed?.find((g) => capabilities([g]).has(t.unlockedBy!)) : undefined;
+    const unlocking = met && t.unlockedBy ? packed.find((g) => capabilities([g]).has(t.unlockedBy!)) : undefined;
     candidates.push({
       templateId: t.id,
       size: t.size,
       subject: met ? t.subject : t.fallback!.subject,
-      reason: met ? t.reason.replace("{item}", unlocking?.name ?? "kit") : t.fallback!.reason,
+      reason: met ? t.reason.replace("{item}", itemRef(unlocking?.name ?? "kit")) : t.fallback!.reason,
       beat: t.beat,
       light: t.light,
       fallback: !met,
@@ -120,7 +130,7 @@ export function suggest(
 
   // The brief's own actions go first, in the order they happen: they're the
   // shots only this brief could ask for. Templates fill the rest.
-  for (const c of coverageFor(findActions(opts.brief ?? ""))) {
+  for (const c of opts.gearOnly ? [] : coverageFor(findActions(opts.brief ?? ""))) {
     if (chosen.length >= limit) break;
     if (onList.has(c.id) || !personAllowed(c.person, presence)) continue;
     chosen.push({ templateId: c.id, size: c.size, subject: c.subject, reason: c.reason, beat: c.beat, light: "any", fallback: false, score: 100, fromBrief: true, keywords: c.keywords });
@@ -143,7 +153,18 @@ export function suggest(
     chosen.push(pick);
   }
 
-  return { suggestions: place(project, chosen), room, withheld };
+  const needs = [...missing.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c);
+  return { suggestions: place(project, chosen), room, withheld, needs };
+}
+
+/**
+ * An item named mid-sentence. The starter kits' generic names ("Camera body",
+ * "Tripod") read as "your camera body"; anything you named yourself stays
+ * exactly as you wrote it — "Peak travel tripod" is a brand, not a description.
+ */
+const GENERIC = new Set((starterKits as { items: { name: string }[] }[]).flatMap((k) => k.items.map((i) => i.name)));
+export function itemRef(name: string): string {
+  return GENERIC.has(name) ? name.charAt(0).toLowerCase() + name.slice(1) : name;
 }
 
 // ─── Placing (§5.6 "What generating builds") ────────────────────────────────

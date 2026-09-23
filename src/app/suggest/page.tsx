@@ -12,8 +12,10 @@ import { addSuggestions, suggest, type Suggestion } from "@/lib/engine";
 import { budgetLabel } from "@/lib/labels";
 import { currentRead } from "@/lib/readClient";
 import type { Project } from "@/lib/types";
+import { GearList } from "./GearList";
 import { ReadList } from "./ReadList";
 import { saveProject, useProject } from "@/lib/useProject";
+import { needsLine } from "@/lib/gear";
 import { capitalise, inWords } from "@/lib/words";
 import styles from "./Suggest.module.css";
 
@@ -30,6 +32,7 @@ function Suggestions() {
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
   if (project === null) return <NotHere href="/" label="← PROJECTS" />;
   if (params.get("from") === "read" && currentRead(project)) return <ReadList key={project.id} project={project} />;
+  if (params.get("from") === "gear") return <GearList key={project.id} project={project} />;
   return <List key={project.id} project={project} fromBrief={params.get("from") === "brief"} />;
 }
 
@@ -138,11 +141,7 @@ function List({ project, fromBrief }: { project: Project; fromBrief: boolean }) 
             {result.room}. More appear as templates are written, or when gear arrives.
           </p>
         )}
-        {result.withheld > 0 && (
-          <p className={styles.note}>
-            {capitalise(inWords(result.withheld))} more {result.withheld === 1 ? "needs" : "need"} gear — a tripod, a mic, a longer lens. They appear once gear is in.
-          </p>
-        )}
+        {result.withheld > 0 && <p className={styles.note}>{needsLine(result.withheld, result.needs)}</p>}
       </div>
 
       <div className={ui.footer}>

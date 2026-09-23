@@ -319,7 +319,7 @@ Firing the read per keystroke would mean hundreds of requests to watch someone t
 
 **The read, as built (M6).** One structured request to Claude Sonnet 5 returns quoted chips, inferred chips, deliverables grouped by client and the shots, each with its reason line, size, beat, light, movement, sound and — where it clearly fits — a location name or day. It sends the brief, the format and treatment, the budget and what's already planned, the days, the locations with start times, who's on camera and the subjects already on the list. It never sends the project's name. The wording on B1 and B9 is *"Sent once to be read. Not stored by this app."* — the server keeps counters, never the brief; the result is saved with the brief on the phone.
 
-- **Cached against the brief text alone.** The screen promises it *"won't run again unless you change the brief"*, so nothing else goes into the hash. (It first hashed the plan too; adding the read's own shots changed the planned count and bought a second read.)
+- **Cached against the brief text and the gear.** The screen promises it *"won't run again unless you change the brief or your gear"*, so nothing else goes into the hash. It first hashed the plan too; adding the read's own shots changed the planned count and bought a second read. Gear joined in v1: the read is sent what the shoot is bringing, as names and key specs, so its reason lines can name the item that earned a shot. A read with no gear hashes as it always did.
 - **B2 after a read:** `REQUIRED — CLIENT` bands with the `[★]` shots (a required shot already on the list shows `ALREADY ON`), then **FROM YOUR BRIEF** with the read's shots, then the template library collapsed behind `+ N MORE FROM THE LIBRARY`. A deliverable dropped on B9 doesn't appear.
 - **B10 keeps exposed shots.** The board's `REPLACE ALL N` would clear shots already marked exposed. As built it's `REPLACE — KEEP WHAT'S SHOT`: it clears unshot shots only, and the CAREFUL box says how many go and how many stay. Dropped shots stay too — wrap never deletes (§5.12).
 - **Limits,** because the read costs real money (about 5¢) and the app is open to anyone: 5 full reads a day per phone, 15 per network address, and a $2 daily ceiling across everyone. An invite link (`/?invite=code`) gives 25 reads over 14 days instead of the daily 5; Settings shows it and can forget it. When a limit is hit, or there's no signal, generating falls back to matching on the phone and says so — B1 shows *"No full reads left today — it will match on this phone instead."* The limits are counted on the server and reset at midnight UTC.
@@ -618,6 +618,13 @@ The engine:
 
 A count of withheld suggestions is shown, without listing them: *"Four more that need a tripod or a longer lens. Add gear to this shoot and they appear."* That turns the constraint into a reason to open the gear screen rather than a dead end.
 
+**As built (v1):**
+- **Ranking.** A template the kit unlocks scores +3.
+- **The withheld line** names the two capabilities the withheld templates most often need, and appears on every suggestion screen.
+- **Item names.** A reason line names the item as you wrote it. Only the starter kits' generic names ("Camera body") drop their capital mid-sentence.
+- **An honest comparison.** A pocket kit and a full rig share about half a reel's list, because the gear-free basics fill both. The shots the gear earns are what differ. G5 and G6 were drawn to show no overlap, which the library doesn't give.
+- **Draft templates.** Thirteen more are drafted for the thin capabilities: slider, light, power, macro, gimbal, drone, wide, tele, fast, lav and slowmo. Several carry G5's rewritten versions word for word.
+
 ### 6.3 Screens
 
 | Screen | Role |
@@ -645,6 +652,13 @@ Two suggestion boards are on the canvas deliberately, because the contrast is th
 - **Add shot** — lens and support stop being free text and become chips drawn from this shoot's packed gear, with a route to edit the kit. Faster to fill, and it keeps the shot's spec honest.
 - **Shot detail** — the spec table reads from the same set, so `85MM` on a shot is a reference to an item rather than a string.
 - **Shoot mode** — unchanged. Gear is a planning-time concern; on set you want the shot, not its provenance.
+
+**As built (v1):**
+- **Add and edit shot.** Once the shoot has gear, the lens is a chip per lens it's bringing (a camera's built-in lens included): `18—50`, `85`, `15 MACRO`. Support is `HANDHELD` plus the shoot's tripods and gimbals.
+- **Links, not copies.** A chip stores the item's id, and the focal as text.
+- **Lenses typed before gear** stay as their own chip.
+- **No lens in the gear** keeps the typed field, and says why.
+- **Shot detail** reads `85MM · Sony 85 f/1.8`.
 
 ---
 
@@ -782,7 +796,7 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 
 1. **The look board is still the weak screen.** Mono captions on paper are handsome but not evocative, and that's the half of the product that's supposed to make you want to shoot. The fix is to deliberately break format there: full-bleed tiles, chrome pulled almost entirely away, the reference images doing all the talking. Worth designing next.
 2. **Reference images are placeholders throughout.** Every tile on the canvas is a flat tonal block. The directions should be re-judged with real frames from your own work before anything is built — imagery changes the read of a design more than any token does.
-3. **Suggestion templates need writing — partly drafted.** On 22 Sep Claude Code drafted 41 more (flagged `"draft": true` in `templates.json`) to fill the thinnest areas: gear-free pieces to camera, interview room tone and cutaways, events, tutorials, scripted coverage. They're a starting point to rewrite from real lists, not a finished library. The engine in §6.2 is only as good as its template library, and that's a content problem more than a design one — a few dozen shots per shoot type, each with honest requirements and a reason line worth reading. Worth drafting by hand from your own past lists before anything generative goes near it.
+3. **Suggestion templates need writing — partly drafted.** On 23 Sep Claude Code drafted 13 gear-aware ones (§6.2 as built). On 22 Sep it drafted 41 more (flagged `"draft": true` in `templates.json`) to fill the thinnest areas: gear-free pieces to camera, interview room tone and cutaways, events, tutorials, scripted coverage. They're a starting point to rewrite from real lists, not a finished library. The engine in §6.2 is only as good as its template library, and that's a content problem more than a design one — a few dozen shots per shoot type, each with honest requirements and a reason line worth reading. Worth drafting by hand from your own past lists before anything generative goes near it.
 4. **Shoot mode in day theme** — see above. Unresolved on purpose.
 5. **Multi-day projects.** The model has `Project → Location → Shot` but a three-day shoot needs a day axis, and it isn't in the screens yet — it also collides with beats, since a beat can span days.
 6. **Budget numbers are guesses.** The shots-per-minute ratios behind the budget ranges in §5.2 are reasoned, not measured. They should be calibrated against your own finished edits — count the shots in a reel you were happy with and work backwards.
@@ -798,7 +812,10 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 16. **Setting `[★]` by hand has no control.** The long-press drawn for it (§5.7) is unassigned in v0. Since M6 the online read creates required shots, but offline nothing can — so without signal, the deliverable guard in wrap (W2) can't be reached. Likely a `REQUIRED FOR` row with a client name in add / edit shot. Needs drawing.
 17. **A guessed beat can't be corrected.** Hand-added shots get an inferred beat (§5.4), but there's no control to change it — no beat field in add / edit, no drag between beats. Wrong guesses will show up in the beat view.
 18. **Per-day budget split is even.** §5.9 wants each day's share to follow what the day is doing (9 / 16 / 19, not 15 / 15 / 14). v0 splits evenly and lets you edit; a suggestion from the brief is v1.
-19. **Redoing the list when gear arrives.** Gear is stubbed in v0, so suggestions are gear-free. When gear lands (v1), adding it to a project with a generated list should offer to redo the list for the new kit — same add-or-replace choice as reading the brief again (B10). Not drawn.
+19. **Redoing the list when gear arrives — resolved, add-only (Rina, 23 Sep).**
+    - **With a list already there,** `SUGGEST SHOTS FROM THIS KIT` offers only what the gear earns, up to eight or the budget's room, with `ADD N NEW`. It never offers a replace.
+    - **With an empty list,** it fills to the top of the budget as usual.
+    - **The other suggestion screens** use the shoot's gear automatically.
 20. **Place chips from capital letters will misfire.** The offline rule in §5.6 turns any capitalised mid-sentence word into a place chip, so brand and people's names come through as places. Cheap to dismiss, but worth watching how often it happens.
 21. **Place names leave the device for the sun-times lookup** (§5.10). It's one short request per name, with no brief text, but it is a network call the rest of the offline path doesn't make, and the privacy note should say so the first time.
 22. **Four glyphs the boards use aren't in the font we can get — resolved.** See Appendix B: upstream JetBrains Mono self-hosted, ★ drawn. Original note: Google's build of JetBrains Mono has no `✓` (U+2713), `★` (U+2605) or `⋯` (U+22EF) at all, and serves `←` (U+2190) in no subset. All four are drawn by a system fallback font today — including the `[✓]` and `[★]` status marks, the most-seen glyphs in the app. Options: self-host upstream JetBrains Mono if it has them (needs a subsetting step), or draw these four as inline SVG sized to the mono cell. Found by the M0 proof page's glyph check.
