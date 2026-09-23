@@ -149,7 +149,14 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(
  * works — or, for moving through a place, wide, following, feet. The last
  * task that makes something ends on the finished thing.
  */
-export function coverageFor(actions: Action[]): CoverageShot[] {
+/**
+ * `depth` is how many ways each action is covered. A reel needs the whole of
+ * it, the hands and the moment it works (1); a longer cut needs the same
+ * moments shot more ways, not more topics (Rina, 23 Sep — a 5–10 minute
+ * brief came back half-full). 2 adds the set-up, over the shoulder and from
+ * above; 3 adds the sound, the face and the pause after.
+ */
+export function coverageFor(actions: Action[], depth: 1 | 2 | 3 = 1): CoverageShot[] {
   if (actions.length === 0) return [];
   const shots: CoverageShot[] = [];
   const place = actions.find((a) => a.place)?.place;
@@ -177,6 +184,13 @@ export function coverageFor(actions: Action[]): CoverageShot[] {
         { id: `${base}-follow`, size: "MS", subject: `${a.phrase} — following from behind`, reason: "Movement without a face. Walk with them and let the place open up ahead.", beat: "body", person: "body", keywords: words(a) },
         { id: `${base}-feet`, size: "INS", subject: `${a.phrase} — feet on the ground`, reason: "A face-free cutaway that carries you between anything.", beat: "body", person: "body", keywords: words(a) },
       );
+      if (depth >= 2)
+        shots.push(
+          { id: `${base}-pov`, size: "MS", subject: `${a.phrase} — what you see, walking in`, reason: "Your own eyes on the way. Walk slowly and bend your knees to keep it smooth.", beat: "body", person: "none", keywords: words(a) },
+          { id: `${base}-pass`, size: "MS", subject: `${a.phrase} — passing the camera`, reason: "Set the camera down and walk through the frame: an entrance and an exit in one take.", beat: "body", person: "body", keywords: words(a) },
+        );
+      if (depth >= 3)
+        shots.push({ id: `${base}-arrive`, size: "WS", subject: `${a.phrase} — arriving`, reason: "The end of the move, held wide, so the edit can land somewhere.", beat: "body", person: "body", keywords: words(a) });
       return;
     }
     shots.push(
@@ -184,6 +198,18 @@ export function coverageFor(actions: Action[]): CoverageShot[] {
       { id: `${base}-hands`, size: "INS", subject: `${a.phrase} — hands, close`, reason: "Hands carry a process without needing a face, and cut between anything.", beat: "body", person: "body", keywords: words(a) },
       { id: `${base}-moment`, size: "CU", subject: `${a.phrase} — the moment you can see it working`, reason: "Wait for the change you can see, and hold on it for a few seconds.", beat: "body", person: "none", keywords: words(a) },
     );
+    if (depth >= 2)
+      shots.push(
+        { id: `${base}-ready`, size: "INS", subject: `${a.phrase} — what it needs, laid out`, reason: "The tools before they're used: a clean opener for this part, and a cutaway you'll reach for.", beat: "body", person: "none", keywords: words(a) },
+        { id: `${base}-ots`, size: "OTS", subject: `${a.phrase} — over the shoulder`, reason: "Puts the viewer where you're standing. Frame the shoulder soft and the work sharp.", beat: "body", person: "body", keywords: words(a) },
+        { id: `${base}-above`, size: "INS", subject: `${a.phrase} — from directly above`, reason: "A top-down angle turns the work into a pattern, and cuts cleanly against the side-on shots.", beat: "body", person: "body", keywords: words(a) },
+      );
+    if (depth >= 3)
+      shots.push(
+        { id: `${base}-sound`, size: "CU", subject: `${a.phrase} — close on what makes the sound`, reason: "Get close to whatever hisses, clicks or pours — in a quiet cut, sound carries the edit.", beat: "body", person: "none", keywords: words(a) },
+        { id: `${base}-face`, size: "MS", subject: `${a.phrase} — me watching it`, reason: "A beat of you watching the work gives the edit a breath between the close-ups.", beat: "body", person: "body", keywords: words(a) },
+        { id: `${base}-after`, size: "WS", subject: `${a.phrase} — the pause after, wide`, reason: "Hold wide for five seconds once it's done: the gap between one part and the next.", beat: "body", person: "none", keywords: words(a) },
+      );
   });
 
   // End on what got made, if the last task made something.

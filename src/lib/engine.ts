@@ -58,7 +58,7 @@ const mentions = (text: string, keyword: string) =>
 
 export function suggest(
   project: Project,
-  opts: { chips?: QuotedChip[]; brief?: string; packed?: GearItem[]; limit?: number; gearOnly?: boolean } = {},
+  opts: { chips?: QuotedChip[]; brief?: string; packed?: GearItem[]; limit?: number; gearOnly?: boolean; coverage?: boolean } = {},
 ): SuggestResult {
   // Everything the shoot is bringing, not only what's ticked into the bag (Rina, 23 Sep).
   const packed = opts.packed ?? project.gear ?? [];
@@ -141,7 +141,10 @@ export function suggest(
 
   // The brief's own actions go first, in the order they happen: they're the
   // shots only this brief could ask for. Templates fill the rest.
-  for (const c of opts.gearOnly ? [] : coverageFor(findActions(opts.brief ?? ""))) {
+  // A longer cut covers the brief's actions more ways, so the list reaches its budget (Rina, 23 Sep).
+  const depth = limit >= 48 ? 3 : limit >= 30 ? 2 : 1; // mid and longer · short · reel (§5.2)
+  // Under an online read the brief's own actions are already covered — the read did it better.
+  for (const c of opts.gearOnly || opts.coverage === false ? [] : coverageFor(findActions(opts.brief ?? ""), depth)) {
     if (chosen.length >= limit) break;
     if (onList.has(c.id) || !personAllowed(c.person, presence)) continue;
     chosen.push({ templateId: c.id, size: c.size, subject: c.subject, reason: c.reason, beat: c.beat, light: "any", fallback: false, score: 100, fromBrief: true, keywords: c.keywords });

@@ -378,6 +378,24 @@ Rina's rule: "Code is what's real; the canvas records where the design ended up.
 
 **Why it's evidence.** The boards were followed exactly, and the result was still wrong. That's the useful kind of failure: G5/G6 showed gear working *in isolation*, and the moment it met a real brief the isolation was the bug. The fix came from how Rina actually shoots, not from the spec. Frame rate is the clearest case: the camera could shoot slow motion, but the person had decided not to, and a tool that suggests what the camera can do instead of what you've chosen gets in the way.
 
+### 2.26 A ceiling for the person, a target for the machine — 23 Sep
+
+**What broke.** §5.2 says the budget is a ceiling, not a target: under budget is silent, and the app never pushes you to shoot more. §5.6 says generating fills to the *top* of the budget. Both are right, for different readers. The read's instructions carried the person's version to the machine: "up to the number… fewer if the brief doesn't honestly support more". With gear added, a 5–10 minute cut that needs 48–64 shots came back with 26. Rina: "roughly half of what I need and would be considered a failure."
+
+**Options.**
+- Pad with library shots after every read.
+- Ask the model for more and hope.
+- Give the model a number, and say how a longer cut earns its shots.
+
+**Decision. [R]**
+- **The read is given a count and a floor.** It's told that length is filled with coverage — each moment a wide, a medium, hands, the detail that shows it worked, a way in and out — not with more topics. Gear changes how you shoot a moment, not how many you cover.
+- **A floor that can't be missed.** A read that still comes back short is filled from the brief-matched library.
+- **Offline, the same idea:** the brief's actions are covered more ways as the budget grows.
+
+On Rina's brief and settings, the read went from 26 (48 on a re-run of the old prompt) to 64 with no padding, and offline from 34 to 52.
+
+**Why it's evidence.** The same principle needed opposite phrasing depending on who it was addressed to. That's a design-engineering problem specifically: the spec was right, and the prompt translated it wrongly. It was caught by the designer testing her own real use case against a number she knew — the budget she had set.
+
 ---
 
 ## 3. Artifact inventory

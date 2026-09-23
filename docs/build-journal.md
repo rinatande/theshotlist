@@ -174,3 +174,16 @@ The "not drawn" notes in design.md (§5.12 as built; §10 item 23) now point at 
 **Rina:** "suggest shots from gear is not cutting it. It needs to at the very least be able to pull in the brief to suggest shots that actually work for the shoot not generic random shots." She also asked for a way to add gear when creating a project, filters (close-up, ND) in the gear list, and a frame rate: "when I shoot a aesthetic silent slow life vlog, i shoot everything in 24 fps, so it won't suggest slowing down clips as real time is what im after."
 **Changed:** Proposed before building: gear suggestions that go through the brief (and the read when there's signal), a kit and a frame rate added to P2, and FILTER as a gear category. Rina overruled the placement: "lets add a third step to make each step clearer". She also added 120fps: "so we can get slow motion". So new project gets a third step, gear and frame rate (24 · 25 · 30 · 50 · 60 · 120 · MIXED), and all four fixes go ahead.
 **Kind:** plan rejected
+
+### 2026-09-23 · v1 gear · Half the shots the cut needs
+
+**Proposed:** The read's instructions told the model to add shots "up to the number you're told there's room for — fewer if the brief doesn't honestly support more". The gear update then added "plan only shots that gear can make". Nothing checked the result against the budget. Offline, each action in the brief was covered three ways whatever the length.
+**Rina:** "Before the update the brief generated 46 shots for a 5-10 min video with a shot budget of 48-64 shots… On the new update, with the exact same prompt, just with gear selected and 24 fps chosen, it only created 26 shots. that's roughly half of what I need and would be considered a failure… The shot list generated should take into account the type of video being shot as well as the length / shot budget and generate enough shots for that!"
+**Changed:**
+- **The read's budget is a count to hit.** It's told exactly how many shots to return and the minimum, and that a longer cut needs each moment covered more ways, not more topics. Gear changes how a moment is shot, not how many are covered.
+- **Tested on her setup.** The old prompt gave 48 on the run tested (26 on hers); the new one gave 64, the top of the budget.
+- **A short read is filled** from the brief-matched library up to the minimum, under TO REACH THE BUDGET.
+- **Offline coverage deepens with the budget:** reel 3 ways per action, short 6, mid and longer 9. Her brief now gives 52 offline, up from 34.
+
+design.md §5.6 and §6.2; case-study-log 2.26.
+**Kind:** bug caught

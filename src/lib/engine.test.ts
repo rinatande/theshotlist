@@ -248,3 +248,26 @@ describe("frame rate and the brief decide what gear is for (Rina, 23 Sep)", () =
     expect(coast.suggestions.some((s) => s.templateId.startsWith("drone"))).toBe(true);
   });
 });
+
+describe("a longer cut gets enough shots (Rina, 23 Sep)", () => {
+  const brief = "Aesthetic vlog of me descaling and flushing coffee machine at home then making a latte.";
+  const mid = project({ format: { genre: "personal", treatment: "silent", delivery: "mid", aspect: "16:9" }, frameRate: 24 });
+
+  it("reaches at least the bottom of a 5–10 minute budget from the brief, offline", () => {
+    const r = suggest(mid, { brief, chips: matchChips(brief) });
+    expect(r.suggestions.length).toBeGreaterThanOrEqual(48);
+    // The brief's actions are covered several ways, not just once.
+    expect(r.suggestions.filter((s) => s.fromBrief && s.subject.startsWith("Making a latte")).length).toBeGreaterThanOrEqual(6);
+  });
+
+  it("covers a reel's actions the short way", () => {
+    const reel = project({ format: REEL_SILENT });
+    const r = suggest(reel, { brief });
+    expect(r.suggestions.filter((s) => s.fromBrief && s.subject.startsWith("Making a latte")).length).toBeLessThanOrEqual(3);
+  });
+
+  it("leaves the brief's actions to the read when it's filling in under one", () => {
+    const r = suggest(mid, { brief, coverage: false, limit: 12 });
+    expect(r.suggestions.some((s) => s.fromBrief)).toBe(false);
+  });
+});

@@ -166,7 +166,7 @@ What good looks like:
 - Sound: "speech" when someone talks on camera, "natural" when there's no talking but the place's sound is worth recording, "none" only when music or voice-over will cover it entirely. In a silent or observational film, natural sound is the soundtrack — use "natural", not "none".
 - Locations. If location names are given, set each shot's "location" to exactly one of those names where it clearly belongs, else null, and return "locations" empty. If none are given, suggest the places this shoot happens in "locations": short names a person would write on their own list ("Kitchen", "Nagi Coffee", "Higashiyama streets"), in the order they'd be shot, and as few as honestly cover it — usually one to four; a shoot in one room is one location. On a multi-day shoot give each its day, else null. Then set every shot's "location" to one of those names.
 - Set a shot's "day" to the day number only on a multi-day shoot, else null.
-- Gear. If gear is listed, plan only shots that gear can make, and when a piece of it earns a shot, name it in the reason line and say what it buys ("The 85 at f1.8 compresses the flame behind the hands"). Where the kit can't do something the brief wants, rewrite the shot so it can ("No tripod packed — set it on the table edge and hold twenty seconds") rather than dropping it. If no gear is listed, keep every shot possible with just a camera, and make each reason line about why the shot works, not about gear.
+- Gear. If gear is listed, plan only shots that gear can make, and when a piece of it earns a shot, name it in the reason line and say what it buys ("The 85 at f1.8 compresses the flame behind the hands"). Where the kit can't do something the brief wants, rewrite the shot so it can ("No tripod packed — set it on the table edge and hold twenty seconds") rather than dropping it. If no gear is listed, keep every shot possible with just a camera, and make each reason line about why the shot works, not about gear. Gear changes how you shoot a moment, never how many moments you cover.
 
 Chips:
 - "quoted": places, times of day, moods, subjects, clients and people exactly as they appear in the brief's own words. Never the project settings — no aspect ratios, lengths, shot counts or treatment names unless the brief itself says them.
@@ -174,7 +174,7 @@ Chips:
 
 Deliverables: only shots a client or brand explicitly requires, grouped under that client's name. Put them in "deliverables", not in "shots". A personal video usually has none.
 
-Budget: the shot budget is a range for the whole cut. Add shots up to the number you're told there's room for — fewer if the brief doesn't honestly support more. Never pad with shots unrelated to the brief, and never repeat anything already on the list.`;
+Budget: the shot budget is how many shots the edit of this length needs — a count to hit, not a ceiling to stay under. Return the number of shots you're asked for (deliverables count toward it), and never fewer than the minimum you're given. A longer cut doesn't need more topics; it needs coverage. Shoot each moment of the brief several ways — a wide that places it, a medium on the action, close-ups and inserts of the hands and the objects, the detail that shows it worked, a cutaway to the place around it, a way in and a way out — and add the in-between shots an edit leans on: arriving, the light changing, textures, time passing, the room at rest. Every shot must still belong to this brief; never repeat anything already on the list.`;
 
 /** How the frame rate reads to the model — nothing when it's left to the camera. */
 function frameRateLine(fr?: number | "mixed"): string[] {
@@ -185,10 +185,12 @@ function frameRateLine(fr?: number | "mixed"): string[] {
 
 export function readPrompt(req: ReadRequest): string {
   const c = req.context;
+  // Fill to the top of the range (§5.6); the bottom is the floor the read must reach (Rina, 23 Sep).
   const room = Math.max(0, c.budget.max - c.planned);
+  const floor = Math.max(0, c.budget.min - c.planned);
   return [
     `Project: ${c.format} (treatment: ${c.treatment}).`,
-    `Budget: ${c.budget.min}–${c.budget.max} shots. ${c.planned} already planned, so there's room for about ${room} more (deliverables count toward it).`,
+    `Budget: ${c.budget.min}–${c.budget.max} shots for the whole cut. ${c.planned} already planned. Return ${room} shots (deliverables included), and at least ${floor}.`,
     c.days.length > 1 ? `Days: ${c.days.map((d) => `day ${d.day}${d.date ? ` (${d.date})` : ""}`).join(", ")}.` : "One day.",
     c.locations.length ? `Locations: ${c.locations.map((l) => `"${l.name}"${l.day ? ` day ${l.day}` : ""}${l.start ? ` from ${l.start}` : ""}`).join("; ")}.` : "No locations yet.",
     `On camera: ${c.onCamera}.`,

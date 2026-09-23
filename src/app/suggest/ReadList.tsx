@@ -9,6 +9,8 @@ import { projectBudget } from "@/lib/budget";
 import { db } from "@/lib/db";
 import { addSuggestions, suggest, type Suggestion } from "@/lib/engine";
 import { budgetLabel } from "@/lib/labels";
+import { projectBrief } from "@/lib/brief";
+import { matchChips } from "@/lib/chips";
 import { currentRead } from "@/lib/readClient";
 import { addReadPicks, clearUnshot, readPicks, type ReadPick } from "@/lib/readShots";
 import type { Project } from "@/lib/types";
@@ -30,15 +32,29 @@ export function ReadList({ project }: { project: Project }) {
   // Worked out once, so adding one doesn't reshuffle the rest.
   const [start] = useState(() => project);
   const { required, shots } = useMemo(() => readPicks(start, read), [start, read]);
-  const [library] = useState(() => suggest(start, { limit: 12 }).suggestions);
+  // A read that comes back short of the budget's minimum is filled from the library,
+  // matched to the brief, so the list is never half of what the cut needs (Rina, 23 Sep).
+  const [fill] = useState(() => {
+    const offered = required.reduce((n, r) => n + r.picks.filter((p) => !p.alreadyOn).length, 0) + shots.length;
+    const planned = start.shots.filter((s) => s.status !== "dropped").length;
+    return Math.max(0, projectBudget(start).min - planned - offered);
+  });
+  const [library] = useState(() => {
+    const text = projectBrief(start)?.text ?? "";
+    return suggest(start, { brief: text, chips: matchChips(text), coverage: false, limit: Math.max(12, fill) }).suggestions;
+  });
   const [added, setAdded] = useState<Set<string>>(new Set());
-  const [showLibrary, setShowLibrary] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(fill > 0);
 
   const live = start.shots.filter((s) => s.status !== "dropped");
   const exposed = live.filter((s) => s.status === "exposed").length;
   const existing = live.length > 0; // B10: there's a list already
   const allPicks = [...required.flatMap((r) => r.picks.filter((p) => !p.alreadyOn)), ...shots];
-  const pending = allPicks.filter((p) => !added.has(p.id));
+  const pendingRead = allPicks.filter((p) => !added.has(p.id));
+  const fillPicks = library.slice(0, fill);
+  const pendingFill = fillPicks.filter((s) => !added.has(s.templateId));
+  const pendingCount = pendingRead.length + pendingFill.length;
+  const offeredCount = allPicks.length + fillPicks.length;
   const b = projectBudget(project);
   const planned = project.shots.filter((s) => s.status !== "dropped").length;
   const locationName = new Map(project.locations.map((l) => [l.id, l.name]));
@@ -140,9 +156,14 @@ export function ReadList({ project }: { project: Project }) {
           (showLibrary ? (
             <section aria-labelledby="library">
               <h2 id="library" className={styles.band}>
-                <span>ALSO FROM THE LIBRARY</span>
+                <span>{fill > 0 ? "TO REACH THE BUDGET" : "ALSO FROM THE LIBRARY"}</span>
                 <span>{String(library.length).padStart(2, "0")}</span>
               </h2>
+              {fill > 0 && (
+                <p className={styles.note}>
+                  The read gave {allPicks.length}; a cut this length needs at least {b.min}. The first {fill} below, matched to your brief, are added with the rest.
+                </p>
+              )}
               <ul className={styles.rows}>
                 {library.map((s) => row(s.templateId, s.size, s.subject, s.reason, where(s.locationId, s.dayId), () => addLibrary([s])))}
               </ul>
@@ -155,7 +176,7 @@ export function ReadList({ project }: { project: Project }) {
       </div>
 
       <div className={ui.footer}>
-        {existing && pending.length > 0 && (
+        {existing && pendingCount > 0 && (
           <div className={styles.careful}>
             <span className={ui.boxHeadingWarn}>CAREFUL</span>
             <p className={ui.boxText}>
@@ -163,22 +184,23 @@ export function ReadList({ project }: { project: Project }) {
             </p>
           </div>
         )}
-        {!existing && pending.length > 0 && (
+        {!existing && pendingCount > 0 && (
           <p className={ui.hint}>
-            Adding {pending.length === allPicks.length ? "all" : "the rest"} puts the list at {planned + pending.length}, against a budget of {budgetLabel(b).replace(" — ", "—")}.
+            Adding {pendingCount === offeredCount ? "all" : "the rest"} puts the list at {planned + pendingCount}, against a budget of {budgetLabel(b).replace(" — ", "—")}.
           </p>
         )}
-        {pending.length > 0 ? (
+        {pendingCount > 0 ? (
           <>
             <button
               type="button"
               className={ui.primary}
               onClick={async () => {
-                await addPicks(pending);
+                await addPicks(pendingRead);
+                if (pendingFill.length) await addLibrary(pendingFill);
                 router.replace(list);
               }}
             >
-              {existing ? `ADD ${pending.length} NEW` : pending.length === allPicks.length ? `ADD ALL ${pending.length}` : `ADD THE OTHER ${pending.length}`}
+              {existing ? `ADD ${pendingCount} NEW` : pendingCount === offeredCount ? `ADD ALL ${pendingCount}` : `ADD THE OTHER ${pendingCount}`}
             </button>
             {existing && (
               <button
@@ -186,7 +208,7 @@ export function ReadList({ project }: { project: Project }) {
                 className={ui.secondary}
                 onClick={async () => {
                   const latest = (await db.projects.get(project.id)) ?? project;
-                  await saveProject(addReadPicks(clearUnshot(latest), pending));
+                  await saveProject(addSuggestions(addReadPicks(clearUnshot(latest), pendingRead), pendingFill, "template"));
                   router.replace(list);
                 }}
               >

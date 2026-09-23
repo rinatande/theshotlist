@@ -31,7 +31,7 @@ describe("what the read is sent", () => {
     const prompt = readPrompt({ brief: "Sunrise at the cliffs", context: readContext(p) });
     expect(prompt).toContain('"Cliff path" from 06:10');
     expect(prompt).toContain('"Drone pull-back"');
-    expect(prompt).toContain("room for about 23 more");
+    expect(prompt).toContain("Return 23 shots (deliverables included), and at least 17.");
     expect(prompt).not.toContain("Secret client film");
   });
 
