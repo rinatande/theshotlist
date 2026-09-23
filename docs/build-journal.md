@@ -200,3 +200,15 @@ design.md §5.6 and §6.2; case-study-log 2.26.
 
 CLAUDE.md's offline rule, design.md §3 and §5.6; case-study-log 2.27.
 **Kind:** design call
+
+### 2026-09-23 · v1 gear · Generating failed twice
+
+**Proposed:** The budget fix asked a 5–10 minute read for up to 64 shots, each with a one-or-two-sentence reason, at the default thinking effort. The route allowed 120 seconds, and gave the reader 100 seconds with one retry.
+**Rina:** "tried to generate shots 2 times and both times failed, is there something wrong with it?"
+**Changed:** Reproduced on the live site: the function was stopped at 120s (FUNCTION_INVOCATION_TIMEOUT), so nothing came back.
+- **Faster read:** effort "medium" (READ_EFFORT), and reason lines of one sentence under 25 words.
+- **More time:** maxDuration 300s, one attempt with a 280s timeout, and the top-up only if the first read is back within 150s.
+- **Timed with her settings:** 61s for 63 shots, about 7¢.
+
+design.md §5.6.
+**Kind:** bug caught

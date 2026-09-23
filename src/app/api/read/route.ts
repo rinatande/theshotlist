@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { jsonSchemaOutputFormat } from "@anthropic-ai/sdk/helpers/json-schema";
-import { MAX_BRIEF, mergeTopUp, READ_MODEL, READ_SCHEMA, READ_SYSTEM, readPrompt, shotTarget, topUpPrompt, type ReadRequest, type ReadResponse, type ReadResult } from "@/lib/read";
+import { MAX_BRIEF, mergeTopUp, READ_EFFORT, READ_MODEL, READ_SCHEMA, READ_SYSTEM, readPrompt, shotTarget, topUpPrompt, type ReadRequest, type ReadResponse, type ReadResult } from "@/lib/read";
 import { recordSpend, reserve, store } from "@/lib/server/quota";
 
 /**
@@ -11,10 +11,11 @@ import { recordSpend, reserve, store } from "@/lib/server/quota";
  */
 
 // A careful read takes 20–60 seconds.
-export const maxDuration = 120;
+// A long cut's read can take well over a minute; 120s timed out on Rina's 5–10 minute brief (23 Sep).
+export const maxDuration = 300;
 
 /** Only ask for a top-up if there's time left for it inside maxDuration. */
-const TOP_UP_BEFORE_MS = 55_000;
+const TOP_UP_BEFORE_MS = 150_000;
 
 /** Sonnet 5 list prices, $ per million tokens — to keep the day's total honest. */
 const PRICE = { input: 2, output: 10 };
@@ -56,7 +57,8 @@ export async function POST(request: Request) {
   if (!decision.ok) return fail(429, "limit", decision.message);
 
   const started = Date.now();
-  const client = new Anthropic({ timeout: 100_000, maxRetries: 1 });
+  // One attempt with room to finish, rather than two that each run out of time.
+  const client = new Anthropic({ timeout: 280_000, maxRetries: 0 });
   try {
     const response = await client.messages.parse({
       model: READ_MODEL,
@@ -65,7 +67,7 @@ export async function POST(request: Request) {
       // The instructions never change between reads, so they're cached.
       system: [{ type: "text", text: READ_SYSTEM, cache_control: { type: "ephemeral" } }],
       messages: [{ role: "user", content: readPrompt({ brief, context: body.context }) }],
-      output_config: { format: jsonSchemaOutputFormat(READ_SCHEMA) },
+      output_config: { effort: READ_EFFORT, format: jsonSchemaOutputFormat(READ_SCHEMA) },
     });
 
     const u = response.usage;
@@ -100,7 +102,7 @@ export async function POST(request: Request) {
             { role: "assistant", content: JSON.stringify(result) },
             { role: "user", content: topUpPrompt(count, floor, room) },
           ],
-          output_config: { format: jsonSchemaOutputFormat(READ_SCHEMA) },
+          output_config: { effort: READ_EFFORT, format: jsonSchemaOutputFormat(READ_SCHEMA) },
         });
         const v = more.usage;
         await recordSpend(s, ((v.input_tokens + (v.cache_creation_input_tokens ?? 0) * 1.25 + (v.cache_read_input_tokens ?? 0) * 0.1) * PRICE.input + v.output_tokens * PRICE.output) / 1e6);

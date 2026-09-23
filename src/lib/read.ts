@@ -17,6 +17,13 @@ import type { Audio, BeatRole, Light, Movement, Project, ShotSize } from "./type
 
 export const READ_MODEL = "claude-sonnet-5";
 
+/**
+ * How hard the read thinks. At the default, a 64-shot read of a 5–10 minute
+ * cut ran past the server's time limit (Rina, 23 Sep); medium is faster and,
+ * for writing a list, loses little.
+ */
+export const READ_EFFORT = "medium" as const;
+
 /** Longest brief the read accepts — three long paragraphs and a pasted client email. */
 export const MAX_BRIEF = 6000;
 
@@ -166,7 +173,7 @@ export const READ_SYSTEM = `You plan shot lists for a solo videographer inside a
 What good looks like:
 - Shots specific to this brief, in the order the thing actually happens. Name the real objects and moments ("descaler going into the water tank", not "a detail shot").
 - A list one person can shoot alone, with whatever they carry: nothing that needs a crew.
-- Every shot has a reason line: one or two plain sentences on why it's worth getting or how to get it on the day. Practical and specific — framing, light, timing, what to match it to. Never generic praise like "looks satisfying".
+- Every shot has a reason line: one plain sentence, under 25 words, on why it's worth getting or how to get it on the day. Practical and specific — framing, light, timing, what to match it to. Never generic praise like "looks satisfying".
 - Subjects are short and start with a capital letter. The person holding the camera is "me" ("Me walking away down the alley", "My hands pouring the beans"), never "the videographer".
 - Plain words, not film-set jargon. Say "location", not "setup"; "start time", not "call time".
 - Sizes: WS (wide), MS (medium), CU (close-up), OTS (over the shoulder), INS (insert). Beats: opener, body, closer. Light: any, sunrise, golden, blue, night, day.
