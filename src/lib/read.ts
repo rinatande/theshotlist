@@ -20,6 +20,13 @@ export const READ_MODEL = "claude-sonnet-5";
 /** Longest brief the read accepts — three long paragraphs and a pasted client email. */
 export const MAX_BRIEF = 6000;
 
+/**
+ * Bumped when the read's instructions change what it returns. v2 (23 Sep): the
+ * budget became a count to hit — reads made before it came back short, so they
+ * run once more instead of being served from the cache.
+ */
+export const READ_VERSION = 2;
+
 export interface ReadContext {
   format: string;
   treatment: string;
@@ -207,14 +214,14 @@ export function readPrompt(req: ReadRequest): string {
  * The brief text and the gear, hashed. The screen promises a read "won't run
  * again unless you change the brief or your gear" (§5.6), so nothing else goes
  * in — adding the read's own shots used to change the planned count and buy a
- * second read. Gear joined in v1 (Rina, 23 Sep); a read with no gear hashes as
- * it always did, so no saved read is lost.
+ * second read. Gear and frame rate joined in v1 (Rina, 23 Sep), and READ_VERSION
+ * lets a change to the instructions re-run reads they got wrong.
  */
 export async function readHash(req: ReadRequest): Promise<string> {
   const gear = [...(req.context.gear ?? [])].sort();
   const frameRate = req.context.frameRate;
   const bytes = new TextEncoder().encode(
-    JSON.stringify({ model: READ_MODEL, brief: req.brief.trim(), ...(gear.length ? { gear } : {}), ...(frameRate !== undefined ? { frameRate } : {}) }),
+    JSON.stringify({ model: READ_MODEL, v: READ_VERSION, brief: req.brief.trim(), ...(gear.length ? { gear } : {}), ...(frameRate !== undefined ? { frameRate } : {}) }),
   );
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
