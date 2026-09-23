@@ -209,6 +209,15 @@ Step 1 of setup states the consequence of the combination in plain language befo
 - **The consequence box waits rather than vanishes.** Same border, same position, but muted and reading *"Pick a kind and a treatment, and this says what they mean for your list — before you commit to them."* It teaches the pattern before its first use, and the box doesn't pop into existence mid-form.
 - **Two versions.** With projects behind you, a quiet `FROM A PAST PROJECT ›` link sits in the name row — it copies format, aspect, gear kit, cast and presence, not the shots or the brief. On a genuinely first run there's nothing to copy, and instead a note that no gear is on file yet, with a route to add it: the suggestion engine has three inputs (§5.5) and this is the moment one of them is missing.
 
+**New project has three steps (v1, Rina 23 Sep).** Step 1 is the kind, the treatment and who's on camera. Step 2 is the length, aspect, dates and days. Step 3 is new:
+- **Frame rate:** `24 · 25 · 30 · 50 · 60 · 120 · MIXED`, optional.
+  - At 24, 25 or 30, everything is real time, so slow motion is never suggested.
+  - At 50 and up it's available whatever the camera's spec says.
+  - At MIXED, or unset, it's left to what the camera can shoot.
+- **What are you bringing:** your kits, or the three starter kits when your library is empty, or `DECIDE LATER`.
+
+Rina chose a third step over adding two rows to P2 — "to make each step clearer" — so the first GENERATE already knows the frame rate and the bag. `FROM A PAST PROJECT` copies the frame rate and the kit too. In edit, step 3 changes the frame rate and points at the GEAR tab for gear.
+
 ### 5.2 Delivery length
 
 `Reel 15–60s · Short 1–3 min · Mid 5–10 min · Long 10–20 min · Custom`
@@ -592,6 +601,11 @@ Two things matter in that shape. **Specs, not just names** — "Sony 85 f/1.8" t
 - **A project keeps copies, not ids.** `Project.gear` holds copies of library items, keeping their ids. Deleting or selling a lens changes the library and its kits, never a project's list (§8 Gear screens).
 - **Suggestions use everything you're bringing.** `packedIds` is only the IN THE BAG checklist. The model above made `packed[]` the engine's input, but then nothing would fit your bag until you'd packed it. See case-study-log 2.24.
 - **A camera can have a built-in lens.** A phone or compact records one, and it counts like any other lens.
+- **Filters are a category (Rina, 23 Sep):** ND, variable ND, polariser, close-up and diffusion, each with an optional strength ("6 stops", "+4").
+  - An ND unlocks shooting wide open and slow shutters in daylight.
+  - A polariser unlocks shots through water and glass.
+  - A close-up filter counts as macro.
+  - Diffusion changes the look, not what you can shoot, so it's on the packing list and nowhere in the suggestions.
 - **Categories:** `DRONE` is a category; `GRIP` isn't offered, because it unlocks nothing.
 - **Starter kits** (E6: Pocket, One camera one lens, Full kit) live in `src/data/starterKits.json` as generic items with typical specs. Picking one makes them your own items and kit, to rename. Like the templates, they're drafts for Rina to edit.
 
@@ -620,6 +634,9 @@ A count of withheld suggestions is shown, without listing them: *"Four more that
 
 **As built (v1):**
 - **Ranking.** A template the kit unlocks scores +3.
+- **With a brief, a shot that needs gear must also be relevant to the brief:** its keywords or its light. Otherwise it doesn't appear at all. The first version offered any shot the gear could make, so a coffee vlog got a drone top-down (Rina, 23 Sep, build journal). Gear-free basics still fill the list.
+- **SUGGEST SHOTS FROM THIS KIT goes through the brief when there is one.** That means the read with signal, which knows the gear and the frame rate, or the brief's words offline. G5/G6 as drawn (format and kit alone) is only for a project with no brief, and says what a brief would add.
+- **The brief screen shows what generating will know.** It carries a `GEAR` line with what's coming and the frame rate, one tap from the GEAR tab.
 - **The withheld line** names the two capabilities the withheld templates most often need, and appears on every suggestion screen.
 - **Item names.** A reason line names the item as you wrote it. Only the starter kits' generic names ("Camera body") drop their capital mid-sentence.
 - **An honest comparison.** A pocket kit and a full rig share about half a reel's list, because the gear-free basics fill both. The shots the gear earns are what differ. G5 and G6 were drawn to show no overlap, which the library doesn't give.

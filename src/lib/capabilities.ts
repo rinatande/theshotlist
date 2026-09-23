@@ -42,6 +42,12 @@ export function capabilities(packed: GearItem[]): Set<Capability> {
       case "drone":
         caps.add("drone");
         break;
+      case "filter":
+        if (specs.type === "nd" || specs.type === "vnd") caps.add("nd");
+        if (specs.type === "cpl") caps.add("polariser");
+        // A close-up filter gets a lens close enough for detail shots.
+        if (specs.type === "closeup") caps.add("macro");
+        break;
       case "grip":
         break;
     }

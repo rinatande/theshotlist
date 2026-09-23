@@ -40,7 +40,13 @@ export async function POST(request: Request) {
   if (!body.device || !DEVICE.test(body.device)) return fail(400, "error", "That request didn't make sense.");
   // The context goes into the prompt as sent, so bound it: every read costs real money.
   const list = (v: unknown, n: number, len: number) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").slice(0, n).map((x) => x.slice(0, len)) : []);
-  body.context = { ...body.context, onList: list(body.context.onList, 80, 200), gear: list(body.context.gear, 40, 160) };
+  const fr = body.context.frameRate;
+  body.context = {
+    ...body.context,
+    onList: list(body.context.onList, 80, 200),
+    gear: list(body.context.gear, 40, 160),
+    frameRate: fr === "mixed" || [24, 25, 30, 50, 60, 120].includes(fr as number) ? fr : undefined,
+  };
 
   const address = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const decision = await reserve(s, { device: body.device, address, invite: body.invite });

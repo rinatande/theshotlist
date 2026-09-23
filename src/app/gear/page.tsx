@@ -16,6 +16,7 @@ const BANDS: { title: string; categories: GearCategory[] }[] = [
   { title: "LENSES", categories: ["lens"] },
   { title: "SUPPORT", categories: ["support"] },
   { title: "LIGHT · AUDIO · POWER", categories: ["light", "audio", "power"] },
+  { title: "FILTERS", categories: ["filter"] },
   { title: "DRONES", categories: ["drone"] },
 ];
 

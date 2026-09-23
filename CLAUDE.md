@@ -74,6 +74,9 @@ Rina's decisions:
 - Cameras can have a built-in lens.
 - DRONE is a category; GRIP isn't offered.
 - The read is sent what you're bringing, and a gear change counts as a new read.
+- (Later that day) Gear suggestions go through the brief, and gear-earned shots need the brief's backing.
+- New project has a third step, frame rate and gear. At 24/25/30 there's no slow motion; 120 is offered for slow motion.
+- FILTER is a gear category: ND, polariser, close-up, diffusion.
 
 ## Rules that must not break
 

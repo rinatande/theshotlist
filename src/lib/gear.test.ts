@@ -103,3 +103,20 @@ describe("a shoot's gear", () => {
     expect(kit).toEqual({ id: "k1", name: "Coast", itemIds: ["fx30"] });
   });
 });
+
+describe("filters", () => {
+  const f = (type: "nd" | "vnd" | "cpl" | "closeup" | "diffusion", strength?: string): GearItem => ({ id: type, name: type, specs: { category: "filter", type, strength } });
+
+  it("unlock what they make possible — ND, polariser, close-up as macro — and diffusion unlocks nothing", () => {
+    expect([...capabilities([f("vnd")])]).toEqual(["nd"]);
+    expect([...capabilities([f("cpl")])]).toEqual(["polariser"]);
+    expect([...capabilities([f("closeup")])]).toEqual(["macro"]);
+    expect([...capabilities([f("diffusion")])]).toEqual([]);
+    expect(unlocksLine(f("diffusion").specs)).toMatch(/changes the look, not what you can shoot/);
+  });
+
+  it("read the way they're written on the ring", () => {
+    expect(specLine(f("nd", "6 stops").specs)).toBe("ND · 6 STOPS");
+    expect(specLine(f("closeup", "+4").specs)).toBe("CLOSE-UP · +4");
+  });
+});

@@ -8,8 +8,8 @@ import { NotHere } from "@/components/NotHere";
 import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { db } from "@/lib/db";
-import { CATEGORIES, specsComplete, unlocksLine } from "@/lib/gear";
-import type { GearCategory, GearItem, GearSpecs, Kit } from "@/lib/types";
+import { CATEGORIES, FILTER_TYPES, specsComplete, unlocksLine } from "@/lib/gear";
+import type { FilterType, GearCategory, GearItem, GearSpecs, Kit } from "@/lib/types";
 import { useLive } from "@/lib/useLive";
 import { useSearchParams } from "next/navigation";
 import styles from "./Item.module.css";
@@ -23,11 +23,13 @@ interface Draft {
   num: Record<string, string>;
   flag: Record<string, boolean>;
   mount: string;
-  kind?: string; // support type, audio type, or light colour
+  /** A filter's strength as written on it: "6 stops", "+4", "1/8". */
+  strength: string;
+  kind?: string; // support type, audio type, light colour, or filter type
   kitIds: string[];
 }
 
-const blank = (category: Category = "lens"): Draft => ({ category, name: "", num: {}, flag: {}, mount: "", kitIds: [] });
+const blank = (category: Category = "lens"): Draft => ({ category, name: "", num: {}, flag: {}, mount: "", strength: "", kitIds: [] });
 
 function toDraft(item: GearItem, kits: Kit[]): Draft {
   const d = blank(item.specs.category === "grip" ? "camera" : item.specs.category);
@@ -68,6 +70,10 @@ function toDraft(item: GearItem, kits: Kit[]): Draft {
     case "drone":
       d.num.maxWindKmh = n(s.maxWindKmh);
       break;
+    case "filter":
+      d.kind = s.type;
+      d.strength = s.strength ?? "";
+      break;
   }
   return d;
 }
@@ -103,6 +109,8 @@ function toSpecs(d: Draft): GearSpecs {
       return { category: "power", capacityMah: n("capacityMah") ?? 0 };
     case "drone":
       return { category: "drone", maxWindKmh: n("maxWindKmh") };
+    case "filter":
+      return { category: "filter", type: (d.kind as FilterType) ?? "nd", strength: d.strength.trim() || undefined };
   }
 }
 
@@ -111,6 +119,7 @@ const KINDS: Partial<Record<Category, { label: string; options: { value: string;
   support: { label: "TYPE", options: ["tripod", "gimbal", "slider", "monopod"].map((v) => ({ value: v, label: v.toUpperCase() })) },
   audio: { label: "TYPE", options: [{ value: "shotgun", label: "SHOTGUN" }, { value: "lav", label: "LAV" }, { value: "recorder", label: "RECORDER" }] },
   light: { label: "COLOUR", options: [{ value: "daylight", label: "DAYLIGHT" }, { value: "bi", label: "BI-COLOUR" }, { value: "rgb", label: "RGB" }] },
+  filter: { label: "TYPE", options: FILTER_TYPES },
 };
 
 function ItemScreen() {
@@ -258,6 +267,14 @@ function ItemForm({ item, library, kits, back, onDone }: { item?: GearItem; libr
     ),
     power: field("capacityMah", "CAPACITY MAH", "20000"),
     drone: field("maxWindKmh", "MAX WIND KM/H · OPTIONAL", "38"),
+    filter: (
+      <div className={ui.field}>
+        <label htmlFor="g-strength" className={ui.label}>
+          STRENGTH · OPTIONAL
+        </label>
+        <input id="g-strength" className={ui.input} autoComplete="off" value={draft.strength} placeholder="6 stops, +4, 1/8" onChange={(e) => set({ strength: e.target.value })} />
+      </div>
+    ),
   };
 
   const why = !draft.name.trim() ? "Give it a name." : !ready ? (kind && !draft.kind && draft.category !== "light" ? `Pick a ${kind.label.toLowerCase()}.` : "Fill in the specs above — they're what the app reasons with.") : undefined;

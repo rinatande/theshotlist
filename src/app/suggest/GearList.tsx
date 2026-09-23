@@ -91,6 +91,15 @@ export function GearList({ project }: { project: Project }) {
           </ul>
         )}
 
+        {/* Only reached with no brief: say what a brief would add. */}
+        <div className={`${ui.box} ${styles.notShown}`}>
+          <span className={ui.boxHeading}>NO BRIEF YET</span>
+          <p className={ui.boxText}>These fit the kit and the format. Write a line about the day and they fit the shoot too.</p>
+          <Link href={`/brief?id=${project.id}`} className={ui.textLink}>
+            WRITE A BRIEF ›
+          </Link>
+        </div>
+
         {notShown && (
           <div className={`${ui.box} ${styles.notShown}`}>
             <span className={ui.boxHeading}>NOT SHOWN</span>

@@ -167,3 +167,10 @@ Others shipped differently from their board: B10 keeps exposed shots, flagged sh
 
 The "not drawn" notes in design.md (§5.12 as built; §10 item 23) now point at those boards. See case-study-log 2.23.
 **Kind:** other
+
+### 2026-09-23 · v1 gear · Gear suggestions ignored the brief
+
+**Proposed:** Stage 2 built G5/G6 as drawn. SUGGEST SHOTS FROM THIS KIT ran the offline engine on the format and the gear alone. On an existing list it offered up to eight "gear-earned" templates whether or not the shoot had any use for them: a drone top-down, hair in the wind in slow motion. Gear could only be chosen after the project existed, so a first read or GENERATE never knew the kit.
+**Rina:** "suggest shots from gear is not cutting it. It needs to at the very least be able to pull in the brief to suggest shots that actually work for the shoot not generic random shots." She also asked for a way to add gear when creating a project, filters (close-up, ND) in the gear list, and a frame rate: "when I shoot a aesthetic silent slow life vlog, i shoot everything in 24 fps, so it won't suggest slowing down clips as real time is what im after."
+**Changed:** Proposed before building: gear suggestions that go through the brief (and the read when there's signal), a kit and a frame rate added to P2, and FILTER as a gear category. Rina overruled the placement: "lets add a third step to make each step clearer". She also added 120fps: "so we can get slow motion". So new project gets a third step, gear and frame rate (24 · 25 · 30 · 50 · 60 · 120 · MIXED), and all four fixes go ahead.
+**Kind:** plan rejected

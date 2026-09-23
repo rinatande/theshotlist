@@ -1,4 +1,4 @@
-import type { Cast, Day, Format, Id, IsoDate, IsoDateTime, Project } from "./types";
+import type { Cast, Day, Format, Id, IsoDate, IsoDateTime, Project, FrameRate } from "./types";
 
 export interface NewProjectInput {
   name?: string;
@@ -6,6 +6,7 @@ export interface NewProjectInput {
   startDate?: IsoDate;
   dayCount: number;
   where?: string;
+  frameRate?: FrameRate;
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -48,6 +49,7 @@ export function createProject(
     startDate: input.startDate,
     dayCount: Math.max(1, input.dayCount),
     where: input.where?.trim() || undefined,
+    frameRate: input.frameRate,
     cast: defaultCast(),
     gear: [],
     packedIds: [],
@@ -128,6 +130,7 @@ export function applyEdit(
     format: input.format,
     startDate: input.startDate,
     where: input.where?.trim() || undefined,
+    frameRate: input.frameRate,
     dayCount: count,
     days,
     locations,

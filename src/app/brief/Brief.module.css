@@ -132,3 +132,24 @@ div.route {
   font-size: var(--text-15);
   font-weight: 500;
 }
+
+/* What generating will know: the shoot's gear and frame rate, one tap from the GEAR tab. */
+.gearLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--target);
+  padding: 0 0 0 0;
+  border-top: 1px solid var(--rule);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.gearText {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-11);
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}

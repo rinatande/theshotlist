@@ -21,6 +21,9 @@ test("the core route, from a new project to a wrapped day", async ({ page }) => 
   await page.getByRole("radio", { name: "PERSONAL" }).click();
   await page.getByRole("radio", { name: "SILENT / OBSERVATIONAL" }).click();
   await next.click();
+  await page.getByRole("button", { name: "NEXT — GEAR" }).click();
+  // Step 3: shooting in real time, gear decided later.
+  await page.getByRole("radio", { name: "24", exact: true }).click();
   await page.getByRole("button", { name: "CREATE PROJECT" }).click();
 
   // Empty list (E5) → the brief.

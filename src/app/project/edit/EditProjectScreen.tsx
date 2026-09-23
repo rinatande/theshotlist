@@ -12,7 +12,7 @@ export function EditProjectScreen() {
   const router = useRouter();
   const params = useSearchParams();
   const id = params.get("id") ?? "";
-  const step = params.get("step") === "2" ? 2 : 1;
+  const step = params.get("step") === "3" ? 3 : params.get("step") === "2" ? 2 : 1;
   const [project, setProject] = useState<Project | null | undefined>(undefined);
   const [draft, setDraft] = useState<Draft | undefined>(undefined);
 
@@ -41,7 +41,8 @@ export function EditProjectScreen() {
       defaultName={defaultProjectName(new Date(project.createdAt))}
       dayChange={dayChange(project, draft.dayCount)}
       cancelHref={back}
-      onNext={() => router.push(`/project/edit?id=${project.id}&step=2`)}
+      onNext={() => router.push(`/project/edit?id=${project.id}&step=${step + 1}`)}
+      project={project}
       onBack={() => router.back()}
       onSubmit={async () => {
         if (!input) return;

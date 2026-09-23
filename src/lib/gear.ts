@@ -2,7 +2,7 @@ import starterKits from "@/data/starterKits.json";
 import templates from "@/data/templates.json";
 import { capabilities } from "./capabilities";
 import { capitalise, inWords } from "./words";
-import type { Capability, GearCategory, GearItem, GearSpecs, Id, Kit, Project, TemplateShot } from "./types";
+import type { Capability, FilterType, GearCategory, GearItem, GearSpecs, Id, Kit, Project, TemplateShot } from "./types";
 
 /**
  * Gear (design.md §6) as pure functions: labels, what an item unlocks,
@@ -21,9 +21,18 @@ export const CATEGORIES: { value: Exclude<GearCategory, "grip">; label: string; 
   { value: "audio", label: "AUDIO", band: "AUDIO" },
   { value: "power", label: "POWER", band: "POWER" },
   { value: "drone", label: "DRONE", band: "DRONES" },
+  { value: "filter", label: "FILTER", band: "FILTERS" },
 ];
 
-const SHORT: Record<GearCategory, string> = { camera: "CAM", lens: "LENS", support: "SUPPORT", light: "LIGHT", audio: "AUDIO", power: "PWR", grip: "GRIP", drone: "DRONE" };
+export const FILTER_TYPES: { value: FilterType; label: string }[] = [
+  { value: "nd", label: "ND" },
+  { value: "vnd", label: "VARIABLE ND" },
+  { value: "cpl", label: "POLARISER" },
+  { value: "closeup", label: "CLOSE-UP" },
+  { value: "diffusion", label: "DIFFUSION" },
+];
+
+const SHORT: Record<GearCategory, string> = { camera: "CAM", lens: "LENS", support: "SUPPORT", light: "LIGHT", audio: "AUDIO", power: "PWR", grip: "GRIP", drone: "DRONE", filter: "FILTER" };
 
 const range = (min: number, max: number) => (min === max ? `${min}` : `${min}—${max}`);
 const f = (n: number) => `f${n}`;
@@ -59,6 +68,9 @@ export function specLine(specs: GearSpecs): string {
     case "grip":
       parts.push("GRIP");
       break;
+    case "filter":
+      parts.push(FILTER_TYPES.find((t) => t.value === specs.type)?.label ?? "FILTER", specs.strength?.trim().toUpperCase());
+      break;
   }
   return parts.filter(Boolean).join(" · ");
 }
@@ -69,7 +81,7 @@ export function kitLine(kit: Kit, library: GearItem[]): string {
   if (library.length > 0 && items.length === library.length) return "EVERYTHING";
   const counts = new Map<GearCategory, number>();
   for (const g of items) counts.set(g.specs.category, (counts.get(g.specs.category) ?? 0) + 1);
-  const order: GearCategory[] = ["camera", "lens", "support", "light", "audio", "power", "drone", "grip"];
+  const order: GearCategory[] = ["camera", "lens", "support", "light", "audio", "power", "filter", "drone", "grip"];
   return order
     .filter((c) => counts.has(c))
     .map((c) => (counts.get(c)! > 1 ? `${counts.get(c)} ${SHORT[c]}` : SHORT[c]))
@@ -90,6 +102,8 @@ const WHAT: Record<Capability, string> = {
   slowmo: "Slow motion — pours, splashes, hair in the wind.",
   light: "Interiors, and shooting on after the light goes.",
   power: "Long lapses without touching a battery.",
+  nd: "Wide open in full sun, and motion blur in daylight — water, traffic, crowds.",
+  polariser: "Through water and glass without the reflection, and a deeper sky.",
 };
 
 const ALL = templates as TemplateShot[];
@@ -102,6 +116,7 @@ const ALL = templates as TemplateShot[];
 export function unlocksLine(specs: GearSpecs, library: GearItem[] = []): string {
   const have = capabilities(library);
   const mine = [...capabilities([{ id: "", name: "", specs }])];
+  if (specs.category === "filter" && specs.type === "diffusion") return "It changes the look, not what you can shoot — so it's on your packing list, not in the suggestions.";
   if (mine.length === 0) return "Nothing new on its own — it's recorded on the shots that use it.";
   const fresh = mine.filter((c) => !have.has(c));
   const lead = mine.map((c) => WHAT[c])[0];
@@ -205,6 +220,8 @@ const NEED: Record<Capability, string> = {
   slowmo: "a camera that shoots slow motion",
   light: "a light",
   power: "a power bank",
+  nd: "an ND filter",
+  polariser: "a polariser",
 };
 
 /**

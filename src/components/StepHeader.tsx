@@ -3,13 +3,15 @@ import ui from "./ui.module.css";
 
 interface Props {
   label: string;
-  /** Two-step forms show the 3px step meter; single screens leave it out. */
-  step?: 1 | 2;
+  /** Stepped forms show the 3px step meter; single screens leave it out. */
+  step?: number;
+  /** How many steps the form has (new project has three since v1 gear). */
+  steps?: number;
   back: { label: string; href?: string; onClick?: () => void };
 }
 
 /** "← CANCEL · New project · 1/2", with the step meter under it when there are steps. */
-export function StepHeader({ label, step, back }: Props) {
+export function StepHeader({ label, step, steps = 2, back }: Props) {
   return (
     <>
       <header className={ui.stepHeader}>
@@ -26,7 +28,7 @@ export function StepHeader({ label, step, back }: Props) {
       </header>
       {step && (
         <div className={ui.stepMeter} aria-hidden="true">
-          <span style={{ width: step === 1 ? "50%" : "100%" }} />
+          <span style={{ width: `${(step / steps) * 100}%` }} />
         </div>
       )}
     </>

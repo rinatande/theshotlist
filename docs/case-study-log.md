@@ -358,6 +358,26 @@ Rina's rule: "Code is what's real; the canvas records where the design ended up.
 
 **Why it's evidence.** The model read cleanly on paper, and the clash only showed when the build had to decide what the engine reads *at the moment you plan*. The fix keeps both boards exactly as drawn and changes only what each one is for. It also keeps the §6 principle that gear generates and never polices: a checklist that changed your suggestions would have been gear policing through the back door.
 
+### 2.25 Gear has to go through the brief — and frame rate is a choice, not a spec — 23 Sep
+
+**What broke.** The gear stage shipped as G5 and G6 were drawn: suggestions from the kit and the format. Rina tried it and said it was "not cutting it". Without the brief, a kit can only suggest what's *possible*, so a coffee vlog was offered a drone top-down and hair in the wind in slow motion. Two more gaps came from the same test:
+- **Gear arrived too late.** It could only be picked once the project existed, so the first GENERATE never knew the kit.
+- **The camera's spec made the choice.** A camera that shoots 120fps got slow-motion suggestions, but Rina shoots a slow-life vlog "everything in 24 fps … real time is what I'm after".
+
+**Options.**
+- Tune the gear ranking.
+- Make gear feed the brief's path instead of having its own.
+- For frame rate: an advanced setting on the camera, or a plain choice on the project.
+- For where it goes: two rows on the format step, or a third step.
+
+**Decision. [R]** Gear feeds the brief, and doesn't replace it:
+- **Kit suggestions go through the brief:** the read with signal, the brief's words offline. A gear-earned shot has to be backed by the brief to appear.
+- **New project gets a third step (frame rate and gear).** Rina's call over my two extra rows on P2, "to make each step clearer". She also added 120 "so we can get slow motion".
+- **Frame rate lives on the project.** At 24, 25 or 30 nothing slow is suggested, whatever the camera can do.
+- **Filters are gear.** Only the ones that change what's possible touch the suggestions.
+
+**Why it's evidence.** The boards were followed exactly, and the result was still wrong. That's the useful kind of failure: G5/G6 showed gear working *in isolation*, and the moment it met a real brief the isolation was the bug. The fix came from how Rina actually shoots, not from the spec. Frame rate is the clearest case: the camera could shoot slow motion, but the person had decided not to, and a tool that suggests what the camera can do instead of what you've chosen gets in the way.
+
 ---
 
 ## 3. Artifact inventory

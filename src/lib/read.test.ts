@@ -50,6 +50,13 @@ describe("what the read is sent", () => {
     expect(readPrompt({ brief: "a brief", context: none })).toContain("No gear listed.");
   });
 
+  it("tells the read the frame rate, and reads again when it changes", async () => {
+    const at24 = readContext(project({ frameRate: 24 }));
+    expect(readPrompt({ brief: "b", context: at24 })).toContain("everything at 24fps — real time throughout");
+    expect(readPrompt({ brief: "b", context: readContext(project({ frameRate: 120 })) })).toContain("slow motion is available");
+    expect(await readHash({ brief: "b", context: at24 })).not.toBe(await readHash({ brief: "b", context: readContext(project()) }));
+  });
+
   it("doesn't read again because the list grew — only a changed brief does", async () => {
     const before = readContext(project());
     const after = readContext(project({ shots: [shot("a", 0, { subject: "Tamping" })] }));

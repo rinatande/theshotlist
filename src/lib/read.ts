@@ -31,6 +31,8 @@ export interface ReadContext {
   onCamera: string;
   /** What the shoot is bringing, as "Sony 85 f/1.8 (lens: 85 · f1.8)" — names and specs, nothing personal (Rina, 23 Sep). */
   gear: string[];
+  /** Frame rate the shoot is filmed at, when chosen: 24/25/30 means real time throughout. */
+  frameRate?: number | "mixed";
 }
 
 export interface ReadRequest {
@@ -94,6 +96,7 @@ export function readContext(project: Project): ReadContext {
     onList: project.shots.filter((s) => s.status !== "dropped").slice(0, 80).map((s) => s.subject),
     onCamera: "the videographer themselves, part of it — hands and body are fine, face optional",
     gear: (project.gear ?? []).map((g) => `${g.name} (${g.specs.category}: ${specLine(g.specs)})`),
+    frameRate: project.frameRate,
   };
 }
 
@@ -173,6 +176,13 @@ Deliverables: only shots a client or brand explicitly requires, grouped under th
 
 Budget: the shot budget is a range for the whole cut. Add shots up to the number you're told there's room for — fewer if the brief doesn't honestly support more. Never pad with shots unrelated to the brief, and never repeat anything already on the list.`;
 
+/** How the frame rate reads to the model — nothing when it's left to the camera. */
+function frameRateLine(fr?: number | "mixed"): string[] {
+  if (fr === undefined || fr === "mixed") return [];
+  if (fr <= 30) return [`Frame rate: everything at ${fr}fps — real time throughout. No slow motion: don't plan shots around slowing footage down.`];
+  return [`Frame rate: shooting at ${fr}fps, so slow motion is available where it earns a shot.`];
+}
+
 export function readPrompt(req: ReadRequest): string {
   const c = req.context;
   const room = Math.max(0, c.budget.max - c.planned);
@@ -183,6 +193,7 @@ export function readPrompt(req: ReadRequest): string {
     c.locations.length ? `Locations: ${c.locations.map((l) => `"${l.name}"${l.day ? ` day ${l.day}` : ""}${l.start ? ` from ${l.start}` : ""}`).join("; ")}.` : "No locations yet.",
     `On camera: ${c.onCamera}.`,
     c.gear?.length ? `Gear coming: ${c.gear.join("; ")}.` : "No gear listed.",
+    ...frameRateLine(c.frameRate),
     c.onList.length ? `Already on the list (don't repeat): ${c.onList.map((s) => `"${s}"`).join("; ")}.` : "Nothing on the list yet.",
     "",
     "Brief:",
@@ -199,7 +210,10 @@ export function readPrompt(req: ReadRequest): string {
  */
 export async function readHash(req: ReadRequest): Promise<string> {
   const gear = [...(req.context.gear ?? [])].sort();
-  const bytes = new TextEncoder().encode(JSON.stringify(gear.length ? { model: READ_MODEL, brief: req.brief.trim(), gear } : { model: READ_MODEL, brief: req.brief.trim() }));
+  const frameRate = req.context.frameRate;
+  const bytes = new TextEncoder().encode(
+    JSON.stringify({ model: READ_MODEL, brief: req.brief.trim(), ...(gear.length ? { gear } : {}), ...(frameRate !== undefined ? { frameRate } : {}) }),
+  );
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }

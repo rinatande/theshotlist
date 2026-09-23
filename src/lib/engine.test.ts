@@ -221,3 +221,30 @@ describe("itemRef", () => {
     expect(itemRef("Peak travel tripod")).toBe("Peak travel tripod");
   });
 });
+
+describe("frame rate and the brief decide what gear is for (Rina, 23 Sep)", () => {
+  const fx30: GearItem = { id: "fx30", name: "Sony FX30", specs: { category: "camera", maxFps: 120 } };
+  const drone: GearItem = { id: "mini", name: "DJI Mini 4", specs: { category: "drone" } };
+  const slow = (r: ReturnType<typeof suggest>) => r.suggestions.filter((s) => /slow/i.test(s.subject) || /slow/i.test(s.reason));
+  const base = { format: { ...REEL_SILENT, genre: "travel" as const }, gear: [fx30] };
+
+  it("never suggests slow motion at 24fps, even with a camera that can", () => {
+    const r = suggest(project({ ...base, frameRate: 24 }), { limit: 80 });
+    expect(r.suggestions.find((s) => s.templateId === "hair-wind-slowmo")).toBeUndefined();
+    expect(r.suggestions.find((s) => s.templateId === "pour-slowmo")).toMatchObject({ fallback: true, subject: "The pour, real speed, three takes" });
+    expect(r.needs).not.toContain("slowmo");
+  });
+
+  it("offers slow motion at 120fps whatever the camera's spec says", () => {
+    const r = suggest(project({ ...base, gear: [], frameRate: 120 }), { limit: 80 });
+    expect(r.suggestions.find((s) => s.templateId === "hair-wind-slowmo")).toBeDefined();
+    expect(slow(r).length).toBeGreaterThan(0);
+  });
+
+  it("keeps a drone out of a coffee vlog, but lets the brief ask for it", () => {
+    const coffee = suggest(project({ ...base, gear: [fx30, drone] }), { brief: "Descaling the coffee machine at home, then a latte.", limit: 80 });
+    expect(coffee.suggestions.some((s) => s.templateId.startsWith("drone"))).toBe(false);
+    const coast = suggest(project({ ...base, gear: [fx30, drone] }), { brief: "A day on the coast, the beach from above.", limit: 80 });
+    expect(coast.suggestions.some((s) => s.templateId.startsWith("drone"))).toBe(true);
+  });
+});

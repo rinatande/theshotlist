@@ -63,6 +63,12 @@ export function suggest(
   // Everything the shoot is bringing, not only what's ticked into the bag (Rina, 23 Sep).
   const packed = opts.packed ?? project.gear ?? [];
   const caps = capabilities(packed);
+  // Frame rate is a choice, not a limit of the camera (Rina, 23 Sep): at 24/25/30
+  // everything is real time, so slow motion is never suggested; at 50 and up it's there.
+  const fr = project.frameRate;
+  const realTime = fr === 24 || fr === 25 || fr === 30;
+  if (realTime) caps.delete("slowmo");
+  else if (typeof fr === "number" && fr >= 50) caps.add("slowmo");
   const brief = words(opts.brief ?? "");
   const lights = new Set((opts.chips ?? []).map((c) => c.light).filter(Boolean) as Light[]);
   const presence = project.cast.leadMember?.presence ?? (project.cast.lead === "no-one" ? "none" : "part");
@@ -76,15 +82,6 @@ export function suggest(
     if (t.genres.length && !t.genres.includes(project.format.genre)) continue;
     if (t.treatments.length && !t.treatments.includes(project.format.treatment)) continue;
     if (!personAllowed(t.person, presence)) continue;
-
-    const met = t.requires.every((r) => caps.has(r as Capability));
-    if (!met && !t.fallback) {
-      withheld++;
-      for (const r of t.requires) if (!caps.has(r)) missing.set(r, (missing.get(r) ?? 0) + 1);
-      continue;
-    }
-    // When gear arrives on a list that already exists, offer only what the gear earns (§10, 19).
-    if (opts.gearOnly && !(met && t.requires.length > 0)) continue;
 
     // Rank (§6.2 step 2): what the brief says, what the kit unlocks, how specific the template is.
     // What the brief mentions outweighs everything else; with a brief, a template
@@ -102,6 +99,20 @@ export function suggest(
       relevant = true;
     }
     if (brief && !relevant) score -= 3;
+    // A shot that needs gear has to earn its place from the brief too: a drone
+    // top-down has no business in a coffee vlog (Rina, 23 Sep). Gear-free basics still fill.
+    if (brief && !relevant && t.requires.length > 0) continue;
+    // Chosen real time: slow-motion shots with no real-time version simply don't come up.
+    if (realTime && t.requires.includes("slowmo") && !t.fallback) continue;
+
+    const met = t.requires.every((r) => caps.has(r as Capability));
+    if (!met && !t.fallback) {
+      withheld++;
+      for (const r of t.requires) if (!caps.has(r)) missing.set(r, (missing.get(r) ?? 0) + 1);
+      continue;
+    }
+    // When gear arrives on a list that already exists, offer only what the gear earns (§10, 19).
+    if (opts.gearOnly && !(met && t.requires.length > 0)) continue;
     // Packing the 85 should visibly change what you're offered (§6.2 step 2).
     if (met && t.unlockedBy && caps.has(t.unlockedBy)) score += 3;
     if (t.treatments.length) score += 1.5;

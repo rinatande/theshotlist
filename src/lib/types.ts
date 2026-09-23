@@ -92,7 +92,12 @@ export interface Cast {
 
 // ─── Gear (§6.1) ─────────────────────────────────────────────────────────────
 
-export type GearCategory = 'camera' | 'lens' | 'support' | 'light' | 'audio' | 'power' | 'grip' | 'drone';
+export type GearCategory = 'camera' | 'lens' | 'support' | 'light' | 'audio' | 'power' | 'grip' | 'drone' | 'filter';
+
+/** v1 (Rina, 23 Sep): ND and close-up filters change what you can shoot; diffusion only changes the look. */
+export type FilterType = 'nd' | 'vnd' | 'cpl' | 'closeup' | 'diffusion';
+
+export type FrameRate = 24 | 25 | 30 | 50 | 60 | 120 | 'mixed';
 
 export type GearSpecs =
   | { category: 'camera'; mount?: string; stabilised?: boolean; batteries?: number; cardSlots?: number; lowLightIso?: number; maxFps?: number;
@@ -104,7 +109,8 @@ export type GearSpecs =
   | { category: 'audio'; type: 'shotgun' | 'lav' | 'recorder'; channels?: number; windshield?: boolean }
   | { category: 'power'; capacityMah: number }
   | { category: 'grip' }
-  | { category: 'drone'; maxWindKmh?: number };
+  | { category: 'drone'; maxWindKmh?: number }
+  | { category: 'filter'; type: FilterType; strength?: string };
 
 export interface GearItem {
   id: Id;
@@ -138,7 +144,9 @@ export type Capability =
   | 'lav'
   | 'slowmo'    // camera maxFps ≥ 100
   | 'light'
-  | 'power';    // a power bank — long lapses
+  | 'power'     // a power bank — long lapses
+  | 'nd'        // an ND or variable ND — wide open, or a slow shutter, in daylight
+  | 'polariser'; // through water and glass, a deeper sky
 
 // ─── Place (§5.10) ───────────────────────────────────────────────────────────
 
@@ -292,6 +300,12 @@ export interface Project {
   budgetOverride?: Budget;
   startDate?: IsoDate;
   dayCount: number;       // asked at creation (§5.9). 1 → no day layer in the UI.
+  /**
+   * What the shoot is filmed at (new project step 3, Rina 23 Sep). 24/25/30 is
+   * real time throughout, so no slow motion is suggested; 50 and up makes it
+   * possible; MIXED or unset leaves it to what the camera can do.
+   */
+  frameRate?: FrameRate;
   where?: string;
   coords?: Coords;
   cast: Cast;

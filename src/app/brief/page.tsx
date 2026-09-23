@@ -8,6 +8,7 @@ import { NotHere } from "@/components/NotHere";
 import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { projectBrief, setBriefText } from "@/lib/brief";
+import { bagLine } from "@/lib/gear";
 import { matchChips, type QuotedChip } from "@/lib/chips";
 import { db } from "@/lib/db";
 import { MAX_BRIEF } from "@/lib/read";
@@ -178,6 +179,16 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
             </div>
           )
         )}
+
+        {/* What generating will know about how you're shooting (Rina, 23 Sep). */}
+        <Link href={`/project?id=${project.id}&tab=gear`} className={styles.gearLine}>
+          <span className={ui.boxHeading}>GEAR</span>
+          <span className={styles.gearText}>
+            {project.gear.length ? bagLine(project.gear) : "NONE CHOSEN — SUGGESTIONS STAY GEAR-FREE"}
+            {typeof project.frameRate === "number" ? ` · ${project.frameRate}FPS` : ""}
+          </span>
+          <span aria-hidden="true">›</span>
+        </Link>
       </div>
 
       <div className={ui.footer}>

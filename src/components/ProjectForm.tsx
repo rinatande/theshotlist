@@ -14,14 +14,15 @@ import {
   TREATMENTS,
 } from "@/lib/labels";
 import type { DayChange, NewProjectInput } from "@/lib/project";
-import type { Aspect, Delivery, Format, Genre, Project, Treatment } from "@/lib/types";
+import { kitLine, STARTER_KITS } from "@/lib/gear";
+import type { Aspect, Delivery, Format, FrameRate, GearItem, Genre, Kit, Project, Treatment } from "@/lib/types";
 import { BottomSheet } from "./BottomSheet";
 import { Choice } from "./Choice";
 import styles from "./ProjectForm.module.css";
 import { StepHeader } from "./StepHeader";
 import ui from "./ui.module.css";
 
-/** Everything the two steps collect. Kind and treatment start unpicked (§5.1). */
+/** Everything the three steps collect. Kind and treatment start unpicked (§5.1). */
 export interface Draft {
   name: string;
   genre?: Genre;
@@ -32,6 +33,10 @@ export interface Draft {
   startDate: string;
   where: string;
   dayCount: number;
+  /** Step 3 (v1, Rina 23 Sep). */
+  frameRate?: FrameRate;
+  /** A library kit's id, "starter:<id>" for a starter kit, or empty to decide later. */
+  kit?: string;
 }
 
 export const EMPTY_DRAFT: Draft = {
@@ -54,6 +59,8 @@ export function draftFromProject(p: Project): Draft {
     startDate: p.startDate ?? "",
     where: p.where ?? "",
     dayCount: p.dayCount,
+    frameRate: p.frameRate,
+    kit: p.kitId,
   };
 }
 
@@ -77,12 +84,18 @@ export function draftInput(d: Draft): NewProjectInput | undefined {
     startDate: d.startDate || undefined,
     dayCount: d.dayCount,
     where: d.where,
+    frameRate: d.frameRate,
   };
 }
 
 interface Props {
   mode: "new" | "edit";
-  step: 1 | 2;
+  step: 1 | 2 | 3;
+  /** Step 3: the gear library's kits and items, to start the shoot from one. */
+  kits?: Kit[];
+  library?: GearItem[];
+  /** Edit only: the project as saved, for its gear line. */
+  project?: Project;
   draft: Draft;
   onDraft: (update: (d: Draft) => Draft) => void;
   /** Placeholder for the name: "18 Sep shoot". */
@@ -98,7 +111,7 @@ interface Props {
 }
 
 export function ProjectForm(props: Props) {
-  return props.step === 1 ? <StepOne {...props} /> : <StepTwo {...props} />;
+  return props.step === 1 ? <StepOne {...props} /> : props.step === 2 ? <StepTwo {...props} /> : <StepThree {...props} />;
 }
 
 // ─── Step 1: name, kind, treatment, who's on camera ──────────────────────────
@@ -113,7 +126,8 @@ function StepOne({ mode, draft, onDraft, defaultName, pastProjects, cancelHref, 
     <div className={ui.screen}>
       <StepHeader
         step={1}
-        label={mode === "new" ? "New project · 1/2" : "Edit project · 1/2"}
+        steps={3}
+        label={mode === "new" ? "New project · 1/3" : "Edit project · 1/3"}
         back={{ label: "← CANCEL", href: cancelHref }}
       />
 
@@ -194,13 +208,16 @@ function StepOne({ mode, draft, onDraft, defaultName, pastProjects, cancelHref, 
                   type="button"
                   className={styles.sheetRow}
                   onClick={() => {
-                    // Format, aspect and (in v0) the default cast — never shots or the brief (§5.1).
+                    // Format, aspect, frame rate and kit — never shots or the brief (§5.1).
                     set({
                       genre: p.format.genre,
                       treatment: p.format.treatment,
                       delivery: p.format.delivery,
                       lengthSeconds: p.format.lengthSeconds,
                       aspect: p.format.aspect,
+                      // v1: how it was filmed and the kit it started from come too (§5.1 names the kit).
+                      frameRate: p.frameRate,
+                      kit: p.kitId,
                     });
                     setCopying(false);
                   }}
@@ -245,7 +262,7 @@ function Consequence({ genre, treatment }: { genre?: Genre; treatment?: Treatmen
 
 const DAY_OPTIONS = ["1", "2", "3", "4", "5+"] as const;
 
-function StepTwo({ mode, draft, onDraft, dayChange, onBack, onSubmit }: Props) {
+function StepTwo({ mode, draft, onDraft, dayChange, onBack, onNext }: Props) {
   const set = (patch: Partial<Draft>) => onDraft((d) => ({ ...d, ...patch }));
   const format = draftFormat(draft)!;
   const b = budget(format);
@@ -255,7 +272,8 @@ function StepTwo({ mode, draft, onDraft, dayChange, onBack, onSubmit }: Props) {
     <div className={ui.screen}>
       <StepHeader
         step={2}
-        label={mode === "new" ? "New project · 2/2" : "Edit project · 2/2"}
+        steps={3}
+        label={mode === "new" ? "New project · 2/3" : "Edit project · 2/3"}
         back={{ label: "← BACK", onClick: onBack }}
       />
 
@@ -354,13 +372,77 @@ function StepTwo({ mode, draft, onDraft, dayChange, onBack, onSubmit }: Props) {
             <p className={ui.boxText}>{dayChangeText(dayChange)}</p>
           </div>
         )}
-        {mode === "new" && (
-          // P2's kit line, left out in v0 until gear existed. The kit is picked on the GEAR tab.
+        <button type="button" className={ui.primary} onClick={onNext}>
+          NEXT — GEAR
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 3: frame rate and gear (v1, Rina 23 Sep) ───────────────────────────
+
+const FRAME_RATES: { value: string; label: string }[] = [
+  ...[24, 25, 30, 50, 60, 120].map((n) => ({ value: String(n), label: String(n) })),
+  { value: "mixed", label: "MIXED" },
+];
+
+function frameRateHint(fr?: FrameRate): string {
+  if (fr === undefined || fr === "mixed") return "Slow motion is suggested where your camera can shoot it.";
+  if (fr <= 30) return "Real time throughout — no slow-motion shots suggested.";
+  return "Slow motion's on the table — pours, splashes and walks can be slowed right down.";
+}
+
+/**
+ * So the first GENERATE already knows how the shoot is filmed and what's in
+ * the bag. Both can wait: nothing here is required.
+ */
+function StepThree({ mode, draft, onDraft, kits = [], library = [], project, onBack, onSubmit }: Props) {
+  const set = (patch: Partial<Draft>) => onDraft((d) => ({ ...d, ...patch }));
+  const starters = kits.length === 0;
+  const kitOptions = starters
+    ? STARTER_KITS.map((s) => ({ value: "starter:" + s.id, label: s.name.toUpperCase() }))
+    : kits.map((k) => ({ value: k.id, label: k.name.toUpperCase() }));
+  const chosenKit = kits.find((k) => k.id === draft.kit);
+  const chosenStarter = STARTER_KITS.find((s) => "starter:" + s.id === draft.kit);
+  const gearHint = chosenKit
+    ? kitLine(chosenKit, library) + ". Add or leave out items on the GEAR tab."
+    : chosenStarter
+      ? chosenStarter.line + " It becomes your own gear, to rename on the GEAR tab."
+      : starters
+        ? "A starter kit becomes your own gear to edit — or set it up later from the GEAR tab. Suggestions work either way."
+        : "Pick a kit and the first suggestions fit what you're bringing. You can change it on the GEAR tab.";
+  const count = project?.gear.length ?? 0;
+
+  return (
+    <div className={ui.screen}>
+      <StepHeader step={3} steps={3} label={mode === "new" ? "New project · 3/3" : "Edit project · 3/3"} back={{ label: "← BACK", onClick: onBack }} />
+
+      <div className={ui.body}>
+        <Choice
+          label="What frame rate are you shooting?"
+          options={FRAME_RATES}
+          value={draft.frameRate === undefined ? undefined : String(draft.frameRate)}
+          onChange={(v) => {
+            const fr: FrameRate = v === "mixed" ? "mixed" : (Number(v) as FrameRate);
+            set({ frameRate: draft.frameRate === fr ? undefined : fr });
+          }}
+          hint={frameRateHint(draft.frameRate)}
+        />
+
+        {mode === "new" ? (
+          <Choice label="What are you bringing?" options={[...kitOptions, { value: "", label: "DECIDE LATER" }]} value={draft.kit ?? ""} onChange={(kit) => set({ kit })} hint={gearHint} />
+        ) : (
           <div className={ui.box}>
-            <span className={ui.boxHeading}>NEXT</span>
-            <p className={ui.boxTextMuted}>Pick a gear kit, and the app will suggest shots that fit both this format and what you packed.</p>
+            <span className={ui.boxHeading}>GEAR</span>
+            <p className={ui.boxText}>
+              {count ? count + (count === 1 ? " item" : " items") + " for this shoot. Change what's coming on the GEAR tab." : "Nothing chosen for this shoot yet. Pick it on the GEAR tab."}
+            </p>
           </div>
         )}
+      </div>
+
+      <div className={ui.footer}>
         <button type="button" className={ui.primary} onClick={onSubmit}>
           {mode === "new" ? "CREATE PROJECT" : "SAVE"}
         </button>

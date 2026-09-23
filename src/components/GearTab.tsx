@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { projectBrief } from "@/lib/brief";
 import { db } from "@/lib/db";
 import { kitDiff, togglePacked } from "@/lib/gear";
 import type { Project } from "@/lib/types";
@@ -87,7 +88,9 @@ export function GearTab({ project }: { project: Project }) {
       </div>
 
       <div className={ui.footer}>
-        <Link href={`/suggest?id=${project.id}&from=gear`} className={ui.primary}>
+        {/* With a brief, the kit's shots come through it — the read with signal, the brief's words without —
+            so they fit the shoot, not just the bag (Rina, 23 Sep). */}
+        <Link href={projectBrief(project)?.text.trim() ? `/brief/read?id=${project.id}` : `/suggest?id=${project.id}&from=gear`} className={ui.primary}>
           SUGGEST SHOTS FROM THIS KIT
         </Link>
       </div>
