@@ -212,3 +212,15 @@ CLAUDE.md's offline rule, design.md §3 and §5.6; case-study-log 2.27.
 
 design.md §5.6.
 **Kind:** bug caught
+
+### 2026-09-23 · v1 gear · A failed read shouldn't cost a read
+
+**Proposed:** Reads were counted when they started, and handed back if the route caught a failure. After her two timed-out reads, Claude Code told her "neither attempt used one of your reads, because a failed read is never counted". That was wrong: a timeout kills the server before the hand-back can run, so both were counted.
+**Rina:** "does a failed read still take up 1 of the 5 reads for the day? it shouldn't"
+**Changed:**
+- **A read is counted only when it comes back.** While it runs it holds a place (HOLD_SECONDS, 6 minutes, longer than the route can run), so the limit can't be dodged by firing reads at once.
+- **A read killed mid-way** — a timeout or a crash — has its hold expire. There's nothing to hand back, so nothing is lost.
+- **Tested with a clock the test controls:** success counts; failure doesn't; five killed reads don't, once their holds expire.
+
+Her two timed-out reads were counted before this, and the counter resets at midnight UTC. design.md §5.6.
+**Kind:** bug caught

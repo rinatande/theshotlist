@@ -33,7 +33,7 @@ export function inviteCodes(): Set<string> {
   );
 }
 
-interface Store {
+export interface Store {
   get(key: string): Promise<number>;
   incr(key: string, by: number, ttlSeconds: number): Promise<number>;
   setIfAbsent(key: string, value: number, ttlSeconds: number): Promise<number>;
@@ -60,19 +60,29 @@ function redisStore(): Store | null {
   };
 }
 
-const memory = new Map<string, number>();
-const memoryStore: Store = {
-  get: async (key) => memory.get(key) ?? 0,
-  incr: async (key, by) => {
-    const value = (memory.get(key) ?? 0) + by;
-    memory.set(key, value);
-    return value;
-  },
-  setIfAbsent: async (key, value) => {
-    if (!memory.has(key)) memory.set(key, value);
-    return memory.get(key)!;
-  },
-};
+/** In-memory counters with expiry, like Redis — for development, and for tests with their own clock. */
+export function memoryStoreFor(now: () => number = () => Date.now()): Store {
+  const memory = new Map<string, { value: number; expires: number }>();
+  const live = (key: string) => {
+    const e = memory.get(key);
+    if (e && e.expires <= now()) memory.delete(key);
+    return memory.get(key);
+  };
+  return {
+    get: async (key) => live(key)?.value ?? 0,
+    incr: async (key, by, ttl) => {
+      const value = (live(key)?.value ?? 0) + by;
+      memory.set(key, { value, expires: now() + ttl * 1000 });
+      return value;
+    },
+    setIfAbsent: async (key, value, ttl) => {
+      if (!live(key)) memory.set(key, { value, expires: now() + ttl * 1000 });
+      return live(key)!.value;
+    },
+  };
+}
+
+const memoryStore = memoryStoreFor();
 
 export function store(): Store | null {
   const redis = redisStore();
@@ -101,6 +111,30 @@ export type Decision = { ok: true; remaining: number; charge: () => Promise<void
  * Reserve one read before calling the model. The caller must `charge` the
  * actual cost after a success, or `refund` the reservation after a failure.
  */
+/**
+ * A running read holds a place for this long. A read is counted only when it
+ * succeeds (Rina, 23 Sep): if the server is killed mid-read — a timeout, a
+ * crash — nothing runs to hand the read back, so the hold simply expires.
+ * Longer than the route's maxDuration (300s), so it can't lapse mid-read.
+ */
+export const HOLD_SECONDS = 6 * 60;
+
+/** Hold one place against `limit`, counting reads done and reads running. */
+async function hold(s: Store, usedKey: string, holdKey: string, limit: number): Promise<boolean> {
+  const held = await s.incr(holdKey, 1, HOLD_SECONDS);
+  if ((await s.get(usedKey)) + held > limit) {
+    await release(s, holdKey);
+    return false;
+  }
+  return true;
+}
+
+/** Let a hold go — never below zero, even if it already expired. */
+async function release(s: Store, holdKey: string): Promise<void> {
+  const v = await s.incr(holdKey, -1, HOLD_SECONDS);
+  if (v < 0) await s.incr(holdKey, -v, HOLD_SECONDS);
+}
+
 export async function reserve(s: Store, who: Who, estimateUsd = 0.1): Promise<Decision> {
   const day = today();
   const spendKey = `spend:${day}`;
@@ -111,36 +145,52 @@ export async function reserve(s: Store, who: Who, estimateUsd = 0.1): Promise<De
 
   const invite = who.invite?.toLowerCase();
   if (invite && inviteCodes().has(invite)) {
-    const first = await s.setIfAbsent(`invite:first:${invite}`, Date.now(), LIMITS.inviteDays * DAY * 2);
+    const ttl = LIMITS.inviteDays * DAY * 2;
+    const first = await s.setIfAbsent(`invite:first:${invite}`, Date.now(), ttl);
     if (Date.now() - first > LIMITS.inviteDays * DAY * 1000) {
       return { ok: false, message: "This invite link has run its course. You can still add shots by hand." };
     }
     const usedKey = `invite:used:${invite}`;
-    const used = await s.incr(usedKey, 1, LIMITS.inviteDays * DAY * 2);
-    if (used > LIMITS.inviteReads) {
-      await s.incr(usedKey, -1, LIMITS.inviteDays * DAY * 2);
+    const holdKey = `hold:${usedKey}`;
+    if (!(await hold(s, usedKey, holdKey, LIMITS.inviteReads))) {
       return { ok: false, message: "This invite link's reads are used up. You can still add shots by hand." };
     }
     return {
       ok: true,
-      remaining: LIMITS.inviteReads - used,
-      charge: async () => {},
-      refund: async () => void (await s.incr(usedKey, -1, LIMITS.inviteDays * DAY * 2)),
+      remaining: Math.max(0, LIMITS.inviteReads - (await s.get(usedKey)) - 1),
+      charge: async () => {
+        await s.incr(usedKey, 1, ttl);
+        await release(s, holdKey);
+      },
+      refund: () => release(s, holdKey),
     };
   }
 
   const deviceKey = `device:${day}:${who.device}`;
   const addressKey = `address:${day}:${who.address}`;
-  const [deviceUsed, addressUsed] = [await s.incr(deviceKey, 1, DAY), await s.incr(addressKey, 1, DAY)];
-  const undo = async () => {
-    await s.incr(deviceKey, -1, DAY);
-    await s.incr(addressKey, -1, DAY);
-  };
-  if (deviceUsed > LIMITS.perDevice || addressUsed > LIMITS.perAddress) {
-    await undo();
-    return { ok: false, message: `That's today's ${LIMITS.perDevice} reads on this phone. More in about ${hoursUntilReset()} hours — you can still add shots by hand.` };
+  const deviceHold = `hold:${deviceKey}`;
+  const addressHold = `hold:${addressKey}`;
+  const full = { ok: false as const, message: `That's today's ${LIMITS.perDevice} reads on this phone. More in about ${hoursUntilReset()} hours — you can still add shots by hand.` };
+  if (!(await hold(s, deviceKey, deviceHold, LIMITS.perDevice))) return full;
+  if (!(await hold(s, addressKey, addressHold, LIMITS.perAddress))) {
+    await release(s, deviceHold);
+    return full;
   }
-  return { ok: true, remaining: LIMITS.perDevice - deviceUsed, charge: async () => {}, refund: undo };
+  const letGo = async () => {
+    await release(s, deviceHold);
+    await release(s, addressHold);
+  };
+  return {
+    ok: true,
+    remaining: Math.max(0, LIMITS.perDevice - (await s.get(deviceKey)) - 1),
+    // Counted only now, once the read has come back.
+    charge: async () => {
+      await s.incr(deviceKey, 1, DAY);
+      await s.incr(addressKey, 1, DAY);
+      await letGo();
+    },
+    refund: letGo,
+  };
 }
 
 /** Add what a read actually cost to today's total for the whole app. */
