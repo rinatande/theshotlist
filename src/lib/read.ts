@@ -258,3 +258,41 @@ export async function readHash(req: ReadRequest): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
+
+// ─── Progress while the read runs (Rina, 23 Sep) ──────────────────────────────
+
+/**
+ * What the server streams to the phone while a read runs, one JSON object per
+ * line. Every event reports something that really happened — a stage the read
+ * reached, or a shot it finished writing — never a timer.
+ */
+export type ReadEvent =
+  | { type: "stage"; stage: "thinking" | "writing" | "topup" }
+  | { type: "shot"; count: number; subject: string }
+  | { type: "done"; response: ReadResponse }
+  | { type: "error"; failure: ReadFailure };
+
+/**
+ * How far the read has got, from its half-written JSON: how many shots it has
+ * finished (deliverables included — they're shots too) and the last one's
+ * subject. Only complete subject strings count, so a subject is never shown
+ * half-typed.
+ */
+export function progressOf(partial: string): { count: number; subject?: string } {
+  const re = /"subject"\s*:\s*("(?:[^"\\]|\\.)*")/g;
+  let count = 0;
+  let last: string | undefined;
+  for (let m = re.exec(partial); m; m = re.exec(partial)) {
+    count++;
+    last = m[1];
+  }
+  let subject: string | undefined;
+  if (last) {
+    try {
+      subject = JSON.parse(last) as string;
+    } catch {
+      subject = undefined;
+    }
+  }
+  return { count, subject };
+}

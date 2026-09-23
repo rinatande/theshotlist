@@ -1,7 +1,7 @@
 "use client";
 
 import { projectBrief } from "./brief";
-import { readContext, readHash, type ReadFailure, type ReadResponse } from "./read";
+import { readContext, readHash, type ReadEvent, type ReadFailure, type ReadResponse } from "./read";
 import type { Project } from "./types";
 
 /**
@@ -70,7 +70,10 @@ export function currentRead(project: Project) {
 
 export type ReadOutcome = { ok: true; response: ReadResponse; hash: string; cached: boolean } | { ok: false; failure: ReadFailure };
 
-export async function runRead(project: Project): Promise<ReadOutcome> {
+/** Progress the read screen shows while it waits (Rina, 23 Sep). */
+export type ReadProgress = Exclude<ReadEvent, { type: "done" } | { type: "error" }>;
+
+export async function runRead(project: Project, onProgress: (p: ReadProgress) => void = () => {}): Promise<ReadOutcome> {
   const brief = projectBrief(project)?.text.trim() ?? "";
   const req = { brief, context: readContext(project) };
   const hash = await readHash(req);
@@ -86,10 +89,33 @@ export async function runRead(project: Project): Promise<ReadOutcome> {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ ...req, device: deviceId(), invite: inviteCode() }),
     });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, failure: { reason: data.reason ?? "error", message: data.message ?? "The read didn't work this time." } };
-    return { ok: true, cached: false, hash, response: data as ReadResponse };
+    if (!res.ok || !res.body) {
+      // Refused before the read started (a limit, a bad request): plain JSON.
+      const data = await res.json().catch(() => ({}));
+      return { ok: false, failure: { reason: data.reason ?? "error", message: data.message ?? "The read didn't work this time." } };
+    }
+    // The read streams one event per line: stages and shots as they happen, then the result.
+    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (value) buffer += value;
+      const lines = buffer.split("\n");
+      buffer = done ? "" : lines.pop()!;
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        const event = JSON.parse(line) as ReadEvent;
+        if (event.type === "done") return { ok: true, cached: false, hash, response: event.response };
+        if (event.type === "error") return { ok: false, failure: event.failure };
+        onProgress(event);
+      }
+      if (done) break;
+    }
+    return { ok: false, failure: { reason: "error", message: "The read stopped before it finished. Nothing was taken from today's reads — try again." } };
   } catch {
-    return { ok: false, failure: { reason: "offline" } };
+    const failure: ReadFailure = navigator.onLine
+      ? { reason: "error", message: "The connection dropped during the read. Try again — nothing was taken from today's reads." }
+      : { reason: "offline" };
+    return { ok: false, failure };
   }
 }

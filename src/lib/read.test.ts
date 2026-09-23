@@ -149,3 +149,12 @@ describe("the backstop for a short read", () => {
     expect(mergeTopUp(first, more).deliverables).toEqual(first.deliverables);
   });
 });
+
+describe("progress while the read runs", () => {
+  it("counts only finished subjects, and reads the last one", async () => {
+    const { progressOf } = await import("./read");
+    expect(progressOf('{"quoted":[{"label":"SUNRISE","kind":"time"}],"shots":[')).toEqual({ count: 0, subject: undefined });
+    expect(progressOf('{"shots":[{"size":"CU","subject":"Descaler going into the tank","reason":"x"},{"size":"WS","subject":"Milk fro')).toEqual({ count: 1, subject: "Descaler going into the tank" });
+    expect(progressOf('{"deliverables":[{"client":"Nagi","shots":[{"subject":"Hero shot of the bag"}]}],"shots":[{"subject":"Say \\"Nagi\\" out loud"}')).toEqual({ count: 2, subject: 'Say "Nagi" out loud' });
+  });
+});

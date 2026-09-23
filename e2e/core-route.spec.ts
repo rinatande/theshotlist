@@ -33,7 +33,16 @@ const READ = {
 
 async function readsAvailable(page: Page) {
   await page.route("**/api/quota**", (route) => route.fulfill({ json: { available: true, remaining: 5, perDevice: 5 } }));
-  await page.route("**/api/read", (route) => route.fulfill({ json: READ }));
+  // The read streams one event per line: stages, each shot as it's written, then the result.
+  const events = [
+    { type: "stage", stage: "thinking" },
+    { type: "stage", stage: "writing" },
+    ...READ.result.shots.map((s, i) => ({ type: "shot", count: i + 1, subject: s.subject })),
+    { type: "done", response: READ },
+  ];
+  await page.route("**/api/read", (route) =>
+    route.fulfill({ contentType: "application/x-ndjson", body: events.map((e) => JSON.stringify(e)).join("\n") + "\n" }),
+  );
 }
 
 async function newProject(page: Page, name: string) {

@@ -9,12 +9,22 @@ import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { projectBrief, saveRead, setDropped } from "@/lib/brief";
 import { db } from "@/lib/db";
-import type { ReadFailure } from "@/lib/read";
-import { runRead } from "@/lib/readClient";
+import { readContext, shotTarget, type ReadFailure } from "@/lib/read";
+import { runRead, type ReadProgress } from "@/lib/readClient";
 import type { Project } from "@/lib/types";
 import { saveProject, useProject } from "@/lib/useProject";
+import { useNow } from "@/lib/useShoot";
 import styles from "../Brief.module.css";
 import read from "./Read.module.css";
+
+/** Where the read has got, from what the server streams — never from a timer (Rina, 23 Sep). */
+type Stage = "sending" | "thinking" | "writing" | "topup" | "finishing";
+interface Progress {
+  stage: Stage;
+  count: number;
+  subject?: string;
+}
+const START: Progress = { stage: "sending", count: 0 };
 
 type State = { phase: "reading" } | { phase: "read"; cached: boolean; remaining: number } | { phase: "failed"; failure: ReadFailure };
 
@@ -35,6 +45,8 @@ function WhatItRead() {
 function Review({ project }: { project: Project }) {
   const [state, setState] = useState<State>({ phase: "reading" });
   const [attempt, setAttempt] = useState(0);
+  const [progress, setProgress] = useState<Progress>(START);
+  const [since, setSince] = useState(() => Date.now());
   const started = useRef(-1);
 
   // One read per attempt, never two — React may run effects twice in development.
@@ -42,9 +54,12 @@ function Review({ project }: { project: Project }) {
     if (started.current === attempt) return;
     started.current = attempt;
     (async () => {
-      const outcome = await runRead(project);
+      const outcome = await runRead(project, (p: ReadProgress) =>
+        setProgress((prev) => (p.type === "stage" ? { ...prev, stage: p.stage } : { ...prev, count: p.count, subject: p.subject })),
+      );
       if (!outcome.ok) return setState({ phase: "failed", failure: outcome.failure });
       if (!outcome.cached) {
+        setProgress((prev) => ({ ...prev, stage: "finishing" }));
         const latest = (await db.projects.get(project.id)) ?? project;
         await saveProject(saveRead(latest, { hash: outcome.hash, model: outcome.response.model, result: outcome.response.result }));
       }
@@ -54,21 +69,7 @@ function Review({ project }: { project: Project }) {
 
   const back = { label: "← EDIT BRIEF", href: `/brief?id=${project.id}` };
 
-  if (state.phase === "reading") {
-    return (
-      <div className={ui.screen}>
-        <StepHeader label="What it read" back={back} />
-        <div className={ui.body} aria-busy="true">
-          <p className={read.lead} aria-live="polite">
-            Reading your brief…
-          </p>
-          <p className={ui.boxTextMuted}>
-            Half a minute for a reel, up to a minute or so for a longer cut. It reads the whole thing once — not as you type — and nothing is built until you&apos;ve seen what it took.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  if (state.phase === "reading") return <Reading project={project} progress={progress} since={since} back={back} />;
 
   const brief = projectBrief(project);
   if (state.phase === "read" && brief?.read) return <FullRead project={project} state={state} back={back} />;
@@ -79,9 +80,69 @@ function Review({ project }: { project: Project }) {
       back={back}
       onRetry={() => {
         setState({ phase: "reading" });
+        setProgress(START);
+        setSince(Date.now());
         setAttempt((a) => a + 1);
       }}
     />
+  );
+}
+
+// ─── While it reads (Rina, 23 Sep) ────────────────────────────────────────────
+
+/**
+ * A minute is a long time to stare at a still screen. Everything here is
+ * real: the stage the read has reached, each shot as it finishes writing it,
+ * and how long it's been — so a stuck read would look stuck.
+ */
+function Reading({ project, progress, since, back }: { project: Project; progress: Progress; since: number; back: { label: string; href: string } }) {
+  const now = useNow(1000);
+  const target = Math.max(1, shotTarget(readContext(project)).room);
+  const secs = Math.max(0, Math.floor((now.getTime() - since) / 1000));
+  const elapsed = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
+  const { stage, count, subject } = progress;
+  const line =
+    stage === "sending"
+      ? "Sending your brief…"
+      : stage === "thinking"
+        ? "Reading it through…"
+        : stage === "finishing"
+          ? "Putting it together…"
+          : stage === "topup"
+            ? `Finding a few more to reach your budget — ${count} of ${target}`
+            : count === 0
+              ? "Planning the shots…"
+              : `Planning the shots — ${count} of ${target}`;
+  // Screen readers hear each stage once, not every shot.
+  const spoken = stage === "writing" || stage === "topup" ? "Planning the shots." : line;
+
+  return (
+    <div className={ui.screen}>
+      <StepHeader label="What it read" back={back} />
+      <div className={ui.body} aria-busy="true">
+        <p className={read.lead}>Reading your brief…</p>
+
+        <div className={read.progress}>
+          <div className={read.statusRow}>
+            <span className={read.status}>{line}</span>
+            <span className={read.elapsed} aria-label={`${secs} seconds so far`}>
+              {elapsed}
+            </span>
+          </div>
+          <div className={read.meter} role="progressbar" aria-label="Shots planned" aria-valuemin={0} aria-valuemax={target} aria-valuenow={count}>
+            <span style={{ width: `${Math.min(100, (count / target) * 100)}%` }} />
+          </div>
+          {subject && <p className={read.latest}>&ldquo;{subject}&rdquo;</p>}
+        </div>
+        <p className={read.sr} aria-live="polite">
+          {spoken}
+        </p>
+
+        <p className={ui.boxTextMuted}>
+          It reads the whole brief once — not as you type — and nothing is built until you&apos;ve seen what it took. Keep this screen open: a longer video takes about a minute.
+        </p>
+      </div>
+    </div>
   );
 }
 
