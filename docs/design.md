@@ -853,6 +853,10 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
     - **Select and move.** `SELECT` sits on the `UNPLACED` band and on every location band that has shots. It turns every row into a tick box, with a bulk `ALL N` row under each band, the same pattern as wrap's bulk row (§5.12). The footer becomes `MOVE N TO…` and `CANCEL`. `MOVE N TO…` opens a sheet listing each location (by day on a multi-day shoot) and each day's `UNPLACED`, leaving out anywhere every picked shot already is. It also has **OR A NEW LOCATION**: a name, and a day on a multi-day shoot. Moved shots keep their list order and go after what's already there, and numbers follow. Switching to the beat view cancels a selection.
     - **The read suggests locations.** With no locations on the project, the read (§5.6) names the places the shoot happens in and puts each shot in one. B2 shows it as `KITCHEN · NEW` and says so in a line above the list. Adding a shot creates its location once. Offline matching doesn't do this.
     - Drawn on the canvas as `SL1` (select mode) and `SL2` (the move sheet), 23 Sep.
+24. **The Android gesture bar ignores a pinned theme in the installed app — a platform limit (Rina, 24 Sep).** The status bar follows the pinned theme (theme-color, set before first paint). In a Chrome tab the gesture-bar strip does too, because the page draws under it (`viewport-fit=cover`, Chrome 135+) and `html` carries `--ground`. In the installed app, Chromium doesn't yet let web apps draw under the system bars, so Android paints the strip from the phone's own dark/light mode.
+    - **The visible case:** with Day pinned on a dark-mode phone, a black strip sits under a day screen. Auto matches, and Night pinned reads as near-black on near-black.
+    - **Nothing on the page reaches it.** It follows neither `color-scheme: light` nor the manifest's `#F2EBDD`.
+    - **When it resolves:** when Chromium ships edge-to-edge for installed apps, the `html` ground fills the strip with no change needed. A native or Play Store wrapper — the H1–H6 boards are for the native app — can set the navigation bar colour directly.
 
 ---
 
