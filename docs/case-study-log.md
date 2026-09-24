@@ -435,6 +435,30 @@ The rule from 2.23 held: code is what's real, and the canvas records where the d
 
 *Artifacts:* `docs/boards/` — `R1`, `R2`, `P4` new; 12 boards updated; `G5` and `G6` marked removed. Build journal, 24 Sep.
 
+### 2.29 A Home that knows what today is — 24 Sep
+
+**What broke.** Nothing was broken. This was new design for the native app, and it was designed but not built. The app opens on Projects, a list. It doesn't know whether you're shooting today, shooting soon, or picking something back up. Gear is reached from a link at the top of Projects, so the one place the app should feel like a companion on shoot day is a filing cabinet.
+
+**Options.**
+- **Navigation:** keep Projects as the front door with links out, or add a bottom bar.
+- **Home:** a dashboard of tiles (next shoot, recent projects, gear, stats), or one card chosen by the situation.
+- **Settings:** a cog in the corner, or a profile square.
+- **The greeting:** use a name straight away, or only once there's an account.
+
+**Decision. [R]**
+- **Rina proposed the frame:** a `HOME · PROJECTS · GEAR` bottom bar, a greeting, and a Home that surfaces today's shoot or the last project.
+- **Claude recommended three details, and Rina agreed:**
+  - **One situation-driven card, not tiles.** Home shows the one thing that matters now: first run (`H1`), the last project you were in (`H2`), a shoot coming up (`H3`), or today's shoot (`H4`, with a night version `H4n`). Tiles would give every situation equal weight, and the point is that one of them matters today.
+  - **A profile square instead of a cog.** A cog next to a bar labelled `GEAR` reads as the same word twice. The collision is the same one "Setup" caused with gear kits (2.6), caught this time before anything was built.
+  - **No name until sign-in.** The app has no account (§5.11), so it doesn't know your name, and a greeting that asked for it would be an account wall by another route. Until sign-in, the greeting is about the day, not the person.
+- **The tabs:** `H5` Projects and `H6` Gear as tabs behind the bar.
+
+These are canvas only, not built.
+
+**Why it's evidence.** It shows the division of labour in the collaboration clearly. The product direction came from Rina: what the app should greet you with. The detail-level critique — one card, the cog collision, the account wall hiding in a greeting — came from Claude, and was argued from rules the project had already set (2.6, §5.11) rather than taste. And the Home takes the budget's point of view from 2.2 one step further: it doesn't ask how much you've planned, it asks what today is.
+
+*Artifacts:* `docs/boards/` — `H1`-HomeFirstRun, `H2`-HomeLastViewed, `H3`-HomeComingUp, `H4`-HomeToday, `H4n`-HomeTodayNight, `H5`-ProjectsTab, `H6`-GearTab.
+
 ---
 
 ## 3. Artifact inventory
