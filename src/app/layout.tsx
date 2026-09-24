@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { AutoTheme } from "@/components/AutoTheme";
-import { THEME_SCRIPT } from "@/lib/theme";
+import { GROUND, THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 // The only typeface (§4.2), self-hosted from JetBrains' own release (OFL, see
@@ -25,12 +25,12 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "TheShotList", statusBarStyle: "default" },
 };
 
-// theme-color can't read a CSS variable, so these two mirror --ground in
-// tokens.css (day / night). syncThemeColor() overrides them when a theme is pinned.
+// theme-color can't read a CSS variable, so these mirror --ground (GROUND in
+// theme.ts). THEME_SCRIPT and syncThemeColor() override them when a theme is set.
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F2EBDD" },
-    { media: "(prefers-color-scheme: dark)", color: "#0C0E0D" },
+    { media: "(prefers-color-scheme: light)", color: GROUND.day },
+    { media: "(prefers-color-scheme: dark)", color: GROUND.night },
   ],
   viewportFit: "cover",
 };

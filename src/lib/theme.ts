@@ -22,8 +22,20 @@ export const THEME_EVENT = "tsl-theme-change";
 /** Fired when Auto has worked out today's sunset, so Settings can say when it switches. */
 export const SUN_EVENT = "tsl-sun-change";
 
-/** Inlined in <head>. Keep it tiny and dependency-free. */
-export const THEME_SCRIPT = `(function(){try{var r=document.documentElement,t=localStorage.getItem("${THEME_KEY}");if(t==="day"||t==="night"){r.setAttribute("data-theme",t);return}var s=JSON.parse(localStorage.getItem("${SUN_KEY}")||"null"),n=new Date(),d=n.getFullYear()+"-"+("0"+(n.getMonth()+1)).slice(-2)+"-"+("0"+n.getDate()).slice(-2);if(s&&s.date===d&&s.sunrise&&s.sunset){r.setAttribute("data-theme",n>=new Date(s.sunrise)&&n<new Date(s.sunset)?"day":"night")}}catch(e){}})()`;
+/**
+ * --ground in tokens.css, day and night, for the one place that can't read a
+ * CSS variable: the theme-color that paints the phone's status bar.
+ */
+export const GROUND = { day: "#F2EBDD", night: "#0C0E0D" } as const;
+
+/**
+ * Inlined in <head>, after the theme-color metas. Keep it tiny and
+ * dependency-free. It sets the theme before first paint and points the metas
+ * at the same ground, so a dark-mode phone never shows the night bar over a
+ * pinned day screen while the app starts (Rina, 24 Sep). The metas' own values
+ * are kept in data-auto, so switching back to Auto restores them.
+ */
+export const THEME_SCRIPT = `(function(){try{var r=document.documentElement,g={day:"${GROUND.day}",night:"${GROUND.night}"},a=function(t){r.setAttribute("data-theme",t);document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){if(!m.dataset.auto)m.dataset.auto=m.content;m.content=g[t]})},t=localStorage.getItem("${THEME_KEY}");if(t==="day"||t==="night"){a(t);return}var s=JSON.parse(localStorage.getItem("${SUN_KEY}")||"null"),n=new Date(),d=n.getFullYear()+"-"+("0"+(n.getMonth()+1)).slice(-2)+"-"+("0"+n.getDate()).slice(-2);if(s&&s.date===d&&s.sunrise&&s.sunset){a(n>=new Date(s.sunrise)&&n<new Date(s.sunset)?"day":"night")}}catch(e){}})()`;
 
 export function readThemeChoice(): ThemeChoice {
   try {

@@ -19,7 +19,12 @@ export function AutoTheme() {
 
     async function resolve() {
       clearTimeout(timer);
-      if (readThemeChoice() !== "auto" || themeLocked()) return;
+      // A pinned choice (or shoot mode's night) is already on <html>; the OS chrome still has to
+      // follow it, or a dark-mode phone keeps the dark theme-color over a day screen (Rina, 24 Sep).
+      if (readThemeChoice() !== "auto" || themeLocked()) {
+        syncThemeColor();
+        return;
+      }
 
       const coords = await whereYouAre();
       if (themeLocked()) return; // shoot mode or wrap opened while this was looking

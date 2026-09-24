@@ -245,3 +245,10 @@ Each change was recorded in design.md and the build journal, but the canvas stil
 
 See case-study-log 2.28.
 **Kind:** other
+
+### 2026-09-24 · v1 · A black status bar over a day screen
+
+**Proposed:** M0 synced the theme-color meta to the ground only when the theme changed or when Auto resolved it (`syncThemeColor()` in `theme.ts` and `AutoTheme`). A choice pinned in Settings was applied before first paint by `THEME_SCRIPT`, but nothing then synced the meta, and `AutoTheme` returned early for a pinned choice.
+**Rina:** "on Android (Xiaomi, system dark mode, app theme pinned to Day in Settings) the status bar shows #0C0E0D above a day-theme screen. Cause: syncThemeColor() never runs at startup when the theme choice isn't "auto" … so the media-matched theme-color meta for dark wins."
+**Changed:** `syncThemeColor()` now runs on mount whatever the choice, including `AutoTheme`'s early return. `html` gets `background-color: var(--ground)` in `globals.css`, so nothing outside `body` can show black. Beyond her fix, the same gap at startup was closed: `THEME_SCRIPT` now points the theme-color metas at the pinned ground before first paint, so the dark bar can't flash while the app loads, and switching back to Auto restores the metas' own values. The two ground colours live once, as `GROUND` in `theme.ts`.
+**Kind:** bug caught
