@@ -23,26 +23,15 @@ textarea::placeholder { color: #6B5F52; opacity: 1; }
     <h1 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;">Brief</h1>
   </div>
 
-  <div style="padding: 12px 20px; border-bottom: 1px solid #D8CDB8; display: flex; justify-content: space-between; align-items: center;">
-    <span role="group" aria-label="Brief scope" style="display: flex; border: 1px solid #D8CDB8;">
-      <span style="padding: 7px 12px; font-size: 11px; font-weight: 500; letter-spacing: 0.1em;">WHOLE TRIP</span>
-      <span style="padding: 7px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; background: #1C1714; color: #F2EBDD;">DAY 2</span>
-    </span>
-    <span style="font-size: 11px; letter-spacing: 0.08em; color: #6B5F52;">25 SEP</span>
-  </div>
 
   <div style="flex-grow: 1; overflow: hidden; padding: 16px 20px 0 20px; display: flex; flex-direction: column; gap: 14px;">
 
     <div style="display: flex; flex-direction: column; gap: 8px;">
-      <label for="brief" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">WHAT ARE YOU SHOOTING TODAY?</label>
+      <label for="brief" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">WHAT ARE YOU SHOOTING?</label>
       <textarea id="brief" rows="5" placeholder="Wandering Higashiyama at sunrise. Quiet, lots of texture." style="box-sizing: border-box; width: 100%; padding: 12px; font-size: 15px; line-height: 1.6; color: #1C1714; background: #FBF6EA; border: 1px solid #1C1714; border-radius: 0; resize: none;"></textarea>
       <span style="font-size: 11px; line-height: 1.5; color: #6B5F52;">A sentence or three paragraphs — both work.</span>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 7px;">
-      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">MATCHED AS YOU TYPE</span>
-      <span style="font-size: 11px; line-height: 1.5; color: #6B5F52;">Nothing yet. A place, a time of day or a client name will show up here as you write — matched on the device, before anything is sent anywhere.</span>
-    </div>
 
     <div style="display: flex; flex-direction: column; border-top: 1px solid #D8CDB8;">
 
@@ -64,11 +53,11 @@ textarea::placeholder { color: #6B5F52; opacity: 1; }
         <span style="font-size: 13px; font-weight: 700; color: #6B5F52;">›</span>
       </a>
 
-      <a href="B3-Days.dc.html" style="display: flex; gap: 14px; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid #D8CDB8; text-decoration: none; color: #1C1714;">
+      <a href="B1-Brief.dc.html" style="display: flex; gap: 14px; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid #D8CDB8; text-decoration: none; color: #1C1714;">
         <span style="width: 22px; font-size: 13px; font-weight: 700; color: #6B5F52;">03</span>
         <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px;">
-          <span style="font-size: 15px; font-weight: 700;">Copy day 1's brief</span>
-          <span style="font-size: 12px; line-height: 1.45; color: #6B5F52;">Most of a trip repeats itself. Bring it over and edit what changed.</span>
+          <span style="font-size: 15px; font-weight: 700;">Copy a brief from a past project</span>
+          <span style="font-size: 12px; line-height: 1.45; color: #6B5F52;">A lot of shoots repeat themselves. Bring one over and edit what changed.</span>
         </span>
         <span style="font-size: 13px; font-weight: 700; color: #6B5F52;">›</span>
       </a>
@@ -76,18 +65,15 @@ textarea::placeholder { color: #6B5F52; opacity: 1; }
     </div>
 
     <div style="display: flex; align-items: center; gap: 12px;">
-      <span style="flex-grow: 1; font-size: 12px; line-height: 1.5; color: #6B5F52;">No brief today? The list still builds from your format and gear — blunter, but it works.</span>
-      <a href="B2-FromBrief.dc.html" style="flex-shrink: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-decoration: none;">SKIP ›</a>
+      <span style="flex-grow: 1; font-size: 12px; line-height: 1.5; color: #6B5F52;">No brief? Add shots by hand instead.</span>
+      <a href="S4-AddShot.dc.html" style="flex-shrink: 0; min-height: 44px; display: flex; align-items: center; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-decoration: none;">ADD A SHOT ›</a>
     </div>
 
   </div>
 
   <div style="padding: 12px 20px 24px 20px; border-top: 1px solid #D8CDB8; display: flex; flex-direction: column; gap: 10px;">
     <span style="font-size: 11px; line-height: 1.5; color: #6B5F52;">Write something first, or skip above.</span>
-    <div style="display: flex; gap: 10px; align-items: center;">
-      <a href="B5-OnCamera.dc.html" style="width: 106px; height: 48px; flex-shrink: 0; border: 1px solid #1C1714; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #1C1714;">ON CAMERA</a>
-      <span aria-disabled="true" style="flex-grow: 1; height: 48px; border: 1px solid #D8CDB8; color: #6B5F52; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; letter-spacing: 0.1em;">GENERATE SHOTS</span>
-    </div>
+    <span aria-disabled="true" style="height: 48px; border: 1px solid #D8CDB8; color: #6B5F52; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; letter-spacing: 0.1em;">GENERATE SHOTS</span>
   </div>
 
 </div>

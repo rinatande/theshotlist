@@ -412,6 +412,29 @@ On Rina's brief and settings, the read went from 26 (48 on a re-run of the old p
 
 **Why it's evidence.** It's the design's founding promise, dropped on evidence rather than defended out of loyalty to the spec. The promise was sound as an idea — shoots happen where there's no signal — but it bundled two things: *using* the list offline, which matters on the day, and *making* it offline, which happens the day before at a desk. Splitting them kept what mattered and removed what didn't work. It also shows the other side of 2.21 to 2.26: several rounds of making the offline engine better were worth less than one honest look at whether anyone would use its output.
 
+### 2.28 The canvas follows the code, a second time — 24 Sep
+
+**What broke.** A day after the first sync (2.23), the canvas was behind again, and in a sharper way. The changes since weren't refinements; they reversed boards:
+- **Generating went online-only** (2.27), so B0, B1, B9 and E5 still promised an offline list that no longer exists.
+- **G5 and G6** — the pocket-versus-rig comparison §6.3 calls the argument for gear — showed a kit-only suggestion screen the build had removed (2.25).
+- **Three screens had no board at all:** the new project's third step, the read's live progress, and the read's failure screen.
+
+**Options.**
+- Leave the reversed boards as the record of the original intent.
+- Delete them.
+- Redraw from the build, keep the reversed boards, and mark them removed.
+
+**Decision. [R]** Redraw and mark.
+- **New boards:** `R1` (reading, live progress), `R2` (read failed) and `P4` (new project 3/3, frame rate and gear).
+- **Updated to match the build:** `B0`, `B1`, `B1b`, `B9`, `E5`, `P1`, `P2`, `PE1`, `PE2`, `G2`, `G4` and `NG4`.
+- **Kept but marked removed:** `G5` and `G6`, not deleted.
+
+The rule from 2.23 held: code is what's real, and the canvas records where the design ended up.
+
+**Why it's evidence.** A second sync a day later shows the practice is a habit, not a one-off tidy-up. Keeping G5 and G6 on the canvas, marked removed, is the interesting choice. They were the boards that made the case for gear, and the build proved that case wrong in practice. A portfolio that deletes its reversed work hides the part of the process worth showing; this one keeps it, labelled, next to what replaced it.
+
+*Artifacts:* `docs/boards/` — `R1`, `R2`, `P4` new; 12 boards updated; `G5` and `G6` marked removed. Build journal, 24 Sep.
+
 ---
 
 ## 3. Artifact inventory

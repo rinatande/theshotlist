@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Read failed</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<style>
+body { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; background: #F2EBDD; }
+a { color: #A83B2A; } a:hover { color: #8A2E20; }
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; color: #1C1714; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column;">
+
+  <div style="padding: 20px 20px 12px 20px; border-bottom: 1px solid #D8CDB8; display: flex; justify-content: space-between; align-items: center;">
+    <a href="B1-Brief.dc.html" style="font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none;">← EDIT BRIEF</a>
+    <h1 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;">What it read</h1>
+  </div>
+
+  <div style="flex-grow: 1; overflow: hidden; padding: 16px 20px 0 20px; display: flex; flex-direction: column; gap: 16px;">
+
+    <span style="font-size: 15px; line-height: 1.55;">The read didn't work this time.</span>
+
+    <div role="status" style="display: flex; flex-direction: column; gap: 6px; padding: 12px; border: 1px solid #D8CDB8;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #8F4F0C;">! NOT READ</span>
+      <span style="font-size: 12px; line-height: 1.5;">It didn't come back in time. A read that doesn't come back isn't counted against today's.</span>
+    </div>
+
+    <span style="font-size: 12px; line-height: 1.5; color: #6B5F52;">Your brief is saved. Everything else works as usual — add shots by hand now, or generate again in a moment.</span>
+
+  </div>
+
+  <div style="padding: 12px 20px 24px 20px; border-top: 1px solid #D8CDB8; display: flex; flex-direction: column; gap: 10px;">
+    <a href="R1-Reading.dc.html" style="display: flex; align-items: center; justify-content: center; height: 48px; background: #A83B2A; color: #F2EBDD; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.12em;">TRY AGAIN</a>
+    <a href="S4-AddShot.dc.html" style="display: flex; align-items: center; justify-content: center; height: 44px; border: 1px solid #1C1714; color: #1C1714; text-decoration: none; font-weight: 700; font-size: 12px; letter-spacing: 0.1em;">+ ADD A SHOT BY HAND</a>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

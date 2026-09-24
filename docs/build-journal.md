@@ -224,3 +224,24 @@ design.md §5.6.
 
 Her two timed-out reads were counted before this, and the counter resets at midnight UTC. design.md §5.6.
 **Kind:** bug caught
+
+### 2026-09-24 · v1 gear · The canvas synced to the build, again
+
+**Proposed:** Since the first sync (23 Sep), the build had moved past the boards again:
+- a third new-project step;
+- generating became online-only;
+- the read gained a live progress screen and an honest failure screen;
+- the gear suggestions went through the brief.
+
+Each change was recorded in design.md and the build journal, but the canvas still showed the earlier design, including G5 and G6, the kit-only suggestion screens that no longer exist.
+**Rina:** Synced the design canvas to the build on 24 Sep.
+**Changed:**
+- **New boards:**
+  - `R1` reading, with live progress;
+  - `R2` read failed;
+  - `P4` new project 3/3, frame rate and gear.
+- **Updated to match the build:** `B0`, `B1`, `B1b`, `B9`, `E5`, `P1`, `P2`, `PE1`, `PE2`, `G2`, `G4` and `NG4`.
+- **Marked removed on the canvas:** `G5` and `G6`.
+
+See case-study-log 2.28.
+**Kind:** other

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New project — gear and frame rate</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<style>
+body { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; background: #F2EBDD; }
+a { color: #A83B2A; } a:hover { color: #8A2E20; }
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; color: #1C1714; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column;">
+
+  <div style="padding: 20px 20px 12px 20px; border-bottom: 1px solid #D8CDB8; display: flex; justify-content: space-between; align-items: center;">
+    <a href="P2-NewProjectFormat.dc.html" style="font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none;">← BACK</a>
+    <h1 style="margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;">New project · 3/3</h1>
+  </div>
+
+  <div style="display: flex; height: 3px; background: #E0D5BE;">
+    <span style="width: 100%; background: #A83B2A;"></span>
+  </div>
+
+  <div style="flex-grow: 1; overflow: hidden; padding: 20px 20px 0 20px; display: flex; flex-direction: column; gap: 22px;">
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <span id="fps" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">WHAT FRAME RATE ARE YOU SHOOTING?</span>
+      <div role="group" aria-labelledby="fps" style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #1C1714; color: #F2EBDD; padding: 9px 12px;">24</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 12px;">25</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 12px;">30</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 12px;">50</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 12px;">60</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 12px;">120</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 12px;">MIXED</span>
+      </div>
+      <span style="font-size: 11px; line-height: 1.5; color: #6B5F52;">Real time throughout — no slow-motion shots suggested.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <span id="kit" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">WHAT ARE YOU BRINGING?</span>
+      <div role="group" aria-labelledby="kit" style="display: flex; gap: 6px; flex-wrap: wrap;">
+        <span style="font-size: 12px; font-weight: 700; letter-spacing: 0.08em; background: #1C1714; color: #F2EBDD; padding: 9px 12px;">POCKET KIT</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 12px;">FULL RIG</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.08em; border: 1px solid #D8CDB8; padding: 9px 12px;">DECIDE LATER</span>
+      </div>
+      <span style="font-size: 11px; line-height: 1.5; color: #6B5F52;">CAM · 2 LENS · SUPPORT · AUDIO · PWR. Add or leave out items on the GEAR tab.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 12px; border: 1px solid #D8CDB8;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #6B5F52;">BOTH CAN WAIT</span>
+      <span style="font-size: 12px; line-height: 1.5;">Nothing here is required. Set them now and the first GENERATE already knows how you shoot and what's in the bag. At 50 or more, pours, splashes and walks can be slowed right down.</span>
+    </div>
+
+  </div>
+
+  <div style="padding: 12px 20px 24px 20px; border-top: 1px solid #D8CDB8;">
+    <a href="E5-EmptyShotList.dc.html" style="display: flex; align-items: center; justify-content: center; height: 48px; background: #A83B2A; color: #F2EBDD; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.12em;">CREATE PROJECT</a>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
