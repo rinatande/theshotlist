@@ -266,3 +266,10 @@ See case-study-log 2.28.
 **Rina:** "if a shot is marked as required for client, it shows up in its own section required, and cannot be reordered, even if it's moved into a same location as other shots … Doesn't make sense where it fits well into the shotlist as a sequence, but you can't see when you should shoot it because it's just in its own required section. Still want to be able to call them out, but have them in the list"
 **Changed:** Plan put to Rina before building: required shots sit inline in their location, in running order, and can be dragged like any other; the callout moves to the row itself and a per-client count at the top of the list. Claude proposed keeping them unnumbered (§5.7, "the mark is the identity"). Rina overruled that too: "we want the required shots to still be numbered in the list and count towards the shot count / budget." So `[★]` stops replacing the number; it moves to the callout line. Built 25 Sep across the list, beat view, running order, shot detail, shoot mode and the day record. See case-study-log 2.31.
 **Kind:** design call
+
+### 2026-09-25 · v1 · Duplicate and delete out of reach of a stray tap
+
+**Proposed:** Built from §5.13 (Rina, 22 Sep): `DUPLICATE` and `DELETE` as two rows on shot detail, under the spec and the note. `DUPLICATE` added a copy straight away. `DELETE` stated its consequence and acted on the first tap, with no confirmation, on the reasoning that stating it was enough.
+**Rina:** Found both too easy to hit by accident, and redesigned the flow on the canvas (S3, S3a, S3b, S4c, SL3–SL5): move them into a `⋯` sheet in shot detail's header (`EDIT SHOT · DUPLICATE · DELETE SHOT`), make delete confirm, make duplicate open the add form and add only on `ADD AS NN`, and let a long-press on a row start select mode, with duplicate and delete in its bar.
+**Changed:** Built to her boards. Shot detail has no action rows now. Delete asks first everywhere, and a batch delete names any exposed or `[★]` shots. Duplicate adds nothing until it's saved. Long-press picks a row, and `SELECT` on bands stays. design.md §5.13; case-study-log 2.32.
+**Kind:** design call

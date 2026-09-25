@@ -488,6 +488,27 @@ These are canvas only, not built. *(Built into the PWA on 25 Sep — design.md �
 
 *Artifacts:* `docs/design.md` §5.7, §5.10; `src/components/ShotList.tsx`; `src/lib/shotNumbers.ts`.
 
+### 2.32 Destructive actions, one step further away — 25 Sep
+
+**What broke.** Shot detail carried `DUPLICATE` and `DELETE` as two full-width rows under the note. They were put there on 22 Sep so neither needed the edit form opened first. `DELETE` acted on one tap: the design's position was that stating the consequence ("Shots below move up — 04 becomes 03") was more honest than a confirmation. `DUPLICATE` also acted on one tap, adding a copy at once. In use on a phone, both sat right where a thumb scrolls to read the note. A stray tap deleted a shot or quietly added one.
+
+**Options.**
+- **Keep the rows** and add undo.
+- **Keep the rows** and confirm delete.
+- **Move both behind `⋯`**, confirm delete, and make duplicate open the form first.
+- **Also give the list a way to act on shots directly**, rather than going through detail.
+
+**Decision. [R]** Rina found both actions too easy to hit by accident and redesigned the flow on the canvas:
+- **Behind `⋯`:** `DUPLICATE` and `DELETE` move into a `⋯` sheet in shot detail's header (`EDIT SHOT · DUPLICATE · DELETE SHOT`, S3a).
+- **Delete confirms**, and says what goes and how the numbers move (S3b).
+- **Duplicate opens the add form filled from the shot (S4c).** Nothing is added until `ADD AS 04`, which puts it straight after the original.
+- **Long-press selection:** she proposed that a long-press on a row start select mode, which already existed for moving shots (SL1). With one shot picked the bar offers `DUPLICATE · MOVE… · DELETE` (SL3); with several, `DELETE N · MOVE N TO…` (SL4). A batch delete confirms and names anything already shot or owed to a client (SL5).
+- **`SELECT` stays:** on bands, as the way in that doesn't need a gesture.
+
+**Why it's evidence.** It overturns an earlier principled position, and the reason is physical, not philosophical. "State the consequence instead of confirming" is right about the words: the sheet still says "04 becomes 03". It was wrong about the geometry. An action you can trigger while scrolling needs a second step, however honestly it's labelled. The redesign doesn't add friction everywhere, though. It moves the actions to where intent is unambiguous: a menu you opened on purpose, or a row you held on purpose. The one step that stays irreversible is the one that asks. Duplicate becomes a draft instead of a side effect. That follows the same rule as generating (2.27): nothing appears on your list that you didn't choose to add.
+
+*Artifacts:* `docs/design.md` §5.13; boards `S3`, `S3a`, `S3b`, `S4c`, `SL3`, `SL4`, `SL5`.
+
 ---
 
 ## 3. Artifact inventory

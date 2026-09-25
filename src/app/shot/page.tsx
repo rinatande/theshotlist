@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { BottomSheet } from "@/components/BottomSheet";
 import { RequiredMark, StatusMark } from "@/components/Marks";
 import { NotHere } from "@/components/NotHere";
+import sheet from "@/components/ProjectActions.module.css";
+import { ShotDelete } from "@/components/ShotDelete";
 import ui from "@/components/ui.module.css";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
-import { deleteConsequence, deleteShot, duplicateShot, toggleExposed } from "@/lib/shots";
+import { deleteShots, toggleExposed } from "@/lib/shots";
 import { audioLabel, movementLabel, supportLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import { saveProject, useProject } from "@/lib/useProject";
@@ -20,6 +23,8 @@ function ShotDetail() {
   const shotId = params.get("shot") ?? "";
   const [tf, setTf] = useState<TimeFormat>("12h");
   const [fresh, setFresh] = useState(false);
+  // The ⋯ sheet (S3a), and its delete confirmation (S3b) in its place.
+  const [sheetOpen, setSheetOpen] = useState<"menu" | "delete" | null>(null);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setTf(readTimeFormat()), []);
 
@@ -53,7 +58,14 @@ function ShotDetail() {
           ← SHOT LIST
         </Link>
         <span className={styles.position}>
-          {n !== undefined ? `${formatShotNumber(n)} / ${formatShotNumber(numbers.size)}` : ""}
+          <span className={styles.positionNo}>{n !== undefined ? `${formatShotNumber(n)} / ${formatShotNumber(numbers.size)}` : ""}</span>
+          <button type="button" className={styles.more} aria-label="Shot options" onClick={() => setSheetOpen("menu")}>
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
+              <circle cx="4" cy="10" r="1.6" />
+              <circle cx="10" cy="10" r="1.6" />
+              <circle cx="16" cy="10" r="1.6" />
+            </svg>
+          </button>
         </span>
       </header>
 
@@ -95,34 +107,6 @@ function ShotDetail() {
           </div>
         )}
 
-        {/* Here rather than in edit, so neither needs the form opened first (§5.13). */}
-        <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.actionRow}
-            onClick={async () => {
-              const [next, copy] = duplicateShot(project, shot.id);
-              await saveProject(next);
-              router.push(`/shot?id=${project.id}&shot=${copy}`);
-            }}
-          >
-            <span className={styles.actionTitle}>DUPLICATE</span>
-            <span className={styles.actionHint}>Same spec, next number. For a second take, or the same insert somewhere else.</span>
-          </button>
-          <button
-            type="button"
-            className={`${styles.actionRow} ${styles.warn}`}
-            onClick={async () => {
-              // States its consequence rather than confirming (§5.13). Leave first,
-              // so this screen never renders a shot that's gone.
-              router.replace(list);
-              await saveProject(deleteShot(project, shot.id));
-            }}
-          >
-            <span className={styles.actionTitle}>DELETE</span>
-            <span className={styles.actionHint}>{deleteConsequence(project, shot.id)}</span>
-          </button>
-        </div>
       </div>
 
       <div className={`${ui.footer} ${styles.footer}`}>
@@ -140,6 +124,59 @@ function ShotDetail() {
           {exposed ? "UNMARK" : "MARK EXPOSED"}
         </button>
       </div>
+
+      {/* Duplicate and delete sit behind ⋯, out of reach of a stray tap (§5.13, Rina 25 Sep). */}
+      {sheetOpen === "menu" && (
+        <BottomSheet title={`SHOT ${n !== undefined ? formatShotNumber(n) : ""} · ${shot.subject.toUpperCase()}`} onClose={() => setSheetOpen(null)}>
+          <ul className={sheet.rows}>
+            <li>
+              <Link href={`/shot/edit?id=${project.id}&shot=${shot.id}`} className={sheet.row}>
+                <span className={sheet.rowText}>
+                  <span className={sheet.rowTitle}>EDIT SHOT</span>
+                  <span className={sheet.rowHint}>Size, lens, movement, sound, note.</span>
+                </span>
+                <span aria-hidden="true" className={sheet.chevron}>
+                  ›
+                </span>
+              </Link>
+            </li>
+            <li>
+              <Link href={`/shot/new?id=${project.id}&copy=${shot.id}`} className={sheet.row}>
+                <span className={sheet.rowText}>
+                  <span className={sheet.rowTitle}>DUPLICATE</span>
+                  <span className={sheet.rowHint}>Opens a copy to change. Nothing is added until you save it.</span>
+                </span>
+                <span aria-hidden="true" className={sheet.chevron}>
+                  ›
+                </span>
+              </Link>
+            </li>
+            <li>
+              <button type="button" className={`${sheet.row} ${sheet.warn}`} onClick={() => setSheetOpen("delete")}>
+                <span className={sheet.rowText}>
+                  <span className={sheet.rowTitle}>DELETE SHOT</span>
+                  <span className={sheet.rowHint}>Asks you first.</span>
+                </span>
+                <span aria-hidden="true" className={sheet.chevron}>
+                  ›
+                </span>
+              </button>
+            </li>
+          </ul>
+        </BottomSheet>
+      )}
+      {sheetOpen === "delete" && (
+        <ShotDelete
+          project={project}
+          ids={[shot.id]}
+          onClose={() => setSheetOpen(null)}
+          onDelete={async () => {
+            // Leave first, so this screen never renders a shot that's gone.
+            router.replace(list);
+            await saveProject(deleteShots(project, [shot.id]));
+          }}
+        />
+      )}
     </div>
   );
 }

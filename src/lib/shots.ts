@@ -138,28 +138,76 @@ export function clearFlag(p: Project, id: Id, now = new Date()): Project {
 }
 
 /** Same spec, next number (§5.13): the copy goes straight after the original. */
-export function duplicateShot(p: Project, id: Id, now = new Date(), newId = () => crypto.randomUUID()): [Project, Id] {
-  const original = p.shots.find((s) => s.id === id);
-  if (!original) return [p, id];
-  const copy: Shot = { ...original, id: newId(), status: "unshot", flagNote: undefined, droppedAt: undefined, order: original.order + 1 };
-  const sameGroup = (s: Shot) =>
-    original.locationId ? s.locationId === original.locationId : !s.locationId && s.dayId === original.dayId;
-  const shots = p.shots.map((s) => (s.id !== id && sameGroup(s) && s.order > original.order ? { ...s, order: s.order + 1 } : s));
-  return [touch({ ...p, shots: [...shots, copy] }, now), copy.id];
+/** A shot's fields as the add form takes them — DUPLICATE opens the form with these (S4c). */
+export function shotInputFrom(s: Shot): ShotInput {
+  return {
+    size: s.size,
+    subject: s.subject,
+    lens: s.lens,
+    lensId: s.lensId,
+    support: s.support,
+    supportId: s.supportId,
+    movement: s.movement,
+    audio: s.audio,
+    locationId: s.locationId,
+    dayId: s.dayId,
+    note: s.note,
+    beat: s.beat,
+    required: s.required,
+  };
 }
 
-export function deleteShot(p: Project, id: Id, now = new Date()): Project {
-  return touch({ ...p, shots: p.shots.filter((s) => s.id !== id) }, now);
+/**
+ * Add a shot straight after another (S4c, ADD AS NN): same group, the shots
+ * below move down one. A copy moved to another location while editing just
+ * joins the end of that one, like any added shot.
+ */
+export function addShotAfter(p: Project, input: ShotInput, afterId: Id, now = new Date(), newId = () => crypto.randomUUID()): [Project, Id] {
+  const [added, id] = addShot(p, input, now, newId);
+  const original = p.shots.find((s) => s.id === afterId);
+  const mine = added.shots.find((s) => s.id === id)!;
+  if (!original) return [added, id];
+  const group = (s: Shot) => (s.locationId ? `l:${s.locationId}` : `d:${s.dayId ?? ""}`);
+  if (group(mine) !== group(original)) return [added, id];
+  const shots = added.shots.map((s) => {
+    if (s.id === id) return { ...s, order: original.order + 1 };
+    return group(s) === group(original) && s.order > original.order ? { ...s, order: s.order + 1 } : s;
+  });
+  return [{ ...added, shots }, id];
 }
 
-/** "Shots below move up — 04 becomes 03. Anything already exposed keeps its mark." (S6) */
-export function deleteConsequence(p: Project, id: Id): string {
+/** The number ADD AS NN will give it. */
+export function numberIfAddedAfter(p: Project, input: ShotInput, afterId: Id): number | undefined {
+  const [next, id] = addShotAfter(p, input, afterId, new Date(0), () => "__preview__");
+  return shotNumbers(next).get(id);
+}
+
+export function deleteShots(p: Project, ids: Id[], now = new Date()): Project {
+  const gone = new Set(ids);
+  return touch({ ...p, shots: p.shots.filter((s) => !gone.has(s.id)) }, now);
+}
+
+/** "Hands on the rope goes, with its note and 3 refs." (S3b) */
+export function deleteGoes(s: Shot): string {
+  const refs = s.refIds?.length ?? 0;
+  const parts = [s.note ? "its note" : "", refs ? (refs === 1 ? "1 ref" : `${refs} refs`) : ""].filter(Boolean);
+  return `${s.subject} goes${parts.length ? `, with ${parts.join(" and ")}` : ""}.`;
+}
+
+/**
+ * What deleting does to the numbers — a number is a position (§5.10):
+ * "The shots below move up — 04 becomes 03." for one (S3b), "The shots after
+ * them move up to fill the gaps." for several (SL5).
+ */
+export function deleteRenumber(p: Project, ids: Id[]): string {
   const numbers = shotNumbers(p);
-  const mine = numbers.get(id);
-  if (mine === undefined) return "It leaves the list. Nothing else moves.";
-  const next = [...numbers.entries()].find(([, n]) => n === mine + 1);
-  if (!next) return "It's the last shot, so nothing else moves.";
-  return `Shots below move up — ${formatShotNumber(mine + 1)} becomes ${formatShotNumber(mine)}. Anything already exposed keeps its mark.`;
+  const gone = new Set(ids);
+  const mine = ids.map((id) => numbers.get(id)).filter((n): n is number => n !== undefined);
+  const first = Math.min(...mine);
+  const after = [...numbers].some(([id, n]) => !gone.has(id) && n > first);
+  if (!mine.length || !after) return ids.length === 1 ? "It's the last shot, so nothing else moves." : "They're the last shots, so nothing else moves.";
+  if (ids.length > 1) return "The shots after them move up to fill the gaps.";
+  return `The shots below move up — ${formatShotNumber(first + 1)} becomes ${formatShotNumber(first)}.`;
 }
 
 /** The number a new shot would get, for "New shot · 07" (S4). */

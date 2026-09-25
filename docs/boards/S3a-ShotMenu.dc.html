@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Shot detail</title>
+<title>Shot options</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -14,7 +14,7 @@ body { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; backgr
 a { color: #A83B2A; } a:hover { color: #8A2E20; }
 </style>
 </helmet>
-<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; color: #1C1714; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column;">
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; color: #1C1714; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column; position: relative;">
 
   <div style="padding: 20px 20px 12px 20px; display: flex; justify-content: space-between; align-items: center;">
     <a href="S2-ShotList.dc.html" style="font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none;">← SHOT LIST</a>
@@ -67,6 +67,37 @@ a { color: #A83B2A; } a:hover { color: #8A2E20; }
   <div style="padding: 12px 20px 24px 20px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #D8CDB8;">
     <a href="S6-EditShot.dc.html" aria-label="Edit shot" style="width: 48px; height: 48px; flex-shrink: 0; border: 1px solid #1C1714; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: #1C1714;">EDIT</a>
     <button type="button" style="flex-grow: 1; height: 48px; background: #A83B2A; color: #F2EBDD; border: none; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 14px; letter-spacing: 0.12em;">MARK EXPOSED</button>
+  </div>
+
+
+  <a href="S3-ShotDetail.dc.html" aria-label="Close" style="position: absolute; inset: 0; background: rgba(28, 23, 20, 0.52);"></a>
+  <div role="dialog" aria-modal="true" aria-labelledby="sheet-title" style="position: absolute; left: 0; right: 0; bottom: 0; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; border-top: 1px solid #1C1714; display: flex; flex-direction: column; padding-bottom: 24px;">
+    <div style="display: flex; justify-content: center; padding: 10px 0 2px 0;"><span aria-hidden="true" style="width: 36px; height: 4px; background: #D8CDB8;"></span></div>
+    <div style="padding: 12px 20px 14px 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+      <h2 id="sheet-title" style="margin: 0; flex-grow: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">SHOT 03 · HANDS ON THE ROPE</h2>
+      <a href="S3-ShotDetail.dc.html" style="flex-shrink: 0; padding: 14px 0; margin: -14px 0; font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none; color: #6B5F52;">CLOSE</a>
+    </div>
+    <a href="S6-EditShot.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-top: 1px solid #D8CDB8; text-decoration: none; color: #1C1714;">
+      <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 15px; font-weight: 700; letter-spacing: 0.06em;">EDIT SHOT</span>
+        <span style="font-size: 12px; line-height: 1.45; color: #6B5F52;">Size, lens, movement, sound, note.</span>
+      </span>
+      <span style="font-size: 13px; font-weight: 700; color: #6B5F52;">›</span>
+    </a>
+    <a href="S4c-DuplicateShot.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-top: 1px solid #D8CDB8; text-decoration: none; color: #1C1714;">
+      <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 15px; font-weight: 700; letter-spacing: 0.06em;">DUPLICATE</span>
+        <span style="font-size: 12px; line-height: 1.45; color: #6B5F52;">Opens a copy to change. Nothing is added until you save it.</span>
+      </span>
+      <span style="font-size: 13px; font-weight: 700; color: #6B5F52;">›</span>
+    </a>
+    <a href="S3b-ShotDelete.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-top: 1px solid #D8CDB8; border-bottom: 1px solid #D8CDB8; text-decoration: none; color: #8F4F0C;">
+      <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 15px; font-weight: 700; letter-spacing: 0.06em;">DELETE SHOT</span>
+        <span style="font-size: 12px; line-height: 1.45; color: #6B5F52;">Asks you first.</span>
+      </span>
+      <span style="font-size: 13px; font-weight: 700; color: #8F4F0C;">›</span>
+    </a>
   </div>
 
 </div>

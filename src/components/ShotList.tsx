@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { beatLabel, ROLES, shotsByBeat } from "@/lib/beats";
 import { projectBrief } from "@/lib/brief";
 import { projectBudget } from "@/lib/budget";
@@ -21,10 +21,14 @@ import ui from "./ui.module.css";
 
 type View = "location" | "beat";
 
-/** Picking several shots to move at once (design.md §10, 23). `ids` is null when not picking. */
+/**
+ * Picking shots to act on (design.md §5.13, §10 item 23). `ids` is null when
+ * not picking. Started by SELECT on a band, or by long-pressing a row, which
+ * picks that row.
+ */
 export interface Selection {
   ids: Set<Id> | null;
-  start: () => void;
+  start: (ids?: Id[]) => void;
   pick: (ids: Id[], on: boolean) => void;
   cancel: () => void;
 }
@@ -85,6 +89,8 @@ export function ShotList({ project, selection }: { project: Project; selection?:
       </div>
 
       {view === "location" ? <ByLocation {...rowProps} /> : <ByBeat {...rowProps} />}
+
+      {selection?.ids && <p className={styles.pickHint}>Long-press any shot to start picking, or SELECT on a band. Tap more to add them.</p>}
 
       {over && (
         // One advisory, once, at the foot — never a warning per shot (§5.2).
@@ -351,6 +357,7 @@ function RequiredLine({ client }: { client: string }) {
 // ─── A row (§7 Shot row) ──────────────────────────────────────────────────────
 
 function ShotRow({ shot, project, numbers, fresh, onToggle, selection }: RowProps & { shot: Shot }) {
+  const longPress = useLongPress(() => selection?.start([shot.id]));
   const exposed = shot.status === "exposed";
   const dropped = shot.status === "dropped";
   const n = numbers.get(shot.id);
@@ -360,11 +367,10 @@ function ShotRow({ shot, project, numbers, fresh, onToggle, selection }: RowProp
   if (selection?.ids) {
     const on = selection.ids.has(shot.id);
     return (
-      <label className={`${muted ? `${styles.row} ${styles.done}` : styles.row}`}>
-        <span className={styles.rowLink}>
-          <span className={styles.no}>
-            <input type="checkbox" className={styles.tick} checked={on} onChange={(e) => selection.pick([shot.id], e.target.checked)} />
-          </span>
+      <label className={[styles.row, muted ? styles.done : "", on ? styles.picked : ""].filter(Boolean).join(" ")}>
+        <span className={`${styles.rowLink} ${styles.rowPick}`}>
+          <input type="checkbox" className={styles.tick} checked={on} onChange={(e) => selection.pick([shot.id], e.target.checked)} />
+          <span className={styles.no}>{n !== undefined ? formatShotNumber(n) : ""}</span>
           <span className={styles.size}>{shot.size}</span>
           <span className={styles.stack}>
             <span className={muted ? styles.subjectDone : styles.subject}>{shot.subject}</span>
@@ -382,7 +388,7 @@ function ShotRow({ shot, project, numbers, fresh, onToggle, selection }: RowProp
 
   return (
     <div className={muted ? `${styles.row} ${styles.done}` : styles.row}>
-      <Link href={`/shot?id=${project.id}&shot=${shot.id}`} className={styles.rowLink}>
+      <Link href={`/shot?id=${project.id}&shot=${shot.id}`} className={styles.rowLink} {...longPress}>
         <span className={styles.no}>{n !== undefined ? formatShotNumber(n) : ""}</span>
         <span className={styles.size}>{shot.size}</span>
         <span className={styles.stack}>
@@ -478,10 +484,56 @@ function EmptyList({ project }: { project: Project }) {
 
 // ─── Picking several (design.md §10, 23) ─────────────────────────────────────
 
+const HOLD_MS = 450;
+const SLOP_PX = 8;
+
+/**
+ * Long-press a row to start picking with it (SL3, Rina 25 Sep). A tap still
+ * opens the shot; a press that moves is a scroll; and the press that picks
+ * swallows its click and the phone's own long-press menu. SELECT on a band
+ * stays, as the way in that doesn't depend on a gesture.
+ */
+function useLongPress(onLong: () => void) {
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const start = useRef<{ x: number; y: number } | null>(null);
+  const fired = useRef(false);
+  const clear = () => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+    start.current = null;
+  };
+  return {
+    onPointerDown: (e: PointerEvent) => {
+      if (e.button !== 0) return;
+      fired.current = false;
+      start.current = { x: e.clientX, y: e.clientY };
+      timer.current = setTimeout(() => {
+        fired.current = true;
+        timer.current = null;
+        navigator.vibrate?.(10);
+        onLong();
+      }, HOLD_MS);
+    },
+    onPointerMove: (e: PointerEvent) => {
+      if (start.current && Math.hypot(e.clientX - start.current.x, e.clientY - start.current.y) > SLOP_PX) clear();
+    },
+    onPointerUp: clear,
+    onPointerCancel: clear,
+    onPointerLeave: clear,
+    onClickCapture: (e: { preventDefault: () => void; stopPropagation: () => void }) => {
+      if (!fired.current) return;
+      e.preventDefault();
+      e.stopPropagation();
+      fired.current = false;
+    },
+    onContextMenu: (e: { preventDefault: () => void }) => e.preventDefault(),
+  };
+}
+
 function SelectButton({ name, selection }: { name: string; selection?: Selection }) {
   if (!selection || selection.ids) return null;
   return (
-    <button type="button" className={styles.bandSelect} onClick={selection.start}>
+    <button type="button" className={styles.bandSelect} onClick={() => selection.start()}>
       SELECT<span className={styles.sr}> shots in {name}</span>
     </button>
   );

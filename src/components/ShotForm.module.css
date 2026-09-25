@@ -12,6 +12,26 @@
   resize: vertical;
 }
 
+/* S4c: which shot this copies, and that it isn't on the list yet. */
+.copyBand {
+  padding: var(--s-2) var(--gutter);
+  background: var(--band);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-faint);
+}
+
+.copyOf {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .suggestion {
   padding: 13px 14px;
   border: 1px solid var(--accent);

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { beatName, guessBeat, ROLES } from "@/lib/beats";
 import { lensChips, supportChips } from "@/lib/gear";
 import { runningOrder } from "@/lib/runningOrder";
-import { clientsOf, coverageGap, findDuplicate, numberIfAdded, type ShotInput } from "@/lib/shots";
+import { clientsOf, coverageGap, findDuplicate, numberIfAdded, numberIfAddedAfter, type ShotInput } from "@/lib/shots";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { AUDIO, MOVEMENTS, suggestAudio, suggestMovement, SUPPORTS } from "@/lib/suggest";
 import type { Audio, BeatRole, Movement, Project, Shot, ShotSize } from "@/lib/types";
@@ -22,6 +22,8 @@ interface Props {
   project: Project;
   /** Editing this shot; absent when adding. */
   shot?: Shot;
+  /** DUPLICATE (S4c): adding a copy of this shot, in after it. */
+  copyOf?: Shot;
   initial: ShotInput;
   cancelHref: string;
   onSubmit: (input: ShotInput) => void;
@@ -34,11 +36,12 @@ interface Props {
  * Movement and audio are filled in by the app and follow the other fields
  * until the person picks one themselves.
  */
-export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClearFlag }: Props) {
+export function ShotForm({ project, shot, copyOf, initial, cancelHref, onSubmit, onClearFlag }: Props) {
   const [draft, setDraft] = useState<ShotInput>(initial);
   // Once touched, a suggestion stops following the other fields. Editing an existing shot starts touched.
-  const [ownMovement, setOwnMovement] = useState(!!shot?.movement);
-  const [ownAudio, setOwnAudio] = useState(!!shot?.audio);
+  // A copy keeps what the original had, so it starts touched too.
+  const [ownMovement, setOwnMovement] = useState(!!(shot ?? copyOf)?.movement);
+  const [ownAudio, setOwnAudio] = useState(!!(shot ?? copyOf)?.audio);
   // A beat from a beat's + ADD, or on a saved shot, is already chosen; otherwise it's guessed (§10 item 17).
   const [ownBeat, setOwnBeat] = useState(!!initial.beat && initial.beat !== "any");
   // [★] by hand (§10 item 16): not required, one of the project's clients, or a new one typed.
@@ -52,7 +55,8 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
   const final: ShotInput = { ...draft, movement, audio, beat };
 
   const editing = !!shot;
-  const n = editing ? shotNumbers(project).get(shot.id) : numberIfAdded(project, final);
+  const n = editing ? shotNumbers(project).get(shot.id) : copyOf ? numberIfAddedAfter(project, final, copyOf.id) : numberIfAdded(project, final);
+  const copyNo = copyOf ? shotNumbers(project).get(copyOf.id) : undefined;
   const label = `${editing ? "Edit shot" : "New shot"}${n !== undefined ? ` · ${formatShotNumber(n)}` : ""}`;
   const needsClient = clientChoice === NEW_CLIENT && !draft.required?.client.trim();
   const ready = draft.subject.trim().length > 0 && !needsClient;
@@ -73,7 +77,9 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
     { value: "", label: "NO LOCATION" },
   ];
 
-  const duplicate = findDuplicate(project, final, shot?.id);
+  // A copy matching its original is the point of DUPLICATE, not a warning.
+  const match = findDuplicate(project, final, shot?.id);
+  const duplicate = match && match.id !== copyOf?.id ? match : undefined;
   // Called out as you type (§8), so only once there's a subject.
   const gap = draft.subject.trim() ? coverageGap(project, draft.size, draft.locationId, shot?.id) : undefined;
   const locationName = locations.find((l) => l.id === draft.locationId)?.name;
@@ -82,6 +88,15 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
   return (
     <div className={ui.screen}>
       <StepHeader label={label} back={{ label: "← CANCEL", href: cancelHref }} />
+      {copyOf && (
+        <div className={styles.copyBand}>
+          <span className={styles.copyOf}>
+            COPY OF {copyNo !== undefined ? `${formatShotNumber(copyNo)} · ` : ""}
+            {copyOf.subject.toUpperCase()}
+          </span>
+          <span>NOT ADDED YET</span>
+        </div>
+      )}
 
       <div className={ui.body}>
         <Choice label="Shot size" variant="segmented" options={SIZES.map((s) => ({ value: s, label: s }))} value={draft.size} onChange={(size) => set({ size })} />
@@ -256,9 +271,16 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
       </div>
 
       <div className={ui.footer}>
+        {copyOf && ready && (
+          <p className={ui.hint}>
+            {copyNo !== undefined && n === copyNo + 1
+              ? `Goes in after ${formatShotNumber(copyNo)}, and the shots below move down one. Cancel and nothing is added.`
+              : "Goes at the end of where you've put it. Cancel and nothing is added."}
+          </p>
+        )}
         {ready ? (
           <button type="button" className={ui.primary} onClick={() => onSubmit(final)}>
-            {editing ? "SAVE" : "ADD TO LIST"}
+            {editing ? "SAVE" : copyOf && n !== undefined ? `ADD AS ${formatShotNumber(n)}` : "ADD TO LIST"}
           </button>
         ) : (
           <>

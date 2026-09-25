@@ -7,10 +7,13 @@ import {
   addShot,
   arrangeShots,
   coverageGap,
-  deleteConsequence,
   deleteLocation,
-  deleteShot,
-  duplicateShot,
+  deleteGoes,
+  deleteRenumber,
+  deleteShots,
+  addShotAfter,
+  numberIfAddedAfter,
+  shotInputFrom,
   findDuplicate,
   moveShots,
   numberIfAdded,
@@ -98,18 +101,33 @@ describe("adding and changing shots", () => {
     expect(toggleExposed(p, "s", at).shots[0].status).toBe("unshot");
   });
 
-  it("duplicates straight after the original: same spec, next number", () => {
+  it("adds a duplicate straight after the original, only when saved (S4c)", () => {
     const base = project({ shots: [shot("s1", 0), shot("s2", 1, { status: "exposed", lens: "85mm" }), shot("s3", 2)] });
-    const [p, copy] = duplicateShot(base, "s2", at, ids);
+    const input = shotInputFrom(base.shots[1]);
+    expect(numberIfAddedAfter(base, input, "s2")).toBe(3);
+    const [p, copy] = addShotAfter(base, input, "s2", at, ids);
     expect(nums(p)).toEqual({ s1: 1, s2: 2, [copy]: 3, s3: 4 });
-    expect(p.shots.find((s) => s.id === copy)).toMatchObject({ lens: "85mm", status: "unshot" });
+    expect(p.shots.find((s) => s.id === copy)).toMatchObject({ lens: "85mm", status: "unshot", source: "manual" });
   });
 
-  it("says what deleting does, then does it (§5.13: 04 becomes 03)", () => {
+  it("sends a copy moved elsewhere to the end of its new location", () => {
+    const base = project({
+      locations: [loc("a", 0), loc("b", 1)],
+      shots: [shot("a1", 0, { locationId: "a" }), shot("a2", 1, { locationId: "a" }), shot("b1", 0, { locationId: "b" })],
+    });
+    const [p, copy] = addShotAfter(base, { ...shotInputFrom(base.shots[0]), locationId: "b" }, "a1", at, ids);
+    expect(nums(p)).toEqual({ a1: 1, a2: 2, b1: 3, [copy]: 4 });
+  });
+
+  it("says what deleting does, then does it (S3b, SL5)", () => {
     const base = project({ shots: ["s1", "s2", "s3", "s4"].map((id, i) => shot(id, i)) });
-    expect(deleteConsequence(base, "s3")).toBe("Shots below move up — 04 becomes 03. Anything already exposed keeps its mark.");
-    expect(deleteConsequence(base, "s4")).toBe("It's the last shot, so nothing else moves.");
-    expect(nums(deleteShot(base, "s3"))).toEqual({ s1: 1, s2: 2, s4: 3 });
+    expect(deleteRenumber(base, ["s3"])).toBe("The shots below move up — 04 becomes 03.");
+    expect(deleteRenumber(base, ["s4"])).toBe("It's the last shot, so nothing else moves.");
+    expect(deleteRenumber(base, ["s1", "s3"])).toBe("The shots after them move up to fill the gaps.");
+    expect(deleteRenumber(base, ["s3", "s4"])).toBe("They're the last shots, so nothing else moves.");
+    expect(nums(deleteShots(base, ["s1", "s3"]))).toEqual({ s2: 1, s4: 2 });
+    expect(deleteGoes(shot("x", 0, { subject: "Hands on the rope", note: "n", refIds: ["a", "b", "c"] }))).toBe("Hands on the rope goes, with its note and 3 refs.");
+    expect(deleteGoes(shot("x", 0, { subject: "Hands" }))).toBe("Hands goes.");
   });
 });
 

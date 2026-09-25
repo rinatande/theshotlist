@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ProjectActions } from "@/components/ProjectActions";
 import { ProjectHeader, type Tab } from "@/components/ProjectHeader";
 import { MoveSheet } from "@/components/MoveSheet";
+import { ShotDelete } from "@/components/ShotDelete";
 import { GearTab } from "@/components/GearTab";
 import { ShotList, type Selection } from "@/components/ShotList";
 import ui from "@/components/ui.module.css";
@@ -13,9 +14,10 @@ import { db } from "@/lib/db";
 import { writeLastViewed } from "@/lib/lastViewed";
 import { fillCoords } from "@/lib/place";
 import { currentDay } from "@/lib/shoot";
+import { deleteShots } from "@/lib/shots";
 import { readTimeFormat } from "@/lib/timeFormat";
 import type { Id } from "@/lib/types";
-import { useProject } from "@/lib/useProject";
+import { saveProject, useProject } from "@/lib/useProject";
 import styles from "./Project.module.css";
 
 const LOOK_COMING = "The look board is coming. It's where references for this shoot will live.";
@@ -29,9 +31,10 @@ export function ProjectScreen() {
   const [actions, setActions] = useState(false);
   const [picked, setPicked] = useState<Set<Id> | null>(null);
   const [moving, setMoving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const selection: Selection = {
     ids: picked,
-    start: () => setPicked(new Set()),
+    start: (ids = []) => setPicked(new Set(ids)),
     pick: (ids, on) =>
       setPicked((prev) => {
         const next = new Set(prev ?? []);
@@ -56,6 +59,8 @@ export function ProjectScreen() {
 
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
   if (project === null) return <Missing />;
+  // Picks still on the list, in case one was deleted elsewhere.
+  const live = (ids: Set<Id>) => [...ids].filter((id) => project.shots.some((s) => s.id === id));
 
   return (
     <div className={ui.screen}>
@@ -63,11 +68,26 @@ export function ProjectScreen() {
 
       {tab === "shots" ? (
         <>
+          {picked && (
+            <div className={styles.picking}>
+              <span role="status" className={styles.pickCount}>
+                {live(picked).length} SELECTED
+              </span>
+              <button type="button" className={styles.pickCancel} onClick={() => setPicked(null)}>
+                CANCEL
+              </button>
+            </div>
+          )}
           <div className={ui.flush}>
             <ShotList project={project} selection={selection} />
           </div>
           {picked ? (
-            <SelectFooter count={[...picked].filter((id) => project.shots.some((s) => s.id === id)).length} onMove={() => setMoving(true)} onCancel={() => setPicked(null)} />
+            <SelectFooter
+              ids={live(picked)}
+              duplicateHref={`/shot/new?id=${project.id}&copy=${live(picked)[0]}&from=list`}
+              onMove={() => setMoving(true)}
+              onDelete={() => setDeleting(true)}
+            />
           ) : (
             <div className={ui.footer}>
               {/* Two actions in the thumb zone (§8 Shot list). Shoot mode goes once every day is wrapped. */}
@@ -105,6 +125,20 @@ export function ProjectScreen() {
         />
       )}
 
+      {deleting && picked && (
+        <ShotDelete
+          project={project}
+          ids={live(picked)}
+          onClose={() => setDeleting(false)}
+          onDelete={async () => {
+            const ids = live(picked);
+            setDeleting(false);
+            setPicked(null);
+            await saveProject(deleteShots(project, ids));
+          }}
+        />
+      )}
+
       {actions && (
         <ProjectActions
           project={project}
@@ -119,25 +153,46 @@ export function ProjectScreen() {
   );
 }
 
-/** While picking: how many, where they go, or back out (design.md §10, 23). */
-function SelectFooter({ count, onMove, onCancel }: { count: number; onMove: () => void; onCancel: () => void }) {
+/**
+ * While picking (SL3, SL4): one shot can be duplicated, moved or deleted;
+ * several can be deleted or moved together. CANCEL is in the strip above the
+ * list. Delete always asks first (§5.13).
+ */
+function SelectFooter({ ids, duplicateHref, onMove, onDelete }: { ids: Id[]; duplicateHref: string; onMove: () => void; onDelete: () => void }) {
+  const count = ids.length;
   return (
     <div className={ui.footer}>
-      <p className={ui.hint} aria-live="polite" id="pick-why">
-        {count === 0 ? "Tick the shots to move, or ALL on a band." : count === 1 ? "1 shot picked." : `${count} shots picked.`}
-      </p>
-      {count > 0 ? (
-        <button type="button" className={ui.primary} onClick={onMove}>
-          MOVE {count} TO…
-        </button>
+      {count === 0 ? (
+        <>
+          <p className={ui.hint} id="pick-why">
+            Tick the shots, or ALL on a band.
+          </p>
+          <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="pick-why">
+            MOVE TO…
+          </button>
+        </>
+      ) : count === 1 ? (
+        <div className={styles.pickBar}>
+          <Link href={duplicateHref} className={styles.pickButton}>
+            DUPLICATE
+          </Link>
+          <button type="button" className={styles.pickButton} onClick={onMove}>
+            MOVE…
+          </button>
+          <button type="button" className={`${styles.pickButton} ${styles.pickWarn}`} onClick={onDelete}>
+            DELETE
+          </button>
+        </div>
       ) : (
-        <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="pick-why">
-          MOVE TO…
-        </button>
+        <div className={styles.pickBar}>
+          <button type="button" className={`${styles.pickButton} ${styles.pickWarn} ${styles.pickFixed}`} onClick={onDelete}>
+            DELETE {count}
+          </button>
+          <button type="button" className={`${ui.primary} ${styles.pickMove}`} onClick={onMove}>
+            MOVE {count} TO…
+          </button>
+        </div>
       )}
-      <button type="button" className={ui.secondary} onClick={onCancel}>
-        CANCEL
-      </button>
     </div>
   );
 }

@@ -7,13 +7,18 @@ interface Props {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  /**
+   * A confirmation (S3b, SL5): a warn label over the question, and no CLOSE —
+   * CANCEL is one of its two buttons. The title becomes the question.
+   */
+  kicker?: string;
 }
 
 /**
  * Bottom sheet (§7): over a scrim, dismissed by tapping the scrim, swiping
  * down, Escape or CLOSE. Focus moves in on open and back out on close.
  */
-export function BottomSheet({ title, onClose, children }: Props) {
+export function BottomSheet({ title, onClose, children, kicker }: Props) {
   const sheet = useRef<HTMLDivElement>(null);
   const startY = useRef<number | null>(null);
 
@@ -55,14 +60,23 @@ export function BottomSheet({ title, onClose, children }: Props) {
       >
         <div className={styles.grab} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
           <span aria-hidden="true" className={styles.grabber} />
-          <div className={styles.head}>
-            <h2 id="sheet-title" className={styles.title}>
-              {title}
-            </h2>
-            <button type="button" className={styles.close} onClick={onClose}>
-              CLOSE
-            </button>
-          </div>
+          {kicker ? (
+            <div className={styles.confirmHead}>
+              <span className={styles.kicker}>{kicker}</span>
+              <h2 id="sheet-title" className={styles.question}>
+                {title}
+              </h2>
+            </div>
+          ) : (
+            <div className={styles.head}>
+              <h2 id="sheet-title" className={styles.title}>
+                {title}
+              </h2>
+              <button type="button" className={styles.close} onClick={onClose}>
+                CLOSE
+              </button>
+            </div>
+          )}
         </div>
         {children}
       </div>
