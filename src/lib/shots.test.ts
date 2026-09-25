@@ -17,6 +17,8 @@ import {
   reorderLocations,
   toggleExposed,
   updateLocation,
+  updateShot,
+  clientsOf,
 } from "./shots";
 import { suggestAudio, suggestMovement } from "./suggest";
 import { day, loc, project, REEL_SILENT, shot } from "./test-helpers";
@@ -240,5 +242,34 @@ describe("moveShots", () => {
   it("does nothing for a location that doesn't exist", () => {
     const p = project({ shots: [shot("a", 0)] });
     expect(moveShots(p, ["a"], { locationId: "gone" })).toBe(p);
+  });
+});
+
+describe("a beat and [★] set by hand (§10 items 16, 17)", () => {
+  it("keeps a picked beat and lets an edit correct a guessed one", () => {
+    const p = project({ shots: [] });
+    const [a, id] = addShot(p, { size: "MS", subject: "Something vague" }, at, ids);
+    expect(a.shots[0].beat).toBe(guessBeat({ subject: "Something vague", size: "MS" }, p));
+    const b = updateShot(a, id, { size: "MS", subject: "Something vague", beat: "closer" }, at);
+    expect(b.shots[0].beat).toBe("closer");
+    // An edit that doesn't send a beat leaves it alone.
+    expect(updateShot(b, id, { size: "MS", subject: "Something vague" }, at).shots[0].beat).toBe("closer");
+  });
+
+  it("marks and unmarks a shot as required, trimming the client", () => {
+    const p = project({ shots: [] });
+    const [a, id] = addShot(p, { size: "CU", subject: "Logo on the pack", required: { client: "  Sable Outdoor " } }, at, ids);
+    expect(a.shots[0].required).toEqual({ client: "Sable Outdoor" });
+    expect(clientsOf(a)).toEqual(["Sable Outdoor"]);
+    // Required shots are never numbered.
+    expect(nums(a)[id]).toBeUndefined();
+    const b = updateShot(a, id, { size: "CU", subject: "Logo on the pack" }, at);
+    expect(b.shots[0].required).toBeUndefined();
+    expect(nums(b)[id]).toBe(1);
+  });
+
+  it("treats a blank client as not required", () => {
+    const [a] = addShot(project({ shots: [] }), { size: "CU", subject: "Logo", required: { client: "  " } }, at, ids);
+    expect(a.shots[0].required).toBeUndefined();
   });
 });

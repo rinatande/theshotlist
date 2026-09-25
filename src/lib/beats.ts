@@ -18,6 +18,11 @@ const NAMES: Record<ReturnType<typeof nearestPreset>, Record<Role, string>> = {
   long: { opener: "COLD OPEN + INTRO", body: "CHAPTERS", closer: "OUTRO" },
 };
 
+/** The beat's own name for this format: "HOOK", "MIDDLE", "OUTRO". */
+export function beatName(format: Format, role: Role): string {
+  return NAMES[nearestPreset(format)][role];
+}
+
 /** "HOOK — FIRST 3 SEC" on a reel (P3); just the name elsewhere. */
 export function beatLabel(format: Format, role: Role): string {
   const preset = nearestPreset(format);

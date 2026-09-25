@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { beatName, guessBeat, ROLES } from "@/lib/beats";
 import { lensChips, supportChips } from "@/lib/gear";
 import { runningOrder } from "@/lib/runningOrder";
-import { coverageGap, findDuplicate, numberIfAdded, type ShotInput } from "@/lib/shots";
+import { clientsOf, coverageGap, findDuplicate, numberIfAdded, type ShotInput } from "@/lib/shots";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { AUDIO, MOVEMENTS, suggestAudio, suggestMovement, SUPPORTS } from "@/lib/suggest";
-import type { Audio, Movement, Project, Shot, ShotSize } from "@/lib/types";
+import type { Audio, BeatRole, Movement, Project, Shot, ShotSize } from "@/lib/types";
 import { Choice } from "./Choice";
 import styles from "./ShotForm.module.css";
 import { StepHeader } from "./StepHeader";
@@ -15,6 +16,7 @@ import ui from "./ui.module.css";
 
 const SIZES: ShotSize[] = ["WS", "MS", "CU", "OTS", "INS"];
 const TYPED = "__typed";
+const NEW_CLIENT = "__new";
 
 interface Props {
   project: Project;
@@ -37,16 +39,23 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
   // Once touched, a suggestion stops following the other fields. Editing an existing shot starts touched.
   const [ownMovement, setOwnMovement] = useState(!!shot?.movement);
   const [ownAudio, setOwnAudio] = useState(!!shot?.audio);
+  // A beat from a beat's + ADD, or on a saved shot, is already chosen; otherwise it's guessed (§10 item 17).
+  const [ownBeat, setOwnBeat] = useState(!!initial.beat && initial.beat !== "any");
+  // [★] by hand (§10 item 16): not required, one of the project's clients, or a new one typed.
+  const clients = clientsOf(project);
+  const [clientChoice, setClientChoice] = useState(initial.required ? (clients.includes(initial.required.client) ? initial.required.client : NEW_CLIENT) : "");
 
   const movement: Movement = ownMovement && draft.movement ? draft.movement : suggestMovement(draft);
   const audio: Audio = ownAudio && draft.audio ? draft.audio : suggestAudio(draft, project.format.treatment);
   const set = (patch: Partial<ShotInput>) => setDraft((d) => ({ ...d, ...patch }));
-  const final: ShotInput = { ...draft, movement, audio };
+  const beat: BeatRole = ownBeat && draft.beat && draft.beat !== "any" ? draft.beat : guessBeat(draft, project);
+  const final: ShotInput = { ...draft, movement, audio, beat };
 
   const editing = !!shot;
   const n = editing ? shotNumbers(project).get(shot.id) : numberIfAdded(project, final);
   const label = `${editing ? "Edit shot" : "New shot"}${n !== undefined ? ` · ${formatShotNumber(n)}` : ""}`;
-  const ready = draft.subject.trim().length > 0;
+  const needsClient = clientChoice === NEW_CLIENT && !draft.required?.client.trim();
+  const ready = draft.subject.trim().length > 0 && !needsClient;
 
   // Gear chips (§6.4) once this shoot has gear; typed lens and fixed supports before that.
   const lenses = lensChips(project.gear);
@@ -170,6 +179,50 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
           />
         )}
 
+        {!draft.required && (
+          <Choice
+            label={ownBeat ? "Beat" : "Beat · suggested"}
+            options={ROLES.map((r) => ({ value: r, label: beatName(project.format, r) }))}
+            value={beat}
+            onChange={(b) => {
+              setOwnBeat(true);
+              set({ beat: b });
+            }}
+            hint={ownBeat ? undefined : "Guessed from the subject and where it's shot. Pick another to change it."}
+          />
+        )}
+
+        <Choice
+          label="Required for a client"
+          options={[
+            { value: "", label: "NO" },
+            ...clients.map((c) => ({ value: c, label: c.toUpperCase() })),
+            { value: NEW_CLIENT, label: clients.length ? "ANOTHER CLIENT" : "YES — NAME THE CLIENT" },
+          ]}
+          value={clientChoice}
+          onChange={(c) => {
+            setClientChoice(c);
+            set({ required: c === "" ? undefined : c === NEW_CLIENT ? { client: "" } : { client: c } });
+          }}
+          hint={clientChoice ? "Marked [★]. It counts toward the budget but isn't numbered, and wrap won't close its day while it's not shot." : undefined}
+        />
+        {clientChoice === NEW_CLIENT && (
+          <div className={ui.field}>
+            <label htmlFor="client" className={ui.label}>
+              CLIENT
+            </label>
+            <input
+              id="client"
+              className={ui.input}
+              type="text"
+              value={draft.required?.client ?? ""}
+              autoComplete="off"
+              placeholder="Sable Outdoor"
+              onChange={(e) => set({ required: { client: e.target.value } })}
+            />
+          </div>
+        )}
+
         <div className={ui.field}>
           <label htmlFor="note" className={ui.label}>
             NOTE
@@ -212,7 +265,7 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
         ) : (
           <>
             <p className={ui.hint} id="add-why">
-              Say what the shot is.
+              {draft.subject.trim() ? "Name the client it's required for." : "Say what the shot is."}
             </p>
             <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="add-why">
               {editing ? "SAVE" : "ADD TO LIST"}

@@ -23,13 +23,22 @@ export interface ShotInput {
   /** Only for a shot with no location on a multi-day project. */
   dayId?: Id;
   note?: string;
-  /** Set when added from a beat's + ADD; otherwise guessed. */
+  /** Set when added from a beat's + ADD or picked in the form; otherwise guessed. */
   beat?: Shot["beat"];
+  /** [★] set by hand (§10 item 16). Absent clears it. */
+  required?: Shot["required"];
 }
 
 const touch = (p: Project, now: Date): Project => ({ ...p, updatedAt: now.toISOString() });
 
 const clean = (s?: string) => s?.trim() || undefined;
+
+const cleanRequired = (r?: Shot["required"]) => (clean(r?.client) ? { client: r!.client.trim() } : undefined);
+
+/** The clients a project's [★] shots are already required for, in first-seen order. */
+export function clientsOf(p: Project): string[] {
+  return [...new Set(p.shots.flatMap((s) => (s.required ? [s.required.client] : [])))];
+}
 
 /** Next free `order` within a location (or within a day's UNPLACED). */
 function nextOrder(p: Project, locationId: Id | undefined, dayId: Id | undefined): number {
@@ -63,6 +72,7 @@ export function addShot(p: Project, input: ShotInput, now = new Date(), newId = 
     dayId,
     note: clean(input.note),
     beat: input.beat ?? guessBeat({ subject: input.subject, size: input.size, locationId }, p),
+    required: cleanRequired(input.required),
     order: nextOrder(p, locationId, dayId),
     status: "unshot",
     source: "manual",
@@ -90,6 +100,8 @@ export function updateShot(p: Project, id: Id, input: ShotInput, now = new Date(
           movement: input.movement,
           audio: input.audio,
           note: clean(input.note),
+          beat: input.beat ?? s.beat,
+          required: cleanRequired(input.required),
           locationId,
           dayId,
           // A shot moved to another location goes to the end of it.

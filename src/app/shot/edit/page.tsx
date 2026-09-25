@@ -36,6 +36,8 @@ function EditShot() {
         locationId: shot.locationId,
         dayId: shot.dayId,
         note: shot.note,
+        beat: shot.beat,
+        required: shot.required,
       }}
       cancelHref={detail}
       onSubmit={async (input) => {

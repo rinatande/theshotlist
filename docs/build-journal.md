@@ -252,3 +252,10 @@ See case-study-log 2.28.
 **Rina:** "on Android (Xiaomi, system dark mode, app theme pinned to Day in Settings) the status bar shows #0C0E0D above a day-theme screen. Cause: syncThemeColor() never runs at startup when the theme choice isn't "auto" … so the media-matched theme-color meta for dark wins."
 **Changed:** `syncThemeColor()` now runs on mount whatever the choice, including `AutoTheme`'s early return. `html` gets `background-color: var(--ground)` in `globals.css`, so nothing outside `body` can show black. Beyond her fix, the same gap at startup was closed: `THEME_SCRIPT` now points the theme-color metas at the pinned ground before first paint, so the dark bar can't flash while the app loads, and switching back to Auto restores the metas' own values. The two ground colours live once, as `GROUND` in `theme.ts`. On her phone the top bar was then right, but the bottom gesture bar stayed black in the installed app (right in a Chrome tab). The page can't reach that strip in an installed app yet, so it's recorded as a platform limit: design.md §10, item 24.
 **Kind:** bug caught
+
+### 2026-09-25 · v1 · The profile square before sign-in
+
+**Proposed:** Planning the Home build, Claude read H1 and H2 as having no profile square, since there's no name before sign-in, and proposed a new "plain mark" for opening Settings.
+**Rina:** "There is a square just with a profile icon instead of initials of H1 and H2, please check again."
+**Changed:** The boards already answer it. Before sign-in, the square carries a drawn person icon, labelled "Settings — not signed in"; the initial (`R`) only appears after sign-in (H3–H6). The build uses the icon, since there's no sign-in yet. Also decided: H1's third route, "Save your work", is left out until sync is built; "last viewed" for H2 is kept on the phone, not on the project.
+**Kind:** plan rejected
