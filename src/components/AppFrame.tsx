@@ -4,19 +4,19 @@ import styles from "./AppFrame.module.css";
 
 /**
  * The frame the three top-level screens share (H1–H6): THESHOTLIST and the
- * profile square above, HOME · PROJECTS · GEAR below. Inside a project, and
+ * profile circle above, HOME · PROJECTS · GEAR below. Inside a project, and
  * in shoot mode and wrap, there's no bar — those are places you go into.
  */
 
 export type Section = "home" | "projects" | "gear";
 
-/** Brand row with the profile square, then whatever heads the screen. */
+/** Brand row with the profile circle, then whatever heads the screen. */
 export function AppTop({ children }: { children?: ReactNode }) {
   return (
     <div className={styles.top}>
       <div className={styles.brandRow}>
         <span className={styles.brand}>THESHOTLIST</span>
-        <ProfileSquare />
+        <ProfileCircle />
       </div>
       {children}
     </div>
@@ -24,14 +24,15 @@ export function AppTop({ children }: { children?: ReactNode }) {
 }
 
 /**
- * Settings lives behind the square, not a cog: a cog beside a bar that says
- * GEAR reads as the same word twice (case-study-log 2.29). No sign-in yet, so
- * it carries a person, never an initial.
+ * Settings lives behind the profile circle, not a cog: a cog beside a bar that
+ * says GEAR reads as the same word twice (case-study-log 2.29). Round because
+ * it stands for a person — things are square, people are round (§4.3, 2.30).
+ * No sign-in yet, so it carries an outline figure, never an initial.
  */
-function ProfileSquare() {
+function ProfileCircle() {
   return (
     <Link href="/settings" aria-label="Settings — not signed in" className={styles.profile}>
-      <span className={styles.square}>
+      <span className={styles.person}>
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.5">
           <circle cx="8" cy="5.5" r="2.75" />
           <path d="M2.5 14.5c0-3 2.5-4.75 5.5-4.75s5.5 1.75 5.5 4.75" />

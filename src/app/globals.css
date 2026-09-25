@@ -10,7 +10,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  border-radius: 0; /* §4.3: radius 0, everywhere */
+  border-radius: 0; /* §4.3: radius 0, everywhere but the profile circle */
 }
 
 html {

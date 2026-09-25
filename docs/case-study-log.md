@@ -459,6 +459,20 @@ These are canvas only, not built. *(Built into the PWA on 25 Sep — design.md �
 
 *Artifacts:* `docs/boards/` — `H1`-HomeFirstRun, `H2`-HomeLastViewed, `H3`-HomeComingUp, `H4`-HomeToday, `H4n`-HomeTodayNight, `H5`-ProjectsTab, `H6`-GearTab.
 
+### 2.30 Things are square, people are round — 25 Sep
+
+**What broke.** The Home boards (2.29) put Settings behind a profile square. It had a person icon before sign-in and an initial after. The square followed the rule in §4.3: radius 0, everywhere, no exceptions. But in this app a square holding a letter already means something else, such as a shot code or a chip. An `R` in a square reads as another label, not as you. And once sign-in exists and brings a photo, a photo cropped to a square reads as a thumbnail, not a person.
+
+**Options.**
+- **Keep it square.** The zero-radius rule stays absolute, and the icon inside has to carry "person" on its own.
+- **Make it a circle.** It becomes the rule's only exception, justified by what the element stands for rather than by taste.
+
+**Decision. [R]** Rina raised the circle-versus-square question and chose the circle. The profile / settings icon is the one round thing in the app. It keeps everything else about its drawing: a 1px `--ink` outline on `--field`, holding the initial or an outline figure. §4.3 now states the exception and its reason. The reason is written as a rule too: things are square, people are round. That way a later element that stands for a person knows which side it falls on, and nothing else can claim the exception for looks.
+
+**Why it's evidence.** A rule written as "no exceptions" met a case its reason didn't cover. Zero radius exists to make the app read as a report, full of records and codes. The one element that isn't a record is the person using it. Keeping the rule absolute would have kept the letter of the system and lost its meaning. The exception is narrow and argued from meaning: the app's own grammar (a letter in a square is a code), and a convention people already read (a person in a circle). That's also why the exception can't spread.
+
+*Artifacts:* `docs/design.md` §4.3; boards `H1`–`H6`, `H4n`.
+
 ---
 
 ## 3. Artifact inventory

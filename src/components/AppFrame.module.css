@@ -1,4 +1,4 @@
-/* The frame around Home, Projects and Gear (H1–H6): brand, profile square, bottom bar. */
+/* The frame around Home, Projects and Gear (H1–H6): brand, profile circle, bottom bar. */
 
 .top {
   padding: calc(var(--s-6) + env(safe-area-inset-top)) var(--gutter) 14px;
@@ -20,7 +20,7 @@
   color: var(--ink-muted);
 }
 
-/* 44px to tap, 30px drawn (H1). */
+/* 44px to tap, 30px drawn (H1). The one round thing: it stands for a person (§4.3). */
 .profile {
   flex-shrink: 0;
   width: var(--target);
@@ -32,10 +32,11 @@
   color: var(--ink);
 }
 
-.square {
+.person {
   width: 30px;
   height: 30px;
   box-sizing: border-box;
+  border-radius: 50%;
   border: 1px solid var(--ink);
   background: var(--field);
   display: flex;

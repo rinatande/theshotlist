@@ -51,7 +51,7 @@ export function SettingsScreen() {
   return (
     <div className={ui.screen}>
       <header className={styles.header}>
-        {/* Reached from the profile square on any tab, so it goes back where you were. */}
+        {/* Reached from the profile circle on any tab, so it goes back where you were. */}
         <button type="button" className={ui.backLink} onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}>
           ← BACK
         </button>

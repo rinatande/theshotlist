@@ -29,7 +29,7 @@ Two jobs that pull in opposite directions:
 
 ## 2. The direction
 
-**Paper Report by day, Camera Report by night.** The same structure — all-monospace, zero radius, hairline rules, table rows, bracketed status codes — rendered on two grounds.
+**Paper Report by day, Camera Report by night.** The same structure — all-monospace, zero radius (one exception, for the person: §4.3), hairline rules, table rows, bracketed status codes — rendered on two grounds.
 
 | | Day | Night |
 |---|---|---|
@@ -151,7 +151,10 @@ One family is a real constraint and the point of the direction. It's also a PWA 
 
 ### 4.3 Surface rules
 
-- **Radius 0.** Everywhere. No exceptions.
+- **Radius 0.** Everywhere, with one exception: the profile / settings icon is a circle, because it's the only element that stands for a person. Things are square; people are round.
+  - **Why it can't be square.** In this app a square holding a letter already means a shot code or a chip, so an initial in a square reads as one more of those. And once someone signs in with a photo, a person in a circle is what everyone expects.
+  - **How it's drawn.** It stays a 1px `--ink` outline on `--field`, holding the initial after sign-in, or an outline figure before it. Only the corners change.
+  - **Nothing else gets the exception.** If another element ever stands for a person, it's round too. Everything else stays square.
 - **1px `--rule` hairlines do all the separating.** No shadows, no elevation, no card fills for grouping.
 - **`--band` fill marks section headers only** — location groups, settings groups. Never a content background.
 - **Paper grain** (day only): a radial-dot overlay at ~7% opacity, 3px pitch. It's what stops the ground reading as flat off-white. Night has no grain — `--grain` is `transparent` there, matching the night boards. (An earlier draft gave night the same overlay in light ink, as sensor noise; the boards never drew it, and the boards won.)
@@ -860,8 +863,8 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
     - **Nothing on the page reaches it.** It follows neither `color-scheme: light` nor the manifest's `#F2EBDD`.
     - **When it resolves:** when Chromium ships edge-to-edge for installed apps, the `html` ground fills the strip with no change needed. A native or Play Store wrapper — the H1–H6 boards are for the native app — can set the navigation bar colour directly.
 25. **Home and the bottom bar, as built (25 Sep).** Built from boards H1–H6 into the PWA, ahead of the native app they were drawn for. Where the build departs from the boards, or the boards were silent:
-    - **Routes.** `/` is Home, the Projects list moved to `/projects`, Gear stays `/gear`. `HOME · PROJECTS · GEAR` shows on those three only — never inside a project, shoot mode or wrap. Every `← PROJECTS` goes to `/projects`; Settings, now reached from the profile square on any tab, says `← BACK`.
-    - **The profile square** carries the person icon, labelled "Settings — not signed in" (H1, H2). No screen shows an initial or a name until sign-in exists.
+    - **Routes.** `/` is Home, the Projects list moved to `/projects`, Gear stays `/gear`. `HOME · PROJECTS · GEAR` shows on those three only — never inside a project, shoot mode or wrap. Every `← PROJECTS` goes to `/projects`; Settings, now reached from the profile circle on any tab, says `← BACK`.
+    - **The profile circle** (round, the one exception to radius 0, §4.3) carries the person icon, labelled "Settings — not signed in" (H1, H2). No screen shows an initial or a name until sign-in exists.
     - **H1 route 03, "Save your work", is left out** until sync is built (Rina, 25 Sep), so the line reads "Two ways in".
     - **Which card (H1–H4).** A project's next shoot is its first day not wrapped, as shoot mode uses. That day dated today → `SHOOTING TODAY`. Dated within 14 days → `NEXT SHOOT`, with every other dated project under `LATER`. A date already past doesn't count: Home can't tell a slipped shoot from an unwrapped day. Otherwise → `PICK UP WHERE YOU LEFT OFF`: the project last opened, remembered on the phone rather than on the project (Rina, 25 Sep), else the last changed. `RECENT` lists up to three others.
     - **GETTING READY** is read off the project: a project brief with text; any shots (counted against the budget); sun times found for the day; every item of this shoot's gear in the bag. An unticked line links to where it's done (`WRITE ›`, `GENERATE ›`, `ADD WHERE ›`, `PACK ›` or `CHOOSE ›` with no gear yet); the board drew only `PACK ›`. The signal line shows only while the list isn't generated — "Do it before you go" says nothing once it's done.
