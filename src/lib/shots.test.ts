@@ -19,6 +19,7 @@ import {
   updateLocation,
   updateShot,
   clientsOf,
+  deliverables,
 } from "./shots";
 import { suggestAudio, suggestMovement } from "./suggest";
 import { day, loc, project, REEL_SILENT, shot } from "./test-helpers";
@@ -261,8 +262,8 @@ describe("a beat and [★] set by hand (§10 items 16, 17)", () => {
     const [a, id] = addShot(p, { size: "CU", subject: "Logo on the pack", required: { client: "  Sable Outdoor " } }, at, ids);
     expect(a.shots[0].required).toEqual({ client: "Sable Outdoor" });
     expect(clientsOf(a)).toEqual(["Sable Outdoor"]);
-    // Required shots are never numbered.
-    expect(nums(a)[id]).toBeUndefined();
+    // Numbered like any other shot, required or not (Rina, 25 Sep).
+    expect(nums(a)[id]).toBe(1);
     const b = updateShot(a, id, { size: "CU", subject: "Logo on the pack" }, at);
     expect(b.shots[0].required).toBeUndefined();
     expect(nums(b)[id]).toBe(1);
@@ -271,5 +272,23 @@ describe("a beat and [★] set by hand (§10 items 16, 17)", () => {
   it("treats a blank client as not required", () => {
     const [a] = addShot(project({ shots: [] }), { size: "CU", subject: "Logo", required: { client: "  " } }, at, ids);
     expect(a.shots[0].required).toBeUndefined();
+  });
+});
+
+describe("deliverables (§5.7)", () => {
+  it("counts each client's [★] shots got, leaving dropped ones out", () => {
+    const p = project({
+      shots: [
+        shot("a", 0, { required: { client: "Sable" }, status: "exposed" }),
+        shot("b", 1, { required: { client: "Sable" } }),
+        shot("c", 2, { required: { client: "Sable" }, status: "dropped" }),
+        shot("d", 3, { required: { client: "Nagi" } }),
+        shot("e", 4),
+      ],
+    });
+    expect(deliverables(p)).toEqual([
+      { client: "Sable", got: 1, of: 2 },
+      { client: "Nagi", got: 0, of: 1 },
+    ]);
   });
 });

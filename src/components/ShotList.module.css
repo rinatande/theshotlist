@@ -60,7 +60,6 @@
 /* ---- Bands ------------------------------------------------------------- */
 
 .band,
-.requiredBand,
 .bandWrap {
   margin: 0;
   background: var(--band);
@@ -77,9 +76,28 @@
   padding: 7px var(--gutter);
 }
 
-.requiredBand {
-  padding: 7px var(--gutter);
+/* What each client is owed (§5.7): a count, not a band — the shots sit in
+   the running order (Rina, 25 Sep). */
+.deliverables {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.deliverable {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--gutter);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
   color: var(--accent);
+}
+
+.deliverable + .deliverable {
+  border-top: 1px solid var(--rule);
 }
 
 /* A band with SELECT: the name, then the control at 44px. */
@@ -293,6 +311,14 @@ label.row {
   font-size: var(--text-11);
   letter-spacing: 0.06em;
   color: var(--ink-muted);
+}
+
+/* [★] FOR SABLE: a line under the subject, like a flag (§4.4). */
+.requiredLine {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent);
 }
 
 .flag {

@@ -8,6 +8,9 @@
 }
 
 .required {
+  /* Inline-block, so an exposed row's strike-through doesn't cross the mark:
+     the shot is done, the deliverable is still what it was. */
+  display: inline-block;
   color: var(--accent);
   font-weight: 700;
   white-space: nowrap;

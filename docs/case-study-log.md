@@ -473,6 +473,21 @@ These are canvas only, not built. *(Built into the PWA on 25 Sep — design.md �
 
 *Artifacts:* `docs/design.md` §4.3; boards `H1`–`H6`, `H4n`.
 
+### 2.31 Required shots belong in the sequence — 25 Sep
+
+**What broke.** §5.7 pinned every `[★]` shot in a `REQUIRED — <client>` band above all the locations, unnumbered, with the star in place of the number. That was designed when a required shot arrived from a read with no place in the day. Once add / edit shot could give one a location, the band hid the one thing a shot list is for. A deliverable that fits naturally between shots 04 and 05 at the cliff path sat at the top of the list instead. It couldn't be dragged, and nothing said when you'd get it. Shoot mode already queued required shots in running order, so the list and the shoot disagreed.
+
+**Options.**
+- **Keep the band**, and show each shot's location on its row.
+- **Move the shots inline and keep them unnumbered.** The star replaces the number where the shot sits, and numbers skip over it. This was Claude's first plan, keeping "the mark is the identity".
+- **Move them inline and number them.** The star becomes a callout under the subject, and the band shrinks to a count per client.
+
+**Decision. [R]** Rina asked for required shots to sit in the list, reorderable, while still being called out. When Claude proposed keeping them unnumbered, she overruled that too: they're numbered and counted like every other shot. So each required shot sits in its location in running order and drags like any other. It has a number, and a `[★] FOR SABLE` line under the subject in `--accent`, where a flag's line sits. The band becomes one line per client at the top of the list: `FOR SABLE · [★] 2 OF 3 GOT`. Budget counting, the advisory that never suggests cutting one, and wrap's guard are unchanged.
+
+**Why it's evidence.** The band answered "what do I owe?" at the cost of "when do I shoot it?", and on a shoot day the second question is the one you're asking. The unnumbered star was a consequence of the band: with no position, a shot had nothing to number. Once it had a place, keeping the number away from it only kept the old design's shape. Rina's two corrections came in order. First the shot belongs in the sequence. Then, if it's in the sequence, it's a shot like the others, with a flag on it. That's the same idea as §4.4, where a flag is a line and not a status: being required is something a shot carries, not a different kind of shot.
+
+*Artifacts:* `docs/design.md` §5.7, §5.10; `src/components/ShotList.tsx`; `src/lib/shotNumbers.ts`.
+
 ---
 
 ## 3. Artifact inventory

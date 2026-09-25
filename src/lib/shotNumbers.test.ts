@@ -78,11 +78,11 @@ describe("shotNumbers", () => {
     expect(numbers(p)).toEqual({ moved: 1, b1: 2 });
   });
 
-  it("gives required shots no number and doesn't skip one for them (§5.7)", () => {
+  it("numbers required shots in running order, like any other (Rina, 25 Sep)", () => {
     const p = project({
       shots: [shot("s1", 0), shot("star", 1, { required: { client: "Nagi Coffee" } }), shot("s2", 2)],
     });
-    expect(numbers(p)).toEqual({ s1: 1, s2: 2 });
+    expect(numbers(p)).toEqual({ s1: 1, star: 2, s2: 3 });
   });
 
   it("keeps a dropped shot's number, so un-dropping doesn't renumber", () => {

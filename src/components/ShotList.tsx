@@ -8,7 +8,7 @@ import { projectBudget } from "@/lib/budget";
 import { budgetLabel, shortDate } from "@/lib/labels";
 import { runningOrder } from "@/lib/runningOrder";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
-import { dayOfShot, toggleExposed } from "@/lib/shots";
+import { dayOfShot, deliverables, toggleExposed } from "@/lib/shots";
 import { supportLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import type { Id, Location, Project, Shot } from "@/lib/types";
@@ -161,9 +161,6 @@ function ByLocation(props: RowProps) {
   const multi = project.days.length > 1;
   const days = multi ? [...project.days].sort((a, b) => a.index - b.index) : [undefined];
   const byOrder = (a: Shot, b: Shot) => a.order - b.order;
-  const required = project.shots.filter((s) => s.required);
-  const clients = [...new Set(required.map((s) => s.required!.client))];
-  const notRequired = project.shots.filter((s) => !s.required);
   const locationIds = new Set(project.locations.map((l) => l.id));
 
   return (
@@ -174,21 +171,12 @@ function ByLocation(props: RowProps) {
           <span>SEE THE DAY ›</span>
         </Link>
       )}
-      {/* Pinned above every location, in both views (§5.7). */}
-      {clients.map((client) => (
-        <section key={client} aria-label={`Required — ${client}`}>
-          <h2 className={styles.requiredBand}>REQUIRED — {client.toUpperCase()}</h2>
-          <AllRow shots={required.filter((s) => s.required!.client === client)} name={`required — ${client}`} selection={props.selection} />
-          {required.filter((s) => s.required!.client === client).map((s) => (
-            <ShotRow key={s.id} shot={s} {...props} />
-          ))}
-        </section>
-      ))}
+      <Deliverables project={project} />
 
       {days.map((d) => {
         const dayId = d?.id;
         const locations = multi ? runningOrder(project, dayId) : runningOrder(project);
-        const inDay = notRequired.filter((s) => (multi ? dayOfShot(project, s) === dayId : true));
+        const inDay = project.shots.filter((s) => (multi ? dayOfShot(project, s) === dayId : true));
         const unplaced = inDay.filter((s) => !s.locationId || !locationIds.has(s.locationId)).sort(byOrder);
         return (
           <section key={dayId ?? "all"} aria-label={d ? `Day ${d.index}` : undefined}>
@@ -242,7 +230,7 @@ function ByLocation(props: RowProps) {
       {multi &&
         (() => {
           const dayIds = new Set(project.days.map((x) => x.id));
-          const loose = notRequired.filter((s) => {
+          const loose = project.shots.filter((s) => {
             const d = dayOfShot(project, s);
             return d === undefined || !dayIds.has(d);
           });
@@ -298,18 +286,10 @@ function ByBeat(props: RowProps) {
   const groups = shotsByBeat(project);
   const byId = new Map(project.shots.map((s) => [s.id, s]));
   const byNumber = (a: Id, b: Id) => (props.numbers.get(a) ?? 0) - (props.numbers.get(b) ?? 0);
-  const required = project.shots.filter((s) => s.required);
 
   return (
     <div className={styles.list}>
-      {required.length > 0 && (
-        <section aria-label="Required">
-          <h2 className={styles.requiredBand}>REQUIRED</h2>
-          {required.map((s) => (
-            <ShotRow key={s.id} shot={s} {...props} />
-          ))}
-        </section>
-      )}
+      <Deliverables project={project} />
       {ROLES.map((role) => {
         const ids = groups[role].sort(byNumber);
         return (
@@ -335,6 +315,39 @@ function ByBeat(props: RowProps) {
   );
 }
 
+// ─── Deliverables (§5.7) ──────────────────────────────────────────────────────
+
+/**
+ * One line per client at the top of the list: what's owed, and how much of
+ * it is got. The shots themselves sit in the running order, numbered, so you
+ * can see when you'll shoot them (Rina, 25 Sep).
+ */
+function Deliverables({ project }: { project: Project }) {
+  const clients = deliverables(project);
+  if (clients.length === 0) return null;
+  return (
+    <ul className={styles.deliverables} aria-label="Required for clients">
+      {clients.map((c) => (
+        <li key={c.client} className={styles.deliverable}>
+          <span>FOR {c.client.toUpperCase()}</span>
+          <span>
+            <RequiredMark label="Required" /> {c.got} OF {c.of} GOT
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** "[★] FOR SABLE" under the subject, where a flag's line sits (§4.4). */
+function RequiredLine({ client }: { client: string }) {
+  return (
+    <span className={styles.requiredLine}>
+      <RequiredMark label="Required" /> FOR {client.toUpperCase()}
+    </span>
+  );
+}
+
 // ─── A row (§7 Shot row) ──────────────────────────────────────────────────────
 
 function ShotRow({ shot, project, numbers, fresh, onToggle, selection }: RowProps & { shot: Shot }) {
@@ -354,10 +367,8 @@ function ShotRow({ shot, project, numbers, fresh, onToggle, selection }: RowProp
           </span>
           <span className={styles.size}>{shot.size}</span>
           <span className={styles.stack}>
-            <span className={muted ? styles.subjectDone : styles.subject}>
-              {shot.required && <span className={styles.sr}>Required: </span>}
-              {shot.subject}
-            </span>
+            <span className={muted ? styles.subjectDone : styles.subject}>{shot.subject}</span>
+            {shot.required && <RequiredLine client={shot.required.client} />}
             {meta && <span className={styles.meta}>{meta}</span>}
           </span>
         </span>
@@ -372,10 +383,11 @@ function ShotRow({ shot, project, numbers, fresh, onToggle, selection }: RowProp
   return (
     <div className={muted ? `${styles.row} ${styles.done}` : styles.row}>
       <Link href={`/shot?id=${project.id}&shot=${shot.id}`} className={styles.rowLink}>
-        <span className={styles.no}>{shot.required ? <RequiredMark /> : n !== undefined ? formatShotNumber(n) : ""}</span>
+        <span className={styles.no}>{n !== undefined ? formatShotNumber(n) : ""}</span>
         <span className={styles.size}>{shot.size}</span>
         <span className={styles.stack}>
           <span className={muted ? styles.subjectDone : styles.subject}>{shot.subject}</span>
+          {shot.required && <RequiredLine client={shot.required.client} />}
           {shot.flagNote && !exposed ? (
             // A flag is a line, not a status (§4.4).
             <span className={styles.flag}>! {shot.flagNote.toUpperCase()}</span>

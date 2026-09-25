@@ -81,7 +81,7 @@ describe("turning a read into shots", () => {
     expect(hero.required).toEqual({ client: "Nagi Coffee" });
     expect(hero.source).toBe("brief");
     expect(hero.reason).toBe("Why Hero shot of the bag");
-    expect(shotNumbers(next).has(hero.id)).toBe(false); // ★ takes no number
+    expect(shotNumbers(next).has(hero.id)).toBe(true); // numbered like any other (Rina, 25 Sep)
   });
 
   it("never offers the same read shot twice, and leaves out what was dropped", () => {

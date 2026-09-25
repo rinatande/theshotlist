@@ -334,3 +334,19 @@ export function moveShots(p: Project, ids: Id[], target: { locationId?: Id; dayI
     now,
   );
 }
+
+/**
+ * Each client's [★] shots, dropped ones out: how many are got, of how many.
+ * The list's count line (§5.7) — the shots themselves stay in running order.
+ */
+export function deliverables(p: Pick<Project, "shots">): { client: string; got: number; of: number }[] {
+  const by = new Map<string, { got: number; of: number }>();
+  for (const s of p.shots) {
+    if (!s.required || s.status === "dropped") continue;
+    const c = by.get(s.required.client) ?? { got: 0, of: 0 };
+    c.of++;
+    if (s.status === "exposed") c.got++;
+    by.set(s.required.client, c);
+  }
+  return [...by].map(([client, c]) => ({ client, ...c }));
+}

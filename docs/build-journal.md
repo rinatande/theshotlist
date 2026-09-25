@@ -259,3 +259,10 @@ See case-study-log 2.28.
 **Rina:** "There is a square just with a profile icon instead of initials of H1 and H2, please check again."
 **Changed:** The boards already answer it. Before sign-in, the square carries a drawn person icon, labelled "Settings — not signed in"; the initial (`R`) only appears after sign-in (H3–H6). The build uses the icon, since there's no sign-in yet. Also decided: H1's third route, "Save your work", is left out until sync is built; "last viewed" for H2 is kept on the phone, not on the project.
 **Kind:** plan rejected
+
+### 2026-09-25 · v1 · Required shots belong in the sequence
+
+**Proposed:** Built as specified in design.md §5.7: `[★]` shots are pinned in a `REQUIRED — <client>` band above every location, in both grouping modes, and left out of the running-order screen. That held even after add / edit shot could give a required shot a location.
+**Rina:** "if a shot is marked as required for client, it shows up in its own section required, and cannot be reordered, even if it's moved into a same location as other shots … Doesn't make sense where it fits well into the shotlist as a sequence, but you can't see when you should shoot it because it's just in its own required section. Still want to be able to call them out, but have them in the list"
+**Changed:** Plan put to Rina before building: required shots sit inline in their location, in running order, and can be dragged like any other; the callout moves to the row itself and a per-client count at the top of the list. Claude proposed keeping them unnumbered (§5.7, "the mark is the identity"). Rina overruled that too: "we want the required shots to still be numbered in the list and count towards the shot count / budget." So `[★]` stops replacing the number; it moves to the callout line. Built 25 Sep across the list, beat view, running order, shot detail, shoot mode and the day record. See case-study-log 2.31.
+**Kind:** design call

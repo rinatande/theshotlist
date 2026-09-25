@@ -179,18 +179,16 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
           />
         )}
 
-        {!draft.required && (
-          <Choice
-            label={ownBeat ? "Beat" : "Beat · suggested"}
-            options={ROLES.map((r) => ({ value: r, label: beatName(project.format, r) }))}
-            value={beat}
-            onChange={(b) => {
-              setOwnBeat(true);
-              set({ beat: b });
-            }}
-            hint={ownBeat ? undefined : "Guessed from the subject and where it's shot. Pick another to change it."}
-          />
-        )}
+        <Choice
+          label={ownBeat ? "Beat" : "Beat · suggested"}
+          options={ROLES.map((r) => ({ value: r, label: beatName(project.format, r) }))}
+          value={beat}
+          onChange={(b) => {
+            setOwnBeat(true);
+            set({ beat: b });
+          }}
+          hint={ownBeat ? undefined : "Guessed from the subject and where it's shot. Pick another to change it."}
+        />
 
         <Choice
           label="Required for a client"
@@ -204,7 +202,7 @@ export function ShotForm({ project, shot, initial, cancelHref, onSubmit, onClear
             setClientChoice(c);
             set({ required: c === "" ? undefined : c === NEW_CLIENT ? { client: "" } : { client: c } });
           }}
-          hint={clientChoice ? "Marked [★]. It counts toward the budget but isn't numbered, and wrap won't close its day while it's not shot." : undefined}
+          hint={clientChoice ? "Marked [★] on the list, in its place in the running order. Wrap won't close its day while it's not shot." : undefined}
         />
         {clientChoice === NEW_CLIENT && (
           <div className={ui.field}>

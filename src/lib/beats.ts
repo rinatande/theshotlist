@@ -89,6 +89,6 @@ export function beatOf(shot: Shot, project: Pick<Project, "locations" | "days">)
 
 export function shotsByBeat(project: Project): Record<Role, Id[]> {
   const out: Record<Role, Id[]> = { opener: [], body: [], closer: [] };
-  for (const s of project.shots) if (!s.required) out[beatOf(s, project)].push(s.id);
+  for (const s of project.shots) out[beatOf(s, project)].push(s.id);
   return out;
 }

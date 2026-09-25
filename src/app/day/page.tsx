@@ -48,7 +48,7 @@ function DayRecord() {
     await saveProject(change(latest));
   };
 
-  const mark = (s: Shot) => (s.required ? <RequiredMark label={`Required for ${s.required.client}`} /> : numbers.has(s.id) ? formatShotNumber(numbers.get(s.id)!) : "");
+  const mark = (s: Shot) => (numbers.has(s.id) ? formatShotNumber(numbers.get(s.id)!) : "");
 
   return (
     <div className={ui.screen}>
@@ -81,7 +81,15 @@ function DayRecord() {
               <li key={s.id} className={styles.dropRow}>
                 <span className={styles.no}>{mark(s)}</span>
                 <span className={styles.size}>{s.size}</span>
-                <span className={styles.struck}>{s.subject}</span>
+                <span className={styles.struck}>
+                  {s.subject}
+                  {s.required && (
+                    <>
+                      {" "}
+                      <RequiredMark label={`Required for ${s.required.client}`} />
+                    </>
+                  )}
+                </span>
                 <span className={styles.actions}>
                   <button type="button" className={styles.action} onClick={() => save((p) => undrop(p, s.id))}>
                     UN-DROP<span className={styles.sr}> {s.subject}</span>
@@ -155,6 +163,11 @@ function Row({ shot, project, mark }: { shot: Shot; project: Project; mark: Reac
         <span className={styles.size}>{shot.size}</span>
         <span className={styles.stack}>
           <span className={exposed ? styles.subjectDone : styles.subject}>{shot.subject}</span>
+          {shot.required && (
+            <span className={styles.requiredLine}>
+              <RequiredMark label="Required" /> FOR {shot.required.client.toUpperCase()}
+            </span>
+          )}
           {shot.flagNote && <span className={styles.flag}>! {shot.flagNote.toUpperCase()}</span>}
         </span>
         <StatusMark exposed={exposed} />

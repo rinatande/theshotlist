@@ -53,7 +53,7 @@ function ShotDetail() {
           ← SHOT LIST
         </Link>
         <span className={styles.position}>
-          {shot.required ? <RequiredMark /> : n !== undefined ? `${formatShotNumber(n)} / ${formatShotNumber(numbers.size)}` : ""}
+          {n !== undefined ? `${formatShotNumber(n)} / ${formatShotNumber(numbers.size)}` : ""}
         </span>
       </header>
 
@@ -66,6 +66,11 @@ function ShotDetail() {
         {exposed && (
           <p className={styles.state}>
             <StatusMark exposed fresh={fresh} /> EXPOSED
+          </p>
+        )}
+        {shot.required && (
+          <p className={styles.required}>
+            <RequiredMark label="Required" /> FOR {shot.required.client.toUpperCase()}
           </p>
         )}
         {shot.flagNote && !exposed && <p className={styles.flag}>! {shot.flagNote.toUpperCase()}</p>}

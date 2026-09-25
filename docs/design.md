@@ -356,11 +356,11 @@ A brand deal's shots are not suggestions — they're obligations, and the failur
 
 | | Behaviour |
 |---|---|
-| Mark | `[★]` in `--accent`, in place of the row number. Required shots are **never numbered** — the mark is the identity. |
-| Position | Pinned in a `REQUIRED — <client>` band above every location, in both grouping modes |
+| Mark | Numbered like any other shot — a number is a position, and a required shot has one. `[★] FOR <CLIENT>` in `--accent` is a line under the subject, where a flag's `!` line sits (§4.4): the brackets and the words carry it, never the colour alone. *(Changed 25 Sep, Rina: it used to replace the number.)* |
+| Position | Inline, in its location, in running order — dragged like any other shot, and in its beat in the beat view. At the top of the list, one line per client counts it: `FOR SABLE · [★] 2 OF 3 GOT`. It's a count, not a band: the shots stay where you'll shoot them. *(Changed 25 Sep, Rina: a band above every location hid when you'd shoot them.)* |
 | Counting | Counted **toward** the shot budget — they're shots you'll take, and leaving them out understated the day. Also counted on their own: `★ 0/3` beside the budget. The over-budget advisory never suggests dropping one (§5.2): a contract is not discretionary. |
 | Wrap | Shoot mode will not let you wrap the day with a deliverable outstanding. It's the one place the app is allowed to be obstinate. |
-| Origin | Created from the brief when the read calls them out (M6). Setting one by hand is open (§10): the long-press drawn for it is unassigned in v0. |
+| Origin | Created from the brief when the read calls them out (M6), or by hand in add / edit shot's `REQUIRED FOR A CLIENT` row (§10 item 16). |
 
 A required shot that conflicts with another setting doesn't get silently dropped — see below.
 
@@ -463,7 +463,7 @@ With neither — offline before a lookup, permission refused — the light lines
 
 **Times sort themselves; the rest is drag order.** Anything with a start time sits in clock order. Locations without one keep the order you dragged them into, under a `NO TIME SET` heading. Shot numbers follow the running order, so moving one location above another renumbers — the reorder screen says so plainly, and anything already exposed keeps its mark, because the number is a position, not an identity.
 
-**How numbering runs.** One sequence for the whole project, continuous across days — day 1 is 01–12 and day 2 carries on at 13 — so a number is never shared. Within a day: timed locations by clock, then untimed by drag order, then that day's `UNPLACED` shots last. Shots with no day at all come after the last day. `[★]` shots take no number (§5.7) and don't consume one.
+**How numbering runs.** One sequence for the whole project, continuous across days — day 1 is 01–12 and day 2 carries on at 13 — so a number is never shared. Within a day: timed locations by clock, then untimed by drag order, then that day's `UNPLACED` shots last. Shots with no day at all come after the last day. `[★]` shots are numbered like the rest, in their place (§5.7).
 
 **Deleting a location never deletes shots.** They fall to an `UNPLACED` group at the foot of the list. That's a bucket in the model and it earns its place: losing six planned shots because you renamed a location is a much worse failure than an extra group header. The delete row states this consequence in place rather than opening a confirm dialog.
 
@@ -706,7 +706,7 @@ Two suggestion boards are on the canvas deliberately, because the contrast is th
 | **Column header** | 11px/700 `0.14em` `--ink-muted`, fixed column widths `34 / 44 / 1fr / 34`, `1px --rule` above and below. |
 | **Location band** | `--band` fill, 7px padding, 11px/700 `0.14em` `--ink-faint`, name left and start time right. |
 | **Shot row** | 13px vertical padding, `1px --rule` bottom. No. (34px) · size (44px, 700) · subject stack (15px + 11px meta) · status (34px, right). Whole row is the link to detail; the status control is a 44×44 button with negative margin so it overlaps the row padding without growing it. |
-| **Status control** | 44×44 minimum, transparent, renders the bracketed code. Tap toggles `[ ]` ↔ `[✓]`. Long-press does nothing in v0 (flags are a line, §4.4; setting `[★]` by hand is open, §10). |
+| **Status control** | 44×44 minimum, transparent, renders the bracketed code. Tap toggles `[ ]` ↔ `[✓]`. Long-press does nothing in v0 (flags are a line, §4.4; `[★]` is set in add / edit shot, §10 item 16). |
 | **Radio row** | Whole row is a `<button role="radio">`, 44px minimum. The mark is `( )` / `(•)` in a fixed 26px column, `flex-shrink: 0`, **with an explicit `line-height` matching the label's first line** — without it the two marks land on different baselines, because the bullet and the space have different vertical metrics. Selected mark in `--accent`, its label at 700. Label plus one line of description in `--ink-muted`. `1px --rule` between rows. For mutually exclusive settings that need explaining — never for binary toggles. |
 | **Segmented control** | `1px --rule` box, equal `flex-grow` segments, `1px --rule` between. Selected: `--ink` fill + `--accent-ink` at 700 (or `--accent` fill in night, where an ink fill would be a white slab). |
 | **Chip** | 11–12px UPPER, 10–11px side padding, **44px minimum height** — the boards draw 7–9px vertical padding, which gives a 35px chip, under the §3 floor, so the height comes from `min-height`, not padding. Selected = filled (`--ink` by day, `--accent` by night, `--accent-ink` label); unselected = `1px --rule` outline. A chip that can't be picked yet is `--ink-muted` with a dashed edge and a line nearby saying why — never dimmed. Used for filters, locations, gear. |
@@ -843,9 +843,9 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 14. **`UNPLACED` has no screen of its own.** It's specified as a group at the foot of the list, but a project where most shots are unplaced — the common state early on — hasn't been drawn, and that's the state a first-time user is most likely to be in.
 15. **Changing format after shots exist — partly resolved.** The edit flow now states what a change does to planned shots before saving (§5.14), and fewer days is drawn. Still undesigned: changing the *delivery* re-seeds the beats (HOOK/BUILD/PAYOFF → OPEN/MIDDLE/CLOSE), and shots already assigned to a beat need a mapping rather than falling back to unassigned.
 16. **Setting `[★]` by hand has no control.** The long-press drawn for it (§5.7) is unassigned in v0. Since M6 the online read creates required shots, but offline nothing can — so without signal, the deliverable guard in wrap (W2) can't be reached. Likely a `REQUIRED FOR` row with a client name in add / edit shot. Needs drawing.
-    - **Built 25 Sep, not drawn:** add / edit shot has a `REQUIRED FOR A CLIENT` row — `NO`, the project's clients as chips, and `ANOTHER CLIENT` (or `YES — NAME THE CLIENT` when there are none), which opens a `CLIENT` field. A marked shot behaves exactly like one from a read: `[★]`, the client's band, wrap's guard.
+    - **Built 25 Sep, not drawn:** add / edit shot has a `REQUIRED FOR A CLIENT` row — `NO`, the project's clients as chips, and `ANOTHER CLIENT` (or `YES — NAME THE CLIENT` when there are none), which opens a `CLIENT` field. A marked shot behaves exactly like one from a read: the `[★] FOR <CLIENT>` line, the client's count, wrap's guard.
 17. **A guessed beat can't be corrected.** Hand-added shots get an inferred beat (§5.4), but there's no control to change it — no beat field in add / edit, no drag between beats. Wrong guesses will show up in the beat view.
-    - **Built 25 Sep, not drawn:** add / edit shot has a `BEAT` row in the format's own names (`HOOK · BUILD · PAYOFF` on a reel). Adding, it reads `BEAT · SUGGESTED` and follows the guess until you pick one, like movement and sound. It's hidden on a `[★]` shot, which sits outside the beats. Drag between beats is still not built.
+    - **Built 25 Sep, not drawn:** add / edit shot has a `BEAT` row in the format's own names (`HOOK · BUILD · PAYOFF` on a reel). Adding, it reads `BEAT · SUGGESTED` and follows the guess until you pick one, like movement and sound. Since required shots moved into the running order (25 Sep), it shows on `[★]` shots too. Drag between beats is still not built.
 18. **Per-day budget split is even.** §5.9 wants each day's share to follow what the day is doing (9 / 16 / 19, not 15 / 15 / 14). v0 splits evenly and lets you edit; a suggestion from the brief is v1.
 19. **Redoing the list when gear arrives — resolved, add-only (Rina, 23 Sep).**
     - **With a list already there,** `SUGGEST SHOTS FROM THIS KIT` offers only what the gear earns, up to eight or the budget's room, with `ADD N NEW`. It never offers a replace.

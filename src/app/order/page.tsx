@@ -197,7 +197,7 @@ function Shots({ project, dayId, tf }: { project: Project; dayId?: Id; tf: TimeF
   const multi = project.days.length > 1;
   const locations = runningOrder(project, multi ? dayId : undefined);
   const locationIds = new Set(project.locations.map((l) => l.id));
-  const inDay = project.shots.filter((s) => !s.required && (multi ? dayOfShot(project, s) === dayId : true));
+  const inDay = project.shots.filter((s) => (multi ? dayOfShot(project, s) === dayId : true));
   const byOrder = (a: { order: number }, b: { order: number }) => a.order - b.order;
 
   // One flat list: each location's band, then its shots; UNPLACED last, always there to drop into.
@@ -265,9 +265,17 @@ function Shots({ project, dayId, tf }: { project: Project; dayId?: Id; tf: TimeF
                 ⋮⋮
               </button>
               <span className={styles.shot}>
-                <span className={styles.no}>{s.required ? <RequiredMark /> : formatShotNumber(numbers.get(id) ?? 0)}</span>
+                <span className={styles.no}>{formatShotNumber(numbers.get(id) ?? 0)}</span>
                 <span className={styles.size}>{s.size}</span>
-                <span className={exposed ? styles.subjectDone : styles.subject}>{s.subject}</span>
+                <span className={exposed ? styles.subjectDone : styles.subject}>
+                  {s.subject}
+                  {s.required && (
+                    <>
+                      {" "}
+                      <RequiredMark label={`Required for ${s.required.client}`} />
+                    </>
+                  )}
+                </span>
                 <StatusMark exposed={exposed} />
               </span>
             </li>

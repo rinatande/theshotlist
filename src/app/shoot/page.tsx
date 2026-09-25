@@ -71,7 +71,7 @@ function Shooting({ project, dayId, first }: { project: Project; dayId: Id; firs
   const location = current ? project.locations.find((l) => l.id === current.locationId) : undefined;
   const light = lightLeft(project, location, now, tf);
   const flagged = dayShots(project, dayId).filter((s) => s.status === "flagged").length;
-  const label = (s: Shot) => (s.required ? `required for ${s.required.client}` : `shot ${formatShotNumber(numbers.get(s.id) ?? 0)}`);
+  const label = (s: Shot) => `shot ${formatShotNumber(numbers.get(s.id) ?? 0)}${s.required ? `, required for ${s.required.client}` : ""}`;
 
   const save = async (change: (p: Project) => Project) => {
     // Re-read first: a tap here must never undo one made a moment ago.
@@ -130,12 +130,11 @@ function Shooting({ project, dayId, first }: { project: Project; dayId: Id; firs
             <div className={styles.shot}>
               <div className={styles.idLine}>
                 <span className={styles.size}>{current.size}</span>
-                {current.required ? (
+                <span className={styles.number}>SHOT {formatShotNumber(numbers.get(current.id) ?? 0)}</span>
+                {current.required && (
                   <span className={styles.required}>
-                    <RequiredMark label={`Required for ${current.required.client}`} /> {current.required.client.toUpperCase()}
+                    <RequiredMark label="Required" /> FOR {current.required.client.toUpperCase()}
                   </span>
-                ) : (
-                  <span className={styles.number}>SHOT {formatShotNumber(numbers.get(current.id) ?? 0)}</span>
                 )}
               </div>
               <p className={styles.subject}>{current.subject}</p>
@@ -197,7 +196,7 @@ function Shooting({ project, dayId, first }: { project: Project; dayId: Id; firs
 
       {flagging && current && (
         <FlagSheet
-          heading={current.required ? "FLAG THIS SHOT" : `FLAG SHOT ${formatShotNumber(numbers.get(current.id) ?? 0)}`}
+          heading={`FLAG SHOT ${formatShotNumber(numbers.get(current.id) ?? 0)}`}
           onClose={() => setFlagging(false)}
           onFlag={async (note) => {
             setFlagging(false);

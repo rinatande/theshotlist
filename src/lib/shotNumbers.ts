@@ -8,7 +8,8 @@ import type { Id, Location, Project, Shot } from "./types";
  * - One sequence for the whole project, continuous across days.
  * - Within a day: located shots in running order, then that day's UNPLACED.
  * - Shots on no day come after the last day.
- * - Required [★] shots take no number and don't consume one (§5.7).
+ * - Required [★] shots are numbered like any other: they sit in the running
+ *   order, and the star is a callout beside the number (Rina, 25 Sep; §5.7).
  * - Dropped shots keep their number: they stay in the day's record, struck
  *   through, and un-dropping one shouldn't renumber the list.
  */
@@ -26,7 +27,7 @@ export function formatShotNumber(n: number): string {
 
 function numberedOrder(project: Pick<Project, "locations" | "days" | "shots">): Shot[] {
   const locationsById = new Map(project.locations.map((l) => [l.id, l]));
-  const shots = project.shots.filter((s) => !s.required);
+  const shots = project.shots;
   const byOrder = (a: Shot, b: Shot) => a.order - b.order;
 
   const days = [...project.days].sort((a, b) => a.index - b.index);
