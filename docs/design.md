@@ -752,6 +752,14 @@ Reference image full-bleed at 176px, then the size chip and location, then the s
 
 *States:* no reference (the image block becomes a `--band` placeholder with `+ ADD REF`) · already exposed (primary becomes `UNMARK`, secondary) · flagged.
 
+**Stepping from shot to shot (added 25 Sep, Rina; S3, N3, S3c).** You can move from one shot to the next without going back to the list each time:
+- **The header:** `‹ 03 / 12 ›` sits beside `⋯`. Each arrow is 44×44 and says where it goes ("Previous shot, 02").
+- **Swipe:** a sideways swipe on the shot's content does the same — left for next, right for previous. It doesn't start within 24px of either screen edge, which belongs to the phone's back gesture, and a drag that's more down than across is a scroll.
+- **The order is the list's, as it's currently grouped.** By location, that's the running order: days, then each day's locations, then that day's `UNPLACED`. By beat, it's hook to payoff. Exposed and dropped shots are included, since you step through the list, not the queue.
+- **Crossing into a new location:** the first shot there opens under a band, `NOW AT HEADLAND` · `2 SHOTS HERE` (`NOW UNPLACED`, or `NOW IN BUILD` in the beat view). It shows stepping backward too, and not when the shot was opened from the list.
+- **It stops at both ends.** The arrow at an end is drawn in `--rule` and does nothing. There's no wrap: going from the last shot back to the first would hide that you'd reached the end.
+- **Steps replace each other in history**, so `← SHOT LIST` — or the phone's back — returns to the list in one go, scrolled to the shot you were on.
+
 ### Add shot
 Size as a five-way segmented control (WS / MS / CU / OTS / INS) — the fastest possible input for the field you always fill. Subject as the only large text field. Lens and support as chips drawn from this shoot's packed gear, with a route through to edit the kit. Location as chips. Note as a textarea. A suggestion block calls out coverage gaps as you type.
 

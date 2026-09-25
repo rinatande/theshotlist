@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState, type TouchEvent } from "react";
 import { BottomSheet } from "@/components/BottomSheet";
 import { RequiredMark, StatusMark } from "@/components/Marks";
 import { NotHere } from "@/components/NotHere";
@@ -11,10 +11,15 @@ import { ShotDelete } from "@/components/ShotDelete";
 import ui from "@/components/ui.module.css";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { deleteShots, toggleExposed } from "@/lib/shots";
+import { neighbours, readListView, stepOrder } from "@/lib/stepping";
 import { audioLabel, movementLabel, supportLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import { saveProject, useProject } from "@/lib/useProject";
 import styles from "./Shot.module.css";
+
+/** Swipes starting this close to either edge are the system's back gesture, not ours. */
+const EDGE_PX = 24;
+const SWIPE_PX = 60;
 
 /** S3 Shot detail: the spec you check at the camera (§8). */
 function ShotDetail() {
@@ -25,6 +30,7 @@ function ShotDetail() {
   const [fresh, setFresh] = useState(false);
   // The ⋯ sheet (S3a), and its delete confirmation (S3b) in its place.
   const [sheetOpen, setSheetOpen] = useState<"menu" | "delete" | null>(null);
+  const touch = useRef<{ x: number; y: number } | null>(null);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setTf(readTimeFormat()), []);
 
@@ -49,7 +55,30 @@ function ShotDetail() {
     ["SOUND", shot.audio && audioLabel(shot.audio)],
   ].filter(([, v]) => v) as [string, string][];
 
-  const list = `/project?id=${project.id}`;
+  // Back lands on this shot in the list, however far you stepped (S3).
+  const list = `/project?id=${project.id}&at=${shot.id}`;
+  // ‹ and ›, in the order the list is showing, stopping at both ends (S3, S3c).
+  const came = params.get("dir");
+  const step = neighbours(stepOrder(project, readListView(project.id)), shot.id, came === "next" || came === "prev" ? came : undefined);
+  const stepHref = (id: string, dir: "prev" | "next") => `/shot?id=${project.id}&shot=${id}&dir=${dir}`;
+  const numberOf = (id?: string) => (id && numbers.has(id) ? formatShotNumber(numbers.get(id)!) : "");
+
+  const onTouchStart = (e: TouchEvent) => {
+    const t = e.touches[0];
+    touch.current = t.clientX < EDGE_PX || t.clientX > window.innerWidth - EDGE_PX ? null : { x: t.clientX, y: t.clientY };
+  };
+  const onTouchEnd = (e: TouchEvent) => {
+    const start = touch.current;
+    touch.current = null;
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    // Mostly sideways and far enough — a scroll that drifts isn't a swipe.
+    if (Math.abs(dx) < SWIPE_PX || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    if (dx < 0 && step.next) router.replace(stepHref(step.next, "next"));
+    if (dx > 0 && step.prev) router.replace(stepHref(step.prev, "prev"));
+  };
 
   return (
     <div className={ui.screen}>
@@ -58,7 +87,35 @@ function ShotDetail() {
           ← SHOT LIST
         </Link>
         <span className={styles.position}>
-          <span className={styles.positionNo}>{n !== undefined ? `${formatShotNumber(n)} / ${formatShotNumber(numbers.size)}` : ""}</span>
+          <nav aria-label="Step through shots" className={styles.stepper}>
+            {step.prev ? (
+              <Link href={stepHref(step.prev, "prev")} replace aria-label={`Previous shot, ${numberOf(step.prev)}`} className={styles.arrow}>
+                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75">
+                  <path d="M11 4 6 9l5 5" />
+                </svg>
+              </Link>
+            ) : (
+              <span role="link" aria-disabled="true" aria-label="No previous shot" className={styles.arrowOff}>
+                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75">
+                  <path d="M11 4 6 9l5 5" />
+                </svg>
+              </span>
+            )}
+            <span className={styles.positionNo}>{n !== undefined ? `${formatShotNumber(n)} / ${formatShotNumber(numbers.size)}` : ""}</span>
+            {step.next ? (
+              <Link href={stepHref(step.next, "next")} replace aria-label={`Next shot, ${numberOf(step.next)}`} className={styles.arrow}>
+                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75">
+                  <path d="M7 4l5 5-5 5" />
+                </svg>
+              </Link>
+            ) : (
+              <span role="link" aria-disabled="true" aria-label="No next shot" className={styles.arrowOff}>
+                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75">
+                  <path d="M7 4l5 5-5 5" />
+                </svg>
+              </span>
+            )}
+          </nav>
           <button type="button" className={styles.more} aria-label="Shot options" onClick={() => setSheetOpen("menu")}>
             <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor">
               <circle cx="4" cy="10" r="1.6" />
@@ -69,7 +126,15 @@ function ShotDetail() {
         </span>
       </header>
 
-      <div className={ui.body}>
+      {step.arrival && (
+        // Crossing into a new location is worth saying (S3c).
+        <div role="status" className={styles.arrival}>
+          <span>{step.arrival.text}</span>
+          <span>{step.arrival.count === 1 ? "1 SHOT HERE" : `${step.arrival.count} SHOTS HERE`}</span>
+        </div>
+      )}
+
+      <div className={ui.body} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <div className={styles.line}>
           <span className={styles.sizeChip}>{shot.size}</span>
           <span className={styles.where}>{where}</span>

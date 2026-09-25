@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ProjectActions } from "@/components/ProjectActions";
 import { ProjectHeader, type Tab } from "@/components/ProjectHeader";
 import { MoveSheet } from "@/components/MoveSheet";
@@ -46,6 +46,20 @@ export function ProjectScreen() {
       }),
     cancel: () => setPicked(null),
   };
+
+  // Back from shot detail lands on the shot you were on, however far you stepped (S3).
+  const landed = useRef(false);
+  const at = params.get("at");
+  useEffect(() => {
+    if (landed.current || !at || !project) return;
+    const row = document.getElementById(`shot-${at}`);
+    if (!row) return;
+    landed.current = true;
+    row.scrollIntoView({ block: "center" });
+    const url = new URL(window.location.href);
+    url.searchParams.delete("at");
+    window.history.replaceState(window.history.state, "", url);
+  }, [at, project]);
 
   // With signal, look up any place names not yet turned into coordinates (§5.10).
   useEffect(() => {

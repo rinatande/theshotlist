@@ -273,3 +273,16 @@ See case-study-log 2.28.
 **Rina:** Found both too easy to hit by accident, and redesigned the flow on the canvas (S3, S3a, S3b, S4c, SL3–SL5): move them into a `⋯` sheet in shot detail's header (`EDIT SHOT · DUPLICATE · DELETE SHOT`), make delete confirm, make duplicate open the add form and add only on `ADD AS NN`, and let a long-press on a row start select mode, with duplicate and delete in its bar.
 **Changed:** Built to her boards. Shot detail has no action rows now. Delete asks first everywhere, and a batch delete names any exposed or `[★]` shots. Duplicate adds nothing until it's saved. Long-press picks a row, and `SELECT` on bands stays. design.md §5.13; case-study-log 2.32.
 **Kind:** design call
+
+### 2026-09-25 · v1 · Stepping from one shot to the next
+
+**Proposed:** Shot detail as built from §8: one shot, with `← SHOT LIST` the only way on. To see the next shot, you went back to the list, which opened at the top, and tapped again.
+**Rina:** Found going back to the list for every shot a hassle, and drew prev / next on the canvas (S3, N3, S3c): `‹ NN / TOTAL ›` in the header beside `⋯`, plus a horizontal swipe on the shot's content that doesn't start at the screen edge (the system back gesture). The order follows the list as grouped, crosses locations with a `NOW AT <LOCATION>` band, includes exposed shots, and stops at both ends. Back returns to the list scrolled to the current shot.
+**Changed:** Built to her boards. The order lives in `src/lib/stepping.ts`, with tests. Filled in where the boards were silent:
+- In the beat view the band reads `NOW IN <BEAT>`, and a shot with no location `NOW UNPLACED`.
+- The band shows stepping backward too, but not when a shot is opened from the list.
+- An arrow at an end is drawn in `--rule` and does nothing.
+- Steps replace each other in history, so back is one step to the list.
+
+design.md §8 Shot detail; case-study-log 2.33.
+**Kind:** design call

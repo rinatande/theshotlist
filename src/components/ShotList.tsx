@@ -367,7 +367,7 @@ function ShotRow({ shot, project, numbers, fresh, onToggle, selection }: RowProp
   if (selection?.ids) {
     const on = selection.ids.has(shot.id);
     return (
-      <label className={[styles.row, muted ? styles.done : "", on ? styles.picked : ""].filter(Boolean).join(" ")}>
+      <label id={`shot-${shot.id}`} className={[styles.row, muted ? styles.done : "", on ? styles.picked : ""].filter(Boolean).join(" ")}>
         <span className={`${styles.rowLink} ${styles.rowPick}`}>
           <input type="checkbox" className={styles.tick} checked={on} onChange={(e) => selection.pick([shot.id], e.target.checked)} />
           <span className={styles.no}>{n !== undefined ? formatShotNumber(n) : ""}</span>
@@ -387,7 +387,7 @@ function ShotRow({ shot, project, numbers, fresh, onToggle, selection }: RowProp
   }
 
   return (
-    <div className={muted ? `${styles.row} ${styles.done}` : styles.row}>
+    <div id={`shot-${shot.id}`} className={muted ? `${styles.row} ${styles.done}` : styles.row}>
       <Link href={`/shot?id=${project.id}&shot=${shot.id}`} className={styles.rowLink} {...longPress}>
         <span className={styles.no}>{n !== undefined ? formatShotNumber(n) : ""}</span>
         <span className={styles.size}>{shot.size}</span>

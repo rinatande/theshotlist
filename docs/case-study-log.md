@@ -509,6 +509,28 @@ These are canvas only, not built. *(Built into the PWA on 25 Sep — design.md �
 
 *Artifacts:* `docs/design.md` §5.13; boards `S3`, `S3a`, `S3b`, `S4c`, `SL3`, `SL4`, `SL5`.
 
+### 2.33 Stepping through shots — 25 Sep
+
+**What broke.** Shot detail was a dead end. To read the next shot's spec, you went back to the list, found your place, and tapped again. The list scrolled to the top every time. Going through a location's shots before a shoot meant one round trip per shot.
+
+**Options.**
+- **Make the list richer**, showing the spec inline, so detail is rarely needed.
+- **Add prev / next to detail:** arrows, a swipe, or both.
+- **Scope the stepping:** within a location only, or across the whole list; in shooting order only, or following however the list is grouped.
+
+**Decision. [R]** Rina found going back to the list for every shot a hassle, and drew the stepping on the canvas (S3, N3, S3c):
+- **Arrows and a swipe:** `‹ NN / TOTAL ›` in the header beside `⋯`, plus a horizontal swipe on the shot's content. The swipe doesn't start at the screen edge, so it doesn't fight the system back gesture.
+- **The list's order:** stepping follows the list as currently grouped, by location or by beat. It crosses locations, and marks the first shot of a new one with `NOW AT <LOCATION>`. It includes exposed shots and stops at both ends, with no wrap.
+- **Back lands where you were:** the list scrolls to the shot you were on.
+
+**Why it's evidence.** It's the same instinct as 2.31 from the other direction: the list's sequence is the thing, so detail should move through it instead of standing outside it. The details are the kind only a real phone reveals:
+- **The edge exclusion:** Android's back gesture owns the screen edge.
+- **The `NOW AT` band:** the header's location line is easy to miss when the spec changes under your thumb.
+- **No wrap:** looping from the last shot back to the first would hide the fact that you'd reached the end.
+- **Back scrolls to the shot:** without it, the stepping would just move the hassle to the return trip.
+
+*Artifacts:* `docs/design.md` §8 Shot detail; `src/lib/stepping.ts`; boards `S3`, `N3`, `S3c`.
+
 ---
 
 ## 3. Artifact inventory
