@@ -1,7 +1,8 @@
 /* The frame around Home, Projects and Gear (H1–H6): brand, profile circle, bottom bar. */
 
 .top {
-  padding: calc(var(--s-6) + env(safe-area-inset-top)) var(--gutter) 14px;
+  /* 20px, like the gutter and the inner screens' headers (S1, N1). */
+  padding: calc(var(--s-5) + env(safe-area-inset-top)) var(--gutter) 14px;
   display: flex;
   flex-direction: column;
   gap: 10px;
