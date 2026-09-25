@@ -17,7 +17,7 @@ import { ReadList } from "./ReadList";
 function Suggestions() {
   const { project } = useProject();
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
-  if (project === null) return <NotHere href="/" label="← PROJECTS" />;
+  if (project === null) return <NotHere href="/projects" label="← PROJECTS" />;
   if (currentRead(project)) return <ReadList key={project.id} project={project} />;
   return (
     <div className={ui.screen}>

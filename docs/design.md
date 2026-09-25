@@ -859,6 +859,14 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
     - **The visible case:** with Day pinned on a dark-mode phone, a black strip sits under a day screen. Auto matches, and Night pinned reads as near-black on near-black.
     - **Nothing on the page reaches it.** It follows neither `color-scheme: light` nor the manifest's `#F2EBDD`.
     - **When it resolves:** when Chromium ships edge-to-edge for installed apps, the `html` ground fills the strip with no change needed. A native or Play Store wrapper — the H1–H6 boards are for the native app — can set the navigation bar colour directly.
+25. **Home and the bottom bar, as built (25 Sep).** Built from boards H1–H6 into the PWA, ahead of the native app they were drawn for. Where the build departs from the boards, or the boards were silent:
+    - **Routes.** `/` is Home, the Projects list moved to `/projects`, Gear stays `/gear`. `HOME · PROJECTS · GEAR` shows on those three only — never inside a project, shoot mode or wrap. Every `← PROJECTS` goes to `/projects`; Settings, now reached from the profile square on any tab, says `← BACK`.
+    - **The profile square** carries the person icon, labelled "Settings — not signed in" (H1, H2). No screen shows an initial or a name until sign-in exists.
+    - **H1 route 03, "Save your work", is left out** until sync is built (Rina, 25 Sep), so the line reads "Two ways in".
+    - **Which card (H1–H4).** A project's next shoot is its first day not wrapped, as shoot mode uses. That day dated today → `SHOOTING TODAY`. Dated within 14 days → `NEXT SHOOT`, with every other dated project under `LATER`. A date already past doesn't count: Home can't tell a slipped shoot from an unwrapped day. Otherwise → `PICK UP WHERE YOU LEFT OFF`: the project last opened, remembered on the phone rather than on the project (Rina, 25 Sep), else the last changed. `RECENT` lists up to three others.
+    - **GETTING READY** is read off the project: a project brief with text; any shots (counted against the budget); sun times found for the day; every item of this shoot's gear in the bag. An unticked line links to where it's done (`WRITE ›`, `GENERATE ›`, `ADD WHERE ›`, `PACK ›` or `CHOOSE ›` with no gear yet); the board drew only `PACK ›`. The signal line shows only while the list isn't generated — "Do it before you go" says nothing once it's done.
+    - **SHOOTING TODAY** rows are absent when there's nothing to say: no location → no `FIRST UP`, no place → no `LIGHT`, no `[★]` today → no `FOR` line. `IN THE BAG` names the kit the shoot started from, else "This shoot's gear", and shows only with gear chosen.
+    - **E4**, the empty Projects tab, loses `SET UP MY GEAR`: Gear is a tab now.
 
 ---
 

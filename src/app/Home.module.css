@@ -1,0 +1,396 @@
+/* Home, H1–H4. Values from the boards; tokens only (night is a token swap, H4n). */
+
+.greeting {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.date {
+  font-size: var(--text-11);
+  font-weight: 500;
+  letter-spacing: var(--track-ui);
+  color: var(--ink-muted);
+}
+
+.body {
+  flex: 1 0 auto;
+  padding: var(--s-1) var(--gutter) var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.plain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.note {
+  margin: 0;
+  font-size: var(--text-12);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+/* ---- H1 ------------------------------------------------------------------ */
+
+.lede {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.routes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.route {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.routeNo,
+.routeNoAccent {
+  width: 22px;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.routeNoAccent {
+  color: var(--accent);
+}
+
+.routeText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.routeTitle {
+  font-size: var(--text-16);
+  font-weight: 700;
+}
+
+.routeLine {
+  font-size: var(--text-12);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.chev,
+.chevAccent {
+  font-size: var(--text-13);
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.chevAccent {
+  color: var(--accent);
+}
+
+/* ---- Cards ----------------------------------------------------------------- */
+
+.card {
+  border: 1px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+.listBox {
+  border: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+}
+
+.listItem + .listItem {
+  border-top: 1px solid var(--rule);
+}
+
+.cardHead {
+  margin: 0;
+  padding: 7px 14px;
+  background: var(--band);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-faint);
+}
+
+.titleBlock {
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.projectName {
+  font-size: var(--text-20);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  font-size: var(--text-11);
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+
+.inlineLink {
+  flex-shrink: 0;
+  min-height: var(--target);
+  display: flex;
+  align-items: center;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.cardAction {
+  padding: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+/* ---- H2 -------------------------------------------------------------------- */
+
+.nudge {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.nudgeText {
+  flex: 1;
+  font-size: var(--text-12);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.quiet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.quietHead {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-muted);
+}
+
+/* ---- H3 -------------------------------------------------------------------- */
+
+.subHead {
+  margin: 0;
+  padding: var(--s-2) 14px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  color: var(--ink-muted);
+}
+
+.check {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: var(--target);
+  padding: var(--s-1) 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.tick,
+.tickOk {
+  width: 30px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.tickOk {
+  color: var(--ok);
+}
+
+.checkText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.checkLabel {
+  font-size: 14px;
+}
+
+.checkDetail {
+  font-size: var(--text-11);
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+
+.signal {
+  margin: 0;
+  padding: var(--s-3) 14px;
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-12);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.signal + .cardAction {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* ---- H4 -------------------------------------------------------------------- */
+
+.facts {
+  margin: 0;
+}
+
+.fact,
+.factMeter {
+  display: flex;
+  gap: var(--s-3);
+  align-items: baseline;
+  padding: 11px 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.factMeter {
+  align-items: center;
+}
+
+.factLabel {
+  width: 78px;
+  flex-shrink: 0;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.factValue {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+}
+
+.meterValue {
+  flex: 1;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.track {
+  flex: 1;
+  height: 4px;
+  background: var(--track);
+}
+
+.fill {
+  display: block;
+  height: 4px;
+  background: var(--ok);
+}
+
+.count,
+.countOk {
+  font-size: var(--text-13);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+}
+
+.countOk {
+  color: var(--ok);
+}
+
+.shootActions {
+  padding: 14px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.shoot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--s-16);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--text-16);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}
+
+.todayList {
+  min-height: var(--target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.bag {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--target-btn);
+  padding: 0 14px;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.bag .factLabel {
+  width: auto;
+}
+
+.bagText {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-13);
+}
+
+.bag .tick,
+.bag .tickOk {
+  width: auto;
+}

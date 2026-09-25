@@ -1,0 +1,88 @@
+/* The frame around Home, Projects and Gear (H1–H6): brand, profile square, bottom bar. */
+
+.top {
+  padding: calc(var(--s-6) + env(safe-area-inset-top)) var(--gutter) 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.brandRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--ink-muted);
+}
+
+/* 44px to tap, 30px drawn (H1). */
+.profile {
+  flex-shrink: 0;
+  width: var(--target);
+  height: var(--target);
+  margin: -8px -8px -8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+}
+
+.square {
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  border: 1px solid var(--ink);
+  background: var(--field);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The action and the bar stay at the thumb, together. */
+.dock {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  background: var(--ground);
+}
+
+.action {
+  padding: var(--s-3) var(--gutter);
+  border-top: 1px solid var(--rule);
+}
+
+.bar {
+  display: flex;
+  border-top: 1px solid var(--rule);
+  margin: 0;
+  background: var(--ground);
+  padding-bottom: max(var(--s-5), env(safe-area-inset-bottom));
+}
+
+.tab {
+  flex: 1;
+  height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+  color: var(--ink-muted);
+  font-size: var(--text-11);
+  font-weight: 500;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+  border-top: 2px solid transparent;
+}
+
+/* Colour, weight and the rule above all mark it, so it's never colour alone (§3). */
+.current {
+  color: var(--accent);
+  font-weight: 700;
+  border-top-color: var(--accent);
+}

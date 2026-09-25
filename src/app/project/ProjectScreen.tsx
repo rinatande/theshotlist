@@ -10,6 +10,7 @@ import { GearTab } from "@/components/GearTab";
 import { ShotList, type Selection } from "@/components/ShotList";
 import ui from "@/components/ui.module.css";
 import { db } from "@/lib/db";
+import { writeLastViewed } from "@/lib/lastViewed";
 import { fillCoords } from "@/lib/place";
 import { currentDay } from "@/lib/shoot";
 import { readTimeFormat } from "@/lib/timeFormat";
@@ -46,6 +47,7 @@ export function ProjectScreen() {
   // With signal, look up any place names not yet turned into coordinates (§5.10).
   useEffect(() => {
     if (!id) return;
+    writeLastViewed(id);
     fillCoords(id);
     const online = () => fillCoords(id);
     window.addEventListener("online", online);
@@ -109,7 +111,7 @@ export function ProjectScreen() {
           onClose={() => setActions(false)}
           onDelete={async () => {
             await db.projects.delete(project.id);
-            router.replace("/");
+            router.replace("/projects");
           }}
         />
       )}
@@ -146,7 +148,7 @@ function Missing() {
       <div className={ui.body}>
         <h1 className={styles.missingTitle}>NOT ON THIS PHONE</h1>
         <p className={styles.coming}>This project isn&apos;t stored here. It may have been deleted.</p>
-        <Link href="/" className={ui.secondary}>
+        <Link href="/projects" className={ui.secondary}>
           ← PROJECTS
         </Link>
       </div>

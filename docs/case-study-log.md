@@ -453,7 +453,7 @@ The rule from 2.23 held: code is what's real, and the canvas records where the d
   - **No name until sign-in.** The app has no account (§5.11), so it doesn't know your name, and a greeting that asked for it would be an account wall by another route. Until sign-in, the greeting is about the day, not the person.
 - **The tabs:** `H5` Projects and `H6` Gear as tabs behind the bar.
 
-These are canvas only, not built.
+These are canvas only, not built. *(Built into the PWA on 25 Sep — design.md §10 item 25.)*
 
 **Why it's evidence.** It shows the division of labour in the collaboration clearly. The product direction came from Rina: what the app should greet you with. The detail-level critique — one card, the cog collision, the account wall hiding in a greeting — came from Claude, and was argued from rules the project had already set (2.6, §5.11) rather than taste. And the Home takes the budget's point of view from 2.2 one step further: it doesn't ask how much you've planned, it asks what today is.
 

@@ -46,7 +46,7 @@ async function readsAvailable(page: Page) {
 }
 
 async function newProject(page: Page, name: string) {
-  await page.goto("/");
+  await page.goto("/projects");
   await page.getByRole("link", { name: "+ NEW PROJECT" }).first().click();
   await page.getByRole("textbox").first().fill(name);
   await page.getByRole("radio", { name: "PERSONAL" }).click();

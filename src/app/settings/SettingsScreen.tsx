@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Choice } from "@/components/Choice";
 import { ThemeControl } from "@/components/ThemeControl";
@@ -20,6 +20,7 @@ interface InstallPrompt extends Event {
 
 /** S5 Settings, v0 rows (§8): theme, time format, storage, install. */
 export function SettingsScreen() {
+  const router = useRouter();
   const count = useLive(() => db.projects.count(), []);
   const offlineReady = useOfflineReady();
   const [time, setTime] = useState<TimeFormat>("12h");
@@ -50,9 +51,10 @@ export function SettingsScreen() {
   return (
     <div className={ui.screen}>
       <header className={styles.header}>
-        <Link href="/" className={ui.backLink}>
-          ← PROJECTS
-        </Link>
+        {/* Reached from the profile square on any tab, so it goes back where you were. */}
+        <button type="button" className={ui.backLink} onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}>
+          ← BACK
+        </button>
         <h1 className={styles.title}>SETTINGS</h1>
       </header>
 

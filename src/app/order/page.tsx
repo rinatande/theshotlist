@@ -30,7 +30,7 @@ function RunningOrder() {
   useEffect(() => setTf(readTimeFormat()), []);
 
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
-  if (project === null) return <NotHere href="/" label="← PROJECTS" />;
+  if (project === null) return <NotHere href="/projects" label="← PROJECTS" />;
 
   const multi = project.days.length > 1;
   const day = multi ? (project.days.find((d) => d.id === dayId) ?? [...project.days].sort((a, b) => a.index - b.index)[0]) : undefined;

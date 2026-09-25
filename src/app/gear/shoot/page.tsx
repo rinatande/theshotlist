@@ -26,7 +26,7 @@ function ShootGear() {
   const { project } = useProject();
   const data = useLive(async () => ({ gear: await db.gear.toArray(), kits: await db.kits.toArray() }), []);
   if (project === undefined || !data) return <div className={ui.screen} aria-busy="true" />;
-  if (project === null) return <NotHere href="/" label="← PROJECTS" />;
+  if (project === null) return <NotHere href="/projects" label="← PROJECTS" />;
   if (data.gear.length === 0 && project.gear.length === 0)
     return (
       <div className={ui.screen}>

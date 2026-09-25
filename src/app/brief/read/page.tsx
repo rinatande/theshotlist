@@ -38,7 +38,7 @@ type State = { phase: "reading" } | { phase: "read"; cached: boolean; remaining:
 function WhatItRead() {
   const { project } = useProject();
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
-  if (project === null) return <NotHere href="/" label="← PROJECTS" />;
+  if (project === null) return <NotHere href="/projects" label="← PROJECTS" />;
   return <Review key={project.id} project={project} />;
 }
 

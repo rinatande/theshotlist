@@ -27,7 +27,7 @@ function ShootScreen() {
   useWakeLock();
 
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
-  if (project === null) return <NotHere href="/" label="← PROJECTS" />;
+  if (project === null) return <NotHere href="/projects" label="← PROJECTS" />;
   const day = currentDay(project);
   if (!day) return <NotHere href={`/project?id=${project.id}`} label="← SHOT LIST" />;
   return <Shooting key={`${project.id}:${day.id}`} project={project} dayId={day.id} first={params.get("shot")} />;

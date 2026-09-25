@@ -128,6 +128,19 @@
   letter-spacing: 0.02em;
 }
 
+/* The GEAR tab's title (H6), under THESHOTLIST like PROJECTS. */
+.tabTitle {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tabRule {
+  border-top: 1px solid var(--rule);
+}
+
 /* ---- E6: nothing in the bag yet ------------------------------------------ */
 
 .empty {

@@ -37,7 +37,7 @@ function WrapScreen() {
   const { project } = useProject();
   useNightLock();
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
-  if (project === null) return <NotHere href="/" label="← PROJECTS" />;
+  if (project === null) return <NotHere href="/projects" label="← PROJECTS" />;
   const day = currentDay(project);
   const view = day && wrapView(project, day.id);
   if (!day || !view) return <NotHere href={`/project?id=${project.id}`} label="← SHOT LIST" />;

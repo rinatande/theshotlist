@@ -1,51 +1,4 @@
-.topBar {
-  padding: calc(var(--s-6) + env(safe-area-inset-top)) var(--gutter) 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.brand {
-  font-size: var(--text-11);
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  color: var(--ink-muted);
-}
-
-.topLinks {
-  display: flex;
-  gap: var(--s-4);
-}
-
-.topLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--target);
-  margin: -12px 0;
-  color: var(--accent);
-  font-size: var(--text-11);
-  font-weight: 700;
-  letter-spacing: var(--track-ui);
-  text-decoration: none;
-}
-
-.title {
-  margin: 10px var(--gutter) 14px;
-  font-size: var(--text-20);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.filters {
-  padding: 0 var(--gutter) 14px;
-  border-bottom: 1px solid var(--rule);
-}
-
-.list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+/* A project as a row (S1, H2, H3): name and marker, meter, dates and format. */
 
 .row {
   display: flex;
@@ -137,6 +90,8 @@
 
 .metaRow {
   display: flex;
+  flex-wrap: wrap;
+  row-gap: var(--s-1);
   justify-content: space-between;
   gap: 10px;
   font-size: var(--text-11);
@@ -145,22 +100,18 @@
 }
 
 .meta {
-  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .formatLine {
+  margin-left: auto;
   flex-shrink: 0;
   font-weight: 700;
   text-align: right;
   white-space: nowrap;
-}
-
-.none {
-  padding: var(--s-4) var(--gutter);
-  color: var(--ink-muted);
 }
 
 .visuallyHidden {
@@ -172,49 +123,8 @@
   white-space: nowrap;
 }
 
-/* ---- E4 ---------------------------------------------------------------- */
-
-.pitch {
-  margin: var(--s-6) var(--gutter) var(--s-4);
-  font-size: var(--text-20);
-  font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: 0.02em;
-}
-
-.steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--rule);
-}
-
-.steps li {
-  padding: 14px var(--gutter);
-  border-bottom: 1px solid var(--rule);
-  font-size: var(--text-15);
-}
-
-.stepNo {
-  display: inline-block;
-  width: 34px;
-  font-weight: 700;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-}
-
-.ok {
-  color: var(--ok);
-  font-weight: 700;
-}
-
-.emptyBody {
-  justify-content: flex-end;
-}
-
-.nothing {
-  margin: 0;
-  color: var(--ink-muted);
-  font-size: var(--text-15);
-  line-height: 1.55;
+/* Inside a bordered card (H2, H3) rather than a full-width list. */
+.boxed {
+  padding: 14px;
+  border-bottom: 0;
 }

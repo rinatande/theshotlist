@@ -29,7 +29,7 @@ function DayRecord() {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setTf(readTimeFormat()), []);
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
-  if (project === null) return <NotHere href="/" label="← PROJECTS" />;
+  if (project === null) return <NotHere href="/projects" label="← PROJECTS" />;
   const day = project.days.find((d) => d.id === params.get("day"));
   if (!day) return <NotHere href={`/project?id=${project.id}`} label="← SHOT LIST" />;
 

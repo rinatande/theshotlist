@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AppTop, Dock } from "@/components/AppFrame";
 import { EmptyGear } from "@/components/EmptyGear";
 import styles from "@/components/Gear.module.css";
 import { GearBand, GearLinkRow } from "@/components/GearRows";
@@ -22,7 +23,7 @@ const BANDS: { title: string; categories: GearCategory[] }[] = [
 
 /**
  * G1 My gear: the library — kits first, then every item by category with
- * its key spec (§6.3). Reached from Projects: gear is content, not a setting.
+ * its key spec (§6.3). The GEAR tab (H6): gear is content, not a setting.
  */
 export default function GearLibrary() {
   const data = useLive(async () => ({ gear: await db.gear.toArray(), kits: await db.kits.toArray() }), []);
@@ -33,18 +34,20 @@ export default function GearLibrary() {
 
   return (
     <div className={ui.screen}>
-      <header className={styles.header}>
-        <Link href="/" className={ui.backLink}>
-          ← PROJECTS
-        </Link>
-        <h1 className={styles.title}>My gear · {gear.length}</h1>
-      </header>
+      <AppTop>
+        <h1 className={styles.tabTitle}>My gear · {gear.length}</h1>
+      </AppTop>
 
       {gear.length === 0 ? (
-        <EmptyGear />
+        <>
+          <div className={styles.tabRule}>
+            <EmptyGear />
+          </div>
+          <Dock current="gear" />
+        </>
       ) : (
         <>
-          <div className={ui.flush}>
+          <div className={`${ui.flush} ${styles.tabRule}`}>
             <GearBand title="KITS" count={kits.length}>
               {[...kits].sort(byName).map((k) => (
                 <li key={k.id}>
@@ -81,11 +84,11 @@ export default function GearLibrary() {
             })}
           </div>
 
-          <div className={ui.footer}>
+          <Dock current="gear">
             <Link href="/gear/item" className={ui.primary}>
               + ADD GEAR
             </Link>
-          </div>
+          </Dock>
         </>
       )}
     </div>

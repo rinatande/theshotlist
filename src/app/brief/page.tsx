@@ -26,7 +26,7 @@ function BriefScreen() {
   const router = useRouter();
   const { project } = useProject();
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
-  if (project === null) return <NotHere href="/" label="← PROJECTS" />;
+  if (project === null) return <NotHere href="/projects" label="← PROJECTS" />;
   return <Editor key={project.id} project={project} onGenerate={() => router.push(`/brief/read?id=${project.id}`)} />;
 }
 

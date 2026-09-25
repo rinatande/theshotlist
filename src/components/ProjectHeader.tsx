@@ -34,7 +34,7 @@ export function ProjectHeader({ project, tab, onTab, onActions }: Props) {
   return (
     <header className={styles.header}>
       <div className={styles.top}>
-        <Link href="/" className={styles.back}>
+        <Link href="/projects" className={styles.back}>
           ← PROJECTS
         </Link>
         {offlineReady && <span className={styles.status}>OFFLINE OK</span>}

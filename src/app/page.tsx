@@ -1,5 +1,5 @@
-import { ProjectsScreen } from "./ProjectsScreen";
+import { HomeScreen } from "./HomeScreen";
 
 export default function Home() {
-  return <ProjectsScreen />;
+  return <HomeScreen />;
 }

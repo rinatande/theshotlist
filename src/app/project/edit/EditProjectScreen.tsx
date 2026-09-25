@@ -25,7 +25,7 @@ export function EditProjectScreen() {
   }, [id]);
 
   useEffect(() => {
-    if (project === null) router.replace("/");
+    if (project === null) router.replace("/projects");
   }, [project, router]);
 
   if (!project || !draft) return null;

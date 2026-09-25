@@ -14,7 +14,7 @@ function NewLocation() {
   const router = useRouter();
   const { project, params } = useProject();
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
-  if (project === null) return <NotHere href="/" label="← PROJECTS" />;
+  if (project === null) return <NotHere href="/projects" label="← PROJECTS" />;
 
   const back = params.get("from") === "order" ? `/order?id=${project.id}` : `/project?id=${project.id}`;
   const day = params.get("day");

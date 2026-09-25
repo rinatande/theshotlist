@@ -1,0 +1,69 @@
+.title {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.filters {
+  padding: 0 var(--gutter) 14px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.none {
+  padding: var(--s-4) var(--gutter);
+  color: var(--ink-muted);
+}
+
+/* ---- E4 ---------------------------------------------------------------- */
+
+.pitch {
+  margin: var(--s-2) var(--gutter) var(--s-4);
+  font-size: var(--text-20);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.steps li {
+  padding: 14px var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-15);
+}
+
+.stepNo {
+  display: inline-block;
+  width: 34px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.ok {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.emptyBody {
+  justify-content: flex-end;
+}
+
+.nothing {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-15);
+  line-height: 1.55;
+}
