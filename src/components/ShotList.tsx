@@ -9,7 +9,7 @@ import { budgetLabel, shortDate } from "@/lib/labels";
 import { runningOrder } from "@/lib/runningOrder";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { dayOfShot, deliverables, toggleExposed } from "@/lib/shots";
-import { supportLabel } from "@/lib/suggest";
+import { rollLine, supportLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import type { Id, Location, Project, Shot } from "@/lib/types";
 import { saveProject } from "@/lib/useProject";
@@ -70,6 +70,7 @@ export function ShotList({ project, selection }: { project: Project; selection?:
     return (
       <>
         <PlanBar project={project} view={view} onView={chooseView} planned={0} over={false} />
+        <RollLine project={project} />
         <EmptyList project={project} />
       </>
     );
@@ -80,6 +81,7 @@ export function ShotList({ project, selection }: { project: Project; selection?:
   return (
     <>
       <PlanBar project={project} view={view} onView={chooseView} planned={planned} over={over} />
+        <RollLine project={project} />
       <BriefStrip project={project} />
       <div className={styles.columns} aria-hidden="true">
         <span>NO.</span>
@@ -135,6 +137,12 @@ function PlanBar({ project, view, onView, planned, over }: { project: Project; v
       </span>
     </div>
   );
+}
+
+/** Under the budget: what it assumes about each shot, so the seconds are really there (§5.15). */
+function RollLine({ project }: { project: Project }) {
+  const line = rollLine(project.format, projectBudget(project));
+  return line ? <p className={styles.rollLine}>{line}</p> : null;
 }
 
 // ─── Brief strip (after B4) ───────────────────────────────────────────────────

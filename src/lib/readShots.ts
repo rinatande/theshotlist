@@ -1,6 +1,7 @@
 import type { ReadResult, ReadShot } from "./read";
 import { addLocation, addShot } from "./shots";
-import type { Id, Project } from "./types";
+import { DIRECTIONS, suggestAngle, suggestRoll } from "./suggest";
+import type { Id, Project, ShotSize, ShotView } from "./types";
 import { capitalise } from "./words";
 
 /**
@@ -9,9 +10,12 @@ import { capitalise } from "./words";
  * never duplicates what's already on the list.
  */
 
+/** A read shot as the app uses it: sizes and tags current, direction checked. */
+export type TidyShot = Omit<ReadShot, "size" | "view"> & { size: ShotSize; view?: ShotView };
+
 export interface ReadPick {
   id: string;
-  shot: ReadShot;
+  shot: TidyShot;
   client?: string;
   locationId?: Id;
   dayId?: Id;
@@ -23,7 +27,7 @@ export interface ReadPick {
 
 const norm = (s: string) => s.trim().replace(/\s+/g, " ").toLowerCase();
 
-function place(project: Project, shot: ReadShot, suggested: ReadResult["locations"] = []): { locationId?: Id; dayId?: Id; newLocation?: string } {
+function place(project: Project, shot: TidyShot, suggested: ReadResult["locations"] = []): { locationId?: Id; dayId?: Id; newLocation?: string } {
   const location = shot.location ? project.locations.find((l) => norm(l.name) === norm(shot.location!)) : undefined;
   if (location) return { locationId: location.id, dayId: location.dayId };
   const dayOf = (index: number | null | undefined) => (project.days.length > 1 && index ? project.days.find((d) => d.index === index)?.id : undefined);
@@ -32,8 +36,23 @@ function place(project: Project, shot: ReadShot, suggested: ReadResult["location
   return { dayId: dayOf(shot.day) };
 }
 
-/** Subjects start with a capital, however the read wrote them. */
-const tidy = (shot: ReadShot): ReadShot => ({ ...shot, subject: capitalise(shot.subject.trim()) });
+/**
+ * Subjects start with a capital, however the read wrote them. A size of OTS,
+ * from a read saved before 29 Sep, is a medium tagged OTS (§5.15). A direction
+ * that doesn't start with one of the five is dropped: never guessed.
+ */
+export function tidy(shot: ReadShot): TidyShot {
+  const ots = shot.size === "OTS";
+  const direction = shot.direction?.trim().replace(/[.\s]+$/, "");
+  const known = direction && DIRECTIONS.some((d) => direction.toLowerCase().startsWith(d));
+  return {
+    ...shot,
+    subject: capitalise(shot.subject.trim()),
+    size: ots ? "MS" : (shot.size as ShotSize),
+    view: ots ? "ots" : shot.view === "pov" || shot.view === "ots" ? shot.view : undefined,
+    direction: known ? `${capitalise(direction)}.` : undefined,
+  };
+}
 
 /** Everything a read offers, minus what's dropped or already on the list. */
 export function readPicks(project: Project, read: { hash: string; result: ReadResult; dropped: string[] }) {
@@ -79,6 +98,8 @@ export function addReadPicks(project: Project, picks: ReadPick[], now = new Date
       if (made) locationId = made.id;
       else [next, locationId] = addLocation(next, { name: p.newLocation, dayId: p.dayId }, now, newId);
     }
+    const treatment = project.format.treatment;
+    // A read cached before 29 Sep has no angle or roll: suggest them, as for a hand-added shot.
     const [q, id] = addShot(
       next,
       {
@@ -87,8 +108,12 @@ export function addReadPicks(project: Project, picks: ReadPick[], now = new Date
         locationId,
         dayId: p.dayId,
         beat: p.shot.beat,
+        angle: p.shot.angle ?? suggestAngle(p.shot, treatment),
+        view: p.shot.view,
         movement: p.shot.movement,
         audio: p.shot.sound,
+        roll: p.shot.roll ?? suggestRoll({ ...p.shot, audio: p.shot.sound }, treatment),
+        note: p.shot.direction,
       },
       now,
       newId,

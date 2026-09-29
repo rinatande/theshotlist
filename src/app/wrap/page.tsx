@@ -15,6 +15,7 @@ import {
   defaultPlan,
   lastDayMissedSentence,
   undecided,
+  varietyLine,
   wrapSentence,
   wrapView,
   type FlagChoice,
@@ -56,6 +57,7 @@ function Wrapping({ project, view }: { project: Project; view: WrapView }) {
     missed: Object.fromEntries(view.missed.map((s) => [s.id, chosen.missed[s.id] ?? base.missed[s.id]])),
   };
   const open = undecided(plan);
+  const variety = varietyLine(project, view.day.id);
   const next = view.later[0];
   const blocked = view.outstanding.length > 0;
   const multi = view.dayCount > 1;
@@ -96,6 +98,8 @@ function Wrapping({ project, view }: { project: Project; view: WrapView }) {
         </p>
         <span className={styles.countLabel}>EXPOSED TODAY</span>
         <p className={styles.sentence}>{wrapSentence(project, view)}</p>
+        {/* One line when the day leans on one angle — never per shot (§5.15). */}
+        {variety && <p className={styles.variety}>{variety}</p>}
       </div>
 
       {/* W2: the outstanding deliverable is pinned above everything else. */}

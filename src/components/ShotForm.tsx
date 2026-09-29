@@ -7,14 +7,15 @@ import { lensChips, supportChips } from "@/lib/gear";
 import { runningOrder } from "@/lib/runningOrder";
 import { clientsOf, coverageGap, findDuplicate, numberIfAdded, numberIfAddedAfter, type ShotInput } from "@/lib/shots";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
-import { AUDIO, MOVEMENTS, suggestAudio, suggestMovement, SUPPORTS } from "@/lib/suggest";
-import type { Audio, BeatRole, Movement, Project, Shot, ShotSize } from "@/lib/types";
+import { ANGLES, AUDIO, MOVEMENTS, ROLLS, suggestAngle, suggestAudio, suggestMovement, suggestRoll, SUPPORTS, VIEWS } from "@/lib/suggest";
+import type { Angle, Audio, BeatRole, Movement, Project, Roll, Shot, ShotSize } from "@/lib/types";
 import { Choice } from "./Choice";
 import styles from "./ShotForm.module.css";
 import { StepHeader } from "./StepHeader";
 import ui from "./ui.module.css";
 
-const SIZES: ShotSize[] = ["WS", "MS", "CU", "OTS", "INS"];
+// How much is in frame. Whose view it is (POV, OTS) is its own tag, beside the angle (§5.15).
+const SIZES: ShotSize[] = ["WS", "MS", "CU", "INS"];
 const TYPED = "__typed";
 const NEW_CLIENT = "__new";
 
@@ -42,6 +43,8 @@ export function ShotForm({ project, shot, copyOf, initial, cancelHref, onSubmit,
   // A copy keeps what the original had, so it starts touched too.
   const [ownMovement, setOwnMovement] = useState(!!(shot ?? copyOf)?.movement);
   const [ownAudio, setOwnAudio] = useState(!!(shot ?? copyOf)?.audio);
+  const [ownAngle, setOwnAngle] = useState(!!(shot ?? copyOf)?.angle);
+  const [ownRoll, setOwnRoll] = useState(!!(shot ?? copyOf)?.roll);
   // A beat from a beat's + ADD, or on a saved shot, is already chosen; otherwise it's guessed (§10 item 17).
   const [ownBeat, setOwnBeat] = useState(!!initial.beat && initial.beat !== "any");
   // [★] by hand (§10 item 16): not required, one of the project's clients, or a new one typed.
@@ -52,7 +55,10 @@ export function ShotForm({ project, shot, copyOf, initial, cancelHref, onSubmit,
   const audio: Audio = ownAudio && draft.audio ? draft.audio : suggestAudio(draft, project.format.treatment);
   const set = (patch: Partial<ShotInput>) => setDraft((d) => ({ ...d, ...patch }));
   const beat: BeatRole = ownBeat && draft.beat && draft.beat !== "any" ? draft.beat : guessBeat(draft, project);
-  const final: ShotInput = { ...draft, movement, audio, beat };
+  const treatment = project.format.treatment;
+  const angle: Angle = ownAngle && draft.angle ? draft.angle : suggestAngle(draft, treatment);
+  const roll: Roll = ownRoll && draft.roll ? draft.roll : suggestRoll({ ...draft, movement, audio }, treatment);
+  const final: ShotInput = { ...draft, movement, audio, beat, angle, roll };
 
   const editing = !!shot;
   const n = editing ? shotNumbers(project).get(shot.id) : copyOf ? numberIfAddedAfter(project, final, copyOf.id) : numberIfAdded(project, final);
@@ -115,6 +121,26 @@ export function ShotForm({ project, shot, copyOf, initial, cancelHref, onSubmit,
             onChange={(e) => set({ subject: e.target.value })}
           />
         </div>
+
+        {/* ANGLE: how high the camera is (§5.15), suggested like movement and sound. */}
+        <Choice
+          label={ownAngle ? "Angle" : "Angle · suggested"}
+          options={ANGLES}
+          value={angle}
+          onChange={(a) => {
+            setOwnAngle(true);
+            set({ angle: a });
+          }}
+          hint={ANGLES.find((a) => a.value === angle)!.hint}
+        />
+        <Choice
+          label="Whose view · optional"
+          options={VIEWS}
+          value={draft.view}
+          // Tap the lit one again to clear it, as support does.
+          onChange={(v) => set({ view: draft.view === v ? undefined : v })}
+          hint={draft.view === "pov" ? "What you see — your own hands. Usually a high angle." : draft.view === "ots" ? "Over someone's shoulder." : undefined}
+        />
 
         {lenses.length > 0 ? (
           // §6.4: chips from this shoot's gear, so the spec stays honest. A lens typed before gear stays as its own chip.
@@ -180,6 +206,18 @@ export function ShotForm({ project, shot, copyOf, initial, cancelHref, onSubmit,
             set({ audio: a });
           }}
           hint={AUDIO.find((a) => a.value === audio)!.hint}
+        />
+
+        {/* ROLL: how long to record, so the budget's seconds are really there (§5.15). */}
+        <Choice
+          label={ownRoll ? "Roll" : "Roll · suggested"}
+          options={ROLLS}
+          value={roll}
+          onChange={(r) => {
+            setOwnRoll(true);
+            set({ roll: r });
+          }}
+          hint={ROLLS.find((r) => r.value === roll)!.hint}
         />
 
         {locations.length > 0 && (

@@ -1,7 +1,7 @@
 import { guessBeat } from "./beats";
 import { shotDayId } from "./runningOrder";
 import { formatShotNumber, shotNumbers } from "./shotNumbers";
-import type { Audio, Id, Location, Movement, Project, Shot, ShotSize, Support } from "./types";
+import type { Angle, Audio, Id, Location, Movement, Project, Roll, Shot, ShotSize, ShotView, Support } from "./types";
 
 /**
  * Changes to a project's shots and locations, as pure functions: each takes a
@@ -17,8 +17,11 @@ export interface ShotInput {
   lensId?: Id;
   support?: Support;
   supportId?: Id;
+  angle?: Angle;
+  view?: ShotView;
   movement?: Movement;
   audio?: Audio;
+  roll?: Roll;
   locationId?: Id;
   /** Only for a shot with no location on a multi-day project. */
   dayId?: Id;
@@ -66,8 +69,11 @@ export function addShot(p: Project, input: ShotInput, now = new Date(), newId = 
     lensId: input.lensId,
     support: input.support,
     supportId: input.supportId,
+    angle: input.angle,
+    view: input.view,
     movement: input.movement,
     audio: input.audio,
+    roll: input.roll,
     locationId,
     dayId,
     note: clean(input.note),
@@ -97,8 +103,11 @@ export function updateShot(p: Project, id: Id, input: ShotInput, now = new Date(
           lensId: input.lensId,
           support: input.support,
           supportId: input.supportId,
+          angle: input.angle,
+          view: input.view,
           movement: input.movement,
           audio: input.audio,
+          roll: input.roll,
           note: clean(input.note),
           beat: input.beat ?? s.beat,
           required: cleanRequired(input.required),
@@ -147,8 +156,11 @@ export function shotInputFrom(s: Shot): ShotInput {
     lensId: s.lensId,
     support: s.support,
     supportId: s.supportId,
+    angle: s.angle,
+    view: s.view,
     movement: s.movement,
     audio: s.audio,
+    roll: s.roll,
     locationId: s.locationId,
     dayId: s.dayId,
     note: s.note,
@@ -218,7 +230,7 @@ export function numberIfAdded(p: Project, input: ShotInput): number | undefined 
 
 // ─── Gaps and duplicates (§8 Add shot) ─────────────────────────────────────────
 
-const GAP_ORDER: ShotSize[] = ["WS", "CU", "INS", "MS", "OTS"];
+const GAP_ORDER: ShotSize[] = ["WS", "CU", "INS", "MS"];
 
 /**
  * A coverage gap: a size this location has none of yet, other than the one
@@ -235,7 +247,7 @@ export function coverageGap(p: Project, adding: ShotSize, locationId: Id | undef
 
 const same = (a?: string, b?: string) => (a ?? "").trim().replace(/\s+/g, " ").toLowerCase() === (b ?? "").trim().replace(/\s+/g, " ").toLowerCase();
 
-/** A duplicate matches on size, subject (ignoring case and spacing), location, lens and support. */
+/** A duplicate matches on size, subject (ignoring case and spacing), location, lens and support — and angle, when both have one. */
 export function findDuplicate(p: Project, input: ShotInput, exceptId?: Id): Shot | undefined {
   if (!input.subject.trim()) return undefined;
   return p.shots.find(
@@ -245,7 +257,9 @@ export function findDuplicate(p: Project, input: ShotInput, exceptId?: Id): Shot
       same(s.subject, input.subject) &&
       (s.locationId ?? "") === (input.locationId ?? "") &&
       same(s.lens, input.lens) &&
-      (s.support ?? "") === (input.support ?? ""),
+      (s.support ?? "") === (input.support ?? "") &&
+      // The same shot from another height is variety, not a repeat (§5.15).
+      (!s.angle || !input.angle || s.angle === input.angle),
   );
 }
 

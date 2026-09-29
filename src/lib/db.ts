@@ -1,5 +1,6 @@
 import Dexie, { type EntityTable } from "dexie";
 import type { GearItem, Kit, Project } from "./types";
+import { moveOtsToView } from "./migrate";
 
 /**
  * Everything lives on the device (CLAUDE.md: local first). A project is stored
@@ -35,6 +36,21 @@ export class ShotListDB extends Dexie {
           .modify((p: Project & { gearIds?: string[] }) => {
             p.gear = p.gear ?? [];
             delete p.gearIds;
+          }),
+      );
+    // v3: OTS is a view tag, not a size (§5.15).
+    this.version(3)
+      .stores({
+        projects: "id, updatedAt, createdAt, startDate",
+        gear: "id, specs.category",
+        kits: "id",
+      })
+      .upgrade((tx) =>
+        tx
+          .table("projects")
+          .toCollection()
+          .modify((p: Project) => {
+            p.shots = moveOtsToView(p).shots;
           }),
       );
   }

@@ -193,7 +193,20 @@ export interface Location {
 
 // ─── Shots (§4.4, §5.12, §5.13) ─────────────────────────────────────────────
 
-export type ShotSize = 'WS' | 'MS' | 'CU' | 'OTS' | 'INS';
+/** How much is in frame. OTS left for the view tag (29 Sep, §5.15): it said whose view, not how much. */
+export type ShotSize = 'WS' | 'MS' | 'CU' | 'INS';
+
+/** How high the camera is, measured against the subject (§5.15). Height only. */
+export type Angle = 'top-down' | 'high' | 'eye-level' | 'surface' | 'low';
+
+/** Whose view it is — a tag beside the angle, not a size: HIGH · POV (§5.15). */
+export type ShotView = 'pov' | 'ots';
+
+/**
+ * How long to record (§5.15): hold for so many seconds, or the whole camera
+ * move, or the action start to finish — each with room either side to cut on.
+ */
+export type Roll = '6s' | '10s' | '15s' | 'move' | 'action';
 
 /**
  * [ ] unshot · [✓] exposed · [!] flagged · dropped (struck through, reversible).
@@ -225,8 +238,12 @@ export interface Shot {
   /** v0, before gear: the lens as typed, "35mm". Gear chips replace it later. */
   lens?: string;
   support?: Support;
+  angle?: Angle;          // suggested by the app, changeable (§5.15)
+  view?: ShotView;
   movement?: Movement;    // suggested by the app, changeable (§5.13)
   audio?: Audio;
+  roll?: Roll;            // suggested by the app, changeable (§5.15)
+  /** Opens with where the camera faces when the read knows it: "Side-on, cup in front." (§5.15) */
   note?: string;
   refIds?: Id[];          // look-board references
 

@@ -8,10 +8,12 @@ import { NotHere } from "@/components/NotHere";
 import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { projectBrief, setBriefText } from "@/lib/brief";
+import { projectBudget } from "@/lib/budget";
 import { bagLine } from "@/lib/gear";
 import { db } from "@/lib/db";
 import { MAX_BRIEF } from "@/lib/read";
 import { readsLeft } from "@/lib/readClient";
+import { rollLine } from "@/lib/suggest";
 import type { Project } from "@/lib/types";
 import { useLive } from "@/lib/useLive";
 import { useOnline } from "@/lib/useOnline";
@@ -179,6 +181,13 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
           </span>
           <span aria-hidden="true">›</span>
         </Link>
+        {/* What the budget assumes per shot, so the seconds are really there (§5.15). */}
+        {rollLine(project.format, projectBudget(project)) && (
+          <p className={styles.budgetLine}>
+            <span className={ui.boxHeading}>BUDGET</span>
+            <span className={styles.budgetText}>{rollLine(project.format, projectBudget(project))}</span>
+          </p>
+        )}
       </div>
 
       <div className={ui.footer}>

@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { ShotForm } from "@/components/ShotForm";
 import { NotHere } from "@/components/NotHere";
 import ui from "@/components/ui.module.css";
-import { clearFlag, updateShot } from "@/lib/shots";
+import { clearFlag, shotInputFrom, updateShot } from "@/lib/shots";
 import { saveProject, useProject } from "@/lib/useProject";
 
 /** S6 Edit shot: add, field for field (§5.13). Duplicate and delete are on shot detail. */
@@ -24,21 +24,7 @@ function EditShot() {
       key={shot.id}
       project={project}
       shot={shot}
-      initial={{
-        size: shot.size,
-        subject: shot.subject,
-        lens: shot.lens,
-        lensId: shot.lensId,
-        support: shot.support,
-        supportId: shot.supportId,
-        movement: shot.movement,
-        audio: shot.audio,
-        locationId: shot.locationId,
-        dayId: shot.dayId,
-        note: shot.note,
-        beat: shot.beat,
-        required: shot.required,
-      }}
+      initial={shotInputFrom(shot)}
       cancelHref={detail}
       onSubmit={async (input) => {
         await saveProject(updateShot(project, shot.id, input));

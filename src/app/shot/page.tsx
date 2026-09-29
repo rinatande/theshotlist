@@ -12,7 +12,7 @@ import ui from "@/components/ui.module.css";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { deleteShots, toggleExposed } from "@/lib/shots";
 import { neighbours, readListView, stepOrder } from "@/lib/stepping";
-import { audioLabel, movementLabel, supportLabel } from "@/lib/suggest";
+import { angleLabel, audioLabel, movementLabel, rollLabel, splitDirection, supportLabel, viewLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import { saveProject, useProject } from "@/lib/useProject";
 import styles from "./Shot.module.css";
@@ -48,11 +48,14 @@ function ShotDetail() {
 
   // Only the rows that say something (§8: the information you check at the camera).
   const spec = [
+    // Angle first, as S3e draws it; a view tag rides along: HIGH · POV (§5.15).
+    ["ANGLE", [shot.angle && angleLabel(shot.angle), shot.view && viewLabel(shot.view)].filter(Boolean).join(" · ")],
     // A gear chip is a reference to an item the shoot is bringing (§6.4), so it says which.
     ["LENS", [shot.lens?.toUpperCase(), project.gear.find((g) => g.id === shot.lensId)?.name].filter(Boolean).join(" · ")],
     ["SUPPORT", shot.support && [supportLabel(shot.support), project.gear.find((g) => g.id === shot.supportId)?.name].filter(Boolean).join(" · ")],
     ["MOVEMENT", shot.movement && movementLabel(shot.movement)],
     ["SOUND", shot.audio && audioLabel(shot.audio)],
+    ["ROLL", shot.roll && rollLabel(shot.roll)],
   ].filter(([, v]) => v) as [string, string][];
 
   // Back lands on this shot in the list, however far you stepped (S3).
@@ -168,7 +171,7 @@ function ShotDetail() {
         {shot.note && (
           <div>
             <h2 className={ui.label}>NOTE</h2>
-            <p className={styles.note}>{shot.note}</p>
+            <NoteText note={shot.note} />
           </div>
         )}
 
@@ -243,6 +246,18 @@ function ShotDetail() {
         />
       )}
     </div>
+  );
+}
+
+/** The note, with where the camera faces set in bold when it opens with it (S3e, §5.15). */
+function NoteText({ note }: { note: string }) {
+  const { direction, rest } = splitDirection(note);
+  return (
+    <p className={styles.note}>
+      {direction && <strong className={styles.direction}>{direction}</strong>}
+      {direction && rest ? " " : ""}
+      {rest}
+    </p>
   );
 }
 

@@ -1,7 +1,8 @@
 import { projectBudget } from "./budget";
 import { runningOrder } from "./runningOrder";
 import { dayOfShot, moveShots } from "./shots";
-import type { Day, Id, Project, Shot } from "./types";
+import { angleLabel } from "./suggest";
+import type { Angle, Day, Id, Project, Shot } from "./types";
 import { capitalise, inWords } from "./words";
 
 /**
@@ -236,4 +237,29 @@ export function lastDayMissedSentence(p: Project, view: WrapView): { text: strin
   const n = view.missed.length;
   if (short) return { short, text: `You're short of the cut — worth going back for ${n === 1 ? "it" : "one of these"} before you wrap?` };
   return { short, text: `You have enough for the cut. ${n === 1 ? "This one drops" : `These ${inWords(n)} drop`} when you wrap.` };
+}
+
+/** Fewer angled shots than this and one angle leaning isn't worth saying. */
+export const VARIETY_MIN = 8;
+/** One angle on this share of the day's angled shots is a lean. */
+export const VARIETY_SHARE = 0.7;
+/** Which angles to offer first, all else equal: the ones observational cuts lean on (§5.15). */
+const OFFER: Angle[] = ["surface", "top-down", "low", "high", "eye-level"];
+
+/**
+ * Wrap's variety line (§5.15): when a day leans on one angle, "11 of 14
+ * today are eye level — a surface or top-down shot would help the cut." Once,
+ * like the budget advisory, never per shot; silent when too few shots have an
+ * angle to judge by.
+ */
+export function varietyLine(p: Project, dayId: Id): string | undefined {
+  const angled = dayShots(p, dayId).filter((s) => s.status !== "dropped" && s.angle);
+  if (angled.length < VARIETY_MIN) return undefined;
+  const count = new Map<Angle, number>();
+  for (const s of angled) count.set(s.angle!, (count.get(s.angle!) ?? 0) + 1);
+  const [top, n] = [...count].sort((a, b) => b[1] - a[1])[0];
+  if (n / angled.length < VARIETY_SHARE) return undefined;
+  const [a, b] = OFFER.filter((x) => x !== top).sort((x, y) => (count.get(x) ?? 0) - (count.get(y) ?? 0) || OFFER.indexOf(x) - OFFER.indexOf(y));
+  const say = (x: Angle) => angleLabel(x).toLowerCase();
+  return `${n} of ${angled.length} today are ${say(top)} — a ${say(a)} or ${say(b)} shot would help the cut.`;
 }

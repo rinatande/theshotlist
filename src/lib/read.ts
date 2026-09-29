@@ -2,7 +2,7 @@ import { projectBudget } from "./budget";
 import { specLine } from "./gear";
 import { formatLine } from "./labels";
 import { runningOrder } from "./runningOrder";
-import type { Audio, BeatRole, Light, Movement, Project, ShotSize } from "./types";
+import type { Angle, Audio, BeatRole, Light, Movement, Project, Roll, ShotSize } from "./types";
 
 /**
  * The online read (design.md §5.6, M6): what the phone sends, what comes
@@ -55,7 +55,8 @@ export interface ReadRequest {
 }
 
 export interface ReadShot {
-  size: ShotSize;
+  /** "OTS" only on reads saved before 29 Sep; it's mapped to MS + the OTS tag (readShots.ts). */
+  size: ShotSize | "OTS";
   subject: string;
   reason: string;
   beat: Exclude<BeatRole, "any">;
@@ -66,6 +67,13 @@ export interface ReadShot {
   location: string | null;
   /** 1-based day on a multi-day shoot, or null. */
   day: number | null;
+  // Since 29 Sep (§5.15). Reads cached before then don't have them; the app
+  // suggests angle and roll itself and leaves the note without a direction.
+  angle?: Angle;
+  view?: "none" | "pov" | "ots";
+  roll?: Roll;
+  /** Where the camera faces, opening the shot's note: "Side-on, cup in front". */
+  direction?: string;
 }
 
 export interface ReadResult {
@@ -117,7 +125,11 @@ export function readContext(project: Project): ReadContext {
 const SHOT_SCHEMA = {
   type: "object",
   properties: {
-    size: { type: "string", enum: ["WS", "MS", "CU", "OTS", "INS"] },
+    size: { type: "string", enum: ["WS", "MS", "CU", "INS"] },
+    angle: { type: "string", enum: ["top-down", "high", "eye-level", "surface", "low"] },
+    view: { type: "string", enum: ["none", "pov", "ots"] },
+    roll: { type: "string", enum: ["6s", "10s", "15s", "move", "action"] },
+    direction: { type: "string" },
     subject: { type: "string" },
     reason: { type: "string" },
     beat: { type: "string", enum: ["opener", "body", "closer"] },
@@ -127,7 +139,7 @@ const SHOT_SCHEMA = {
     location: { type: ["string", "null"] },
     day: { type: ["integer", "null"] },
   },
-  required: ["size", "subject", "reason", "beat", "light", "movement", "sound", "location", "day"],
+  required: ["size", "subject", "reason", "beat", "light", "movement", "sound", "location", "day", "angle", "view", "roll", "direction"],
   additionalProperties: false,
 } as const;
 
@@ -176,7 +188,11 @@ What good looks like:
 - Every shot has a reason line: one plain sentence, under 25 words, on why it's worth getting or how to get it on the day. Practical and specific — framing, light, timing, what to match it to. Never generic praise like "looks satisfying".
 - Subjects are short and start with a capital letter. The person holding the camera is "me" ("Me walking away down the alley", "My hands pouring the beans"), never "the videographer".
 - Plain words, not film-set jargon. Say "location", not "setup"; "start time", not "call time".
-- Sizes: WS (wide), MS (medium), CU (close-up), OTS (over the shoulder), INS (insert). Beats: opener, body, closer. Light: any, sunrise, golden, blue, night, day.
+- Sizes are how much is in frame: WS (wide), MS (medium), CU (close-up), INS (insert). Beats: opener, body, closer. Light: any, sunrise, golden, blue, night, day.
+- Angle is how high the camera is, measured against the subject: "top-down" (straight down, flat), "high" (above, looking down), "eye-level" (at a person's eye height), "surface" (the lens just above the counter, table or floor the action is on — objects loom, the background falls away), "low" (below, looking up). Spread angles across a sequence the way an editor would want them; never a run of eye-level mediums. Silent and observational films lean on "surface" and "top-down" for the small things.
+- View: "pov" when it's what the person sees (their own hands), "ots" over someone's shoulder, else "none". A POV is usually "high".
+- Roll is how long to record: "6s" for a still close-up or insert, "10s" for a still wide, "15s" for a still wide in observational work (and "10s" for its closer shots), "move" for any camera move (the whole move plus two seconds), "action" when something happens start to finish, or someone talks.
+- Direction is where the camera faces, as a short phrase that starts with one of: front-on, side-on, three-quarter, from behind, along (down the length of a surface). Under 8 words, with what's in front if it helps: "Side-on, cup in front", "Along the counter, bowl in front".
 - Sound: "speech" when someone talks on camera, "natural" when there's no talking but the place's sound is worth recording, "none" only when music or voice-over will cover it entirely. In a silent or observational film, natural sound is the soundtrack — use "natural", not "none".
 - Locations. If location names are given, set each shot's "location" to exactly one of those names where it clearly belongs, else null, and return "locations" empty. If none are given, suggest the places this shoot happens in "locations": short names a person would write on their own list ("Kitchen", "Nagi Coffee", "Higashiyama streets"), in the order they'd be shot, and as few as honestly cover it — usually one to four; a shoot in one room is one location. On a multi-day shoot give each its day, else null. Then set every shot's "location" to one of those names.
 - Set a shot's "day" to the day number only on a multi-day shoot, else null.

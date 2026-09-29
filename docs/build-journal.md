@@ -286,3 +286,30 @@ See case-study-log 2.28.
 
 design.md §8 Shot detail; case-study-log 2.33.
 **Kind:** design call
+
+### 2026-09-29 · v1 · Angle, direction and roll
+
+**Proposed:** Rina's §5.15 proposal, built into v0. Before code, Claude put a plan to her with six places where §5.15 was wrong or wouldn't work as written:
+- offline matching can't write a direction, because it no longer exists;
+- the read returns no note, so direction should be its own short field;
+- the budget line's single number breaks §5.2's rule that a budget is a range, and its sum is wrong where talking carries the cut;
+- the roll table has no medium and no observational values;
+- the variety line has no thresholds;
+- old cached reads need filling in.
+
+Claude also proposed leaving angle out of shoot mode, since N4 hadn't been redrawn.
+**Rina:** "I think let's add angle to shoot mode and we'll sync the boards up later. besides that please go ahead!"
+**Changed:** Built with Claude's answers to the six points, and with angle as the first spec chip in shoot mode (the boards will follow). Where the build differs from §5.15 as proposed:
+- **Direction:** only the read writes it, as a short field that becomes the note's first sentence. A phrase that doesn't start with one of the five directions is dropped.
+- **The budget line:** a range, and only up to three minutes, never for talking to camera or interview.
+- **Roll:** a still medium is `6S+`, and observational holds go one step longer (`10S+`, `15S+`).
+- **The variety line:** needs at least 8 angled shots, with one angle on 70% or more of them.
+- **Duplicates:** a different angle stops a shot being a duplicate.
+- **No Playwright test clicked OTS**, so none changed.
+
+Checked:
+- the Dexie upgrade in Chrome, on a real version-2 database: an exposed OTS shot came through as `MS` + `OTS`, note intact;
+- the new rules in `src/lib/angle.test.ts`.
+
+design.md §5.15 now describes what shipped.
+**Kind:** design call

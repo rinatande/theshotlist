@@ -10,7 +10,7 @@ import { db } from "@/lib/db";
 import { lightLeft } from "@/lib/light";
 import { currentDay, dayCount, dayShots, flagShot, markExposed, shootQueue, skip } from "@/lib/shoot";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
-import { movementLabel, supportLabel } from "@/lib/suggest";
+import { angleLabel, movementLabel, supportLabel, viewLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import type { Id, Project, Shot } from "@/lib/types";
 import { saveProject, useProject } from "@/lib/useProject";
@@ -212,7 +212,9 @@ function Shooting({ project, dayId, first }: { project: Project; dayId: Id; firs
 
 /** Lens, support and movement as chips — what you set the camera to (N4). */
 function Spec({ shot }: { shot: Shot }) {
-  const chips = [shot.lens?.toUpperCase(), shot.support ? supportLabel(shot.support) : undefined, shot.movement ? movementLabel(shot.movement).toUpperCase() : undefined].filter(
+  // Angle leads, as on shot detail (§5.15; Rina, 29 Sep). No roll timer here: you watch the camera, not the phone.
+  const angle = [shot.angle && angleLabel(shot.angle), shot.view && viewLabel(shot.view)].filter(Boolean).join(" · ");
+  const chips = [angle || undefined, shot.lens?.toUpperCase(), shot.support ? supportLabel(shot.support) : undefined, shot.movement ? movementLabel(shot.movement).toUpperCase() : undefined].filter(
     (c): c is string => !!c,
   );
   if (chips.length === 0) return null;

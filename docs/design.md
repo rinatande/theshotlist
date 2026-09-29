@@ -587,6 +587,59 @@ Once a project existed there was no way to change it or get rid of it.
 
 **Changes that touch planned shots say so before saving.** When an edit changes something the existing list depends on — the number of days, the delivery length — a `CHANGES` box appears above `SAVE` saying exactly what will happen: *"Going from 3 days to 2: day 3's 4 shots move to day 2. Nothing is deleted — you can move them again from the list."* It appears only when such a change has been made. Nothing moves silently, and nothing is deleted by an edit.
 
+### 5.15 Angle, direction and roll — as built (29 Sep, Rina)
+
+*Proposed by Rina on 29 Sep, drawn on the canvas as S3e, and built the same day. Where the build departs from the proposal, it says so below.*
+
+Before this, a shot was described by its **size** and nothing else about where the camera is. Two things were missing, and both show up in the edit rather than on the day: a list with enough shots but no variety in them, and a list that's all ticked off but doesn't add up to a video.
+
+**ANGLE — how high the camera is, measured against the subject.** The first row of the spec on shot detail, suggested by the app the same way movement and sound are (§5.13), and returned with every shot by the read:
+
+| Angle | Where the camera is | What it gives you | Example |
+|---|---|---|---|
+| `TOP-DOWN` | Straight down, flat | Pattern and layout; tidy and graphic | Latte art, beans on the tray |
+| `HIGH` | Above, looking down, about 45° | How you see things standing over them — and where most POV sits | Your hands tamping |
+| `EYE LEVEL` | At the person's eye height | Neutral and human; how people meet each other | The barista at the counter |
+| `SURFACE` | The lens just above the counter, table or floor the action is on | Objects loom, the background falls away — the angle silent, observational pieces lean on most | A cup in the foreground, hands soft behind it |
+| `LOW` | Below the subject, looking up | Scale, presence, sky | The shopfront against the morning |
+
+- **Height only.** An earlier list mixed height with *whose view it is* (POV, over the shoulder), and they overlapped: a POV of your own hands is a high angle. So angle is height alone.
+- **Measured against the subject.** Eye level is a person's eye level. For objects, height is measured from what they sit on — which is what keeps `EYE LEVEL` and `SURFACE` apart.
+- **`SURFACE`, not "chest level".** Chest level depends on whose chest, and a camera at your chest tilts down into the cup, which is closer to `HIGH`. `SURFACE` means just above whatever the action is on, anywhere. The picker's hint: *"Just above the counter or table — objects loom, the background falls away."*
+- **How it's suggested** (`suggestAngle` in `src/lib/suggest.ts`): a POV is `HIGH`. Then the subject's words: *latte art*, *tray*, *overhead* → `TOP-DOWN`; *drone* → `HIGH`; *shopfront*, *sky*, *looking up* → `LOW`; a face, or an OTS → `EYE LEVEL`. Then size and treatment: in silent, observational work, inserts and close-ups are `SURFACE`; otherwise inserts are `HIGH`, and everything else is `EYE LEVEL`.
+- **POV and over-the-shoulder are a tag**, not an angle and not a size: `HIGH · POV`. Add and edit have a `WHOSE VIEW · OPTIONAL` row, `POV` / `OTS`; tapping the lit one clears it. `OTS` left the size control, so size means how much is in frame again: WS / MS / CU / INS. **Existing `OTS` shots became `MS` + `OTS`** (Dexie version 3, `src/lib/migrate.ts`); nothing else on them changed — status, note and number included.
+- **Where it shows:** shot detail's first spec row (`SURFACE`, `HIGH · POV`); add and edit, as `ANGLE · SUGGESTED` until picked; and **shoot mode**, as the first spec chip (added at build, Rina — the boards will follow). Shots made before 29 Sep have no angle; the row is absent until the shot is edited, when the suggestion is offered.
+- **Duplicates:** the same shot at a different angle isn't a duplicate (§8 Add shot) — it's variety.
+
+**Direction goes in the note, first (Rina).** Where the camera faces — **front-on, side-on, three-quarter, from behind, along** (down the length of a surface) — opens the note as a short phrase: *"Side-on, cup in front. Hands only, no faces."* Shot detail sets it in bold (S3e), so it reads at a glance.
+
+- **Only the read writes it** (changed at build). The proposal had offline matching write it where a template knew it, but offline generation was removed on 23 Sep (case-study-log 2.27) and the templates don't record direction. So hand-added shots have none, and the app never guesses one.
+- **The read returns it as its own short field**, not a whole note: a phrase under eight words, which the app writes as the note's first sentence. A phrase that doesn't start with one of the five is dropped. A whole note per shot would have lengthened every read for little gain.
+
+**ROLL — how long to record.** The shot budget (§5.2) quietly assumes a few seconds of usable footage per shot. Nothing said so, so sixteen one-second clips ticked the list off and left sixteen seconds of footage. What you use isn't what you record: you need a second or two either side to cut on, and time for the moment to happen. Each shot gets a suggested roll (`suggestRoll`):
+
+| Shot | Roll | Observational (silent) |
+|---|---|---|
+| Any camera move — pan, push, pull, track, follow, reveal | `THE WHOLE MOVE + 2S` | same |
+| An action (*pour*, *tamp*, *pack* …), or someone talking | `START TO FINISH + 2S` | same |
+| Still insert, close-up or medium | `6S+` | `10S+` |
+| Still wide | `10S+` | `15S+` |
+
+- A move beats an action, which beats a hold: a tracking shot of a walk is `THE WHOLE MOVE + 2S`. Handheld isn't a move — the camera is held, not travelling.
+- The medium and the observational column were filled in at build; the proposal's table had neither. These are first guesses, like the budget table (open problem 6), to calibrate against real edits.
+- **It shows as the last spec row**, `ROLL · 6S+`, and in add and edit as `ROLL · SUGGESTED` until picked.
+- **One line ties it to the budget,** under the plan bar's budget and under `GEAR` on the brief: *"18—24 shots at about 2—3s each makes a 45s reel — roll longer than you'll use."* Worked out from the real budget and length, and **written as a range** (changed at build): the proposal's single number broke §5.2's rule that a budget is a range. It shows **only up to three minutes, and not for talking to camera or interview**: past that, or where talking carries the length, shots aren't the whole cut and the sum would be wrong.
+- **No timer in shoot mode.** You're watching the camera, not the phone.
+
+**Variety, counted.** The read spreads angles across a sequence rather than returning a run of eye-level mediums, and wrap says so when a day leans on one: *"11 of 14 today are eye level — a surface or top-down shot would help the cut."* One quieter line under wrap's sentence, never per shot (`varietyLine` in `src/lib/shoot.ts`).
+
+- **When:** at least 8 of the day's live shots have an angle, and one angle covers 70% or more of them. Below 8 there's too little to judge.
+- **What it offers:** the two least-used angles, preferring `SURFACE`, then `TOP-DOWN`, then `LOW` and `HIGH` when they tie.
+
+**Reads from before 29 Sep** are cached without angle, view, roll or direction. The cache key didn't change, so they aren't re-run: an old `OTS` becomes `MS` + `OTS`, angle and roll are suggested as for a hand-added shot, and the note has no direction.
+
+**In the build:** `Shot.angle`, `Shot.view`, `Shot.roll` (`src/lib/types.ts`); the migration in `src/lib/migrate.ts`; the rules in `src/lib/suggest.ts`; the read's schema and prompt in `src/lib/read.ts` and its tidying in `src/lib/readShots.ts`; tests in `src/lib/angle.test.ts`.
+
 ---
 
 ## 6. Gear
@@ -761,11 +814,11 @@ Reference image full-bleed at 176px, then the size chip and location, then the s
 - **Steps replace each other in history**, so `← SHOT LIST` — or the phone's back — returns to the list in one go, scrolled to the shot you were on.
 
 ### Add shot
-Size as a five-way segmented control (WS / MS / CU / OTS / INS) — the fastest possible input for the field you always fill. Subject as the only large text field. Lens and support as chips drawn from this shoot's packed gear, with a route through to edit the kit. Location as chips. Note as a textarea. A suggestion block calls out coverage gaps as you type.
+Size as a four-way segmented control (WS / MS / CU / INS; OTS became a view tag on 29 Sep, §5.15) — the fastest possible input for the field you always fill. Angle, whose view, and roll as chip rows, suggested until picked (§5.15). Subject as the only large text field. Lens and support as chips drawn from this shoot's packed gear, with a route through to edit the kit. Location as chips. Note as a textarea. A suggestion block calls out coverage gaps as you type.
 
 *States:* editing an existing shot (same screen, `SAVE` instead of `ADD TO LIST`) · duplicate-shot warning.
 
-*Rules:* a **coverage gap** is a size the chosen location has none of yet — never the size being added, since that shot fills its own gap, and only once the location already has shots (*"You have no INS at the headland yet."*). It appears once a subject is typed. A **duplicate** is a shot matching an existing one on size, subject (ignoring case and spacing), location, lens and support — the warning says which number it matches and still lets you add it, since a second take is legitimate.
+*Rules:* a **coverage gap** is a size the chosen location has none of yet — never the size being added, since that shot fills its own gap, and only once the location already has shots (*"You have no INS at the headland yet."*). It appears once a subject is typed. A **duplicate** is a shot matching an existing one on size, subject (ignoring case and spacing), location, lens and support — and angle, when both have one — the warning says which number it matches and still lets you add it, since a second take is legitimate.
 
 ### Settings
 Grouped rows under `--band` headers: **Appearance / Shot lists / Data**. Appearance holds the theme control (§9). Data holds offline storage, call-sheet export, and the PWA install prompt. Version and offline status in the footer.
@@ -928,4 +981,5 @@ Self-hosted from JetBrains' own release (OFL; `src/fonts/`), three weights, one 
 - Draft the suggestion template library per genre × treatment × format, and design the multi-day axis.
 - Design wrap / end of day, including the blocked wrap when a deliverable is outstanding.
 - Design shot-level edit, duplicate, delete and reorder.
+- v1: angle, direction and roll on every shot (§5.15).
 - Write the token file as CSS custom properties and the component CSS to match §7 — at which point this document becomes the spec the code is checked against rather than the place the design happens.
