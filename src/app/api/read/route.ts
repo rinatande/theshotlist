@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { MAX_BRIEF, mergeTopUp, progressOf, READ_EFFORT, READ_MODEL, READ_SCHEMA, READ_SYSTEM, readPrompt, shotTarget, topUpPrompt, type ReadEvent, type ReadFailure, type ReadRequest, type ReadResult } from "@/lib/read";
+import { MAX_BRIEF, mergeTopUp, progressOf, READ_MAX_TOKENS, READ_MODEL, readEffort, READ_SCHEMA, READ_SYSTEM, readPrompt, shotTarget, topUpPrompt, type ReadEvent, type ReadFailure, type ReadRequest, type ReadResult } from "@/lib/read";
 import { recordSpend, reserve, store } from "@/lib/server/quota";
 
 /**
@@ -69,14 +69,16 @@ export async function POST(request: Request) {
    * the moment its subject is complete. Returns the finished result.
    */
   const readOnce = async (messages: Anthropic.MessageParam[], send: (e: ReadEvent) => void, before: number): Promise<{ result?: ReadResult; stop: string | null }> => {
+    // A long list thinks less, so the list itself has the time and tokens (§5.6 timing).
+    const effort = readEffort(shotTarget(context).room);
     const stream = (current = client.messages.stream({
       model: READ_MODEL,
-      max_tokens: 16000,
+      max_tokens: READ_MAX_TOKENS,
       thinking: { type: "adaptive" },
       // The instructions never change between reads, so they're cached.
       system: [{ type: "text", text: READ_SYSTEM, cache_control: { type: "ephemeral" } }],
       messages,
-      output_config: { effort: READ_EFFORT, format: { type: "json_schema", schema: READ_SCHEMA as unknown as Record<string, unknown> } },
+      output_config: { effort, format: { type: "json_schema", schema: READ_SCHEMA as unknown as Record<string, unknown> } },
     }));
     let text = "";
     let count = 0;

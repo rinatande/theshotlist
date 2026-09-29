@@ -24,6 +24,25 @@ export const READ_MODEL = "claude-sonnet-5";
  */
 export const READ_EFFORT = "medium" as const;
 
+/**
+ * Above this many shots asked for, the read thinks at "low". With angle,
+ * roll and direction on every shot (§5.15), a 66–88 shot long cut at medium
+ * thought for 136s and ran out of tokens after 11 shots; at low it wrote 87 in
+ * 144s with the angles still spread (Rina, 29 Sep).
+ */
+export const LONG_READ = 40;
+
+/** How hard a read thinks, by how many shots it's writing. */
+export function readEffort(room: number): "low" | "medium" {
+  return room > LONG_READ ? "low" : READ_EFFORT;
+}
+
+/**
+ * Thinking and the list share this. 16,000 was enough before §5.15, but not
+ * once thinking could take most of it: the list must always have room to finish.
+ */
+export const READ_MAX_TOKENS = 32000;
+
 /** Longest brief the read accepts — three long paragraphs and a pasted client email. */
 export const MAX_BRIEF = 6000;
 
@@ -192,7 +211,7 @@ What good looks like:
 - Angle is how high the camera is, measured against the subject: "top-down" (straight down, flat), "high" (above, looking down), "eye-level" (at a person's eye height), "surface" (the lens just above the counter, table or floor the action is on — objects loom, the background falls away), "low" (below, looking up). Spread angles across a sequence the way an editor would want them; never a run of eye-level mediums. Silent and observational films lean on "surface" and "top-down" for the small things.
 - View: "pov" when it's what the person sees (their own hands), "ots" over someone's shoulder, else "none". A POV is usually "high".
 - Roll is how long to record: "6s" for a still close-up or insert, "10s" for a still wide, "15s" for a still wide in observational work (and "10s" for its closer shots), "move" for any camera move (the whole move plus two seconds), "action" when something happens start to finish, or someone talks.
-- Direction is where the camera faces, as a short phrase that starts with one of: front-on, side-on, three-quarter, from behind, along (down the length of a surface). Under 8 words, with what's in front if it helps: "Side-on, cup in front", "Along the counter, bowl in front".
+- Direction is where the camera faces, as a short phrase that starts with one of: front-on, side-on, three-quarter, from behind, along (down the length of a surface). Under 8 words, with what's in front if it helps: "Side-on, cup in front", "Along the counter, bowl in front". A top-down shot faces nowhere in particular: leave its direction empty ("").
 - Sound: "speech" when someone talks on camera, "natural" when there's no talking but the place's sound is worth recording, "none" only when music or voice-over will cover it entirely. In a silent or observational film, natural sound is the soundtrack — use "natural", not "none".
 - Locations. If location names are given, set each shot's "location" to exactly one of those names where it clearly belongs, else null, and return "locations" empty. If none are given, suggest the places this shoot happens in "locations": short names a person would write on their own list ("Kitchen", "Nagi Coffee", "Higashiyama streets"), in the order they'd be shot, and as few as honestly cover it — usually one to four; a shoot in one room is one location. On a multi-day shoot give each its day, else null. Then set every shot's "location" to one of those names.
 - Set a shot's "day" to the day number only on a multi-day shoot, else null.

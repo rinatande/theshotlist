@@ -313,3 +313,21 @@ Checked:
 
 design.md §5.15 now describes what shipped.
 **Kind:** design call
+
+### 2026-09-29 · v1 · A long cut's read ran out of room
+
+**Proposed:** The §5.15 build added angle, view, roll and a direction to every shot the read writes, and asked it to spread angles across the sequence. It kept the read's limits from 23 Sep: 16,000 tokens and effort `medium`. Claude checked the schema but didn't run a long read before shipping.
+**Rina:** "I just tried to test it, and I assumed it timed out. with the same brief, gear and project settings except changing duration to long, it tried to generate 88 shots. Can you make sure it works for longer form videos?"
+**Changed:** It wasn't a timeout. Measured against the real model with a long silent brief, the read spent about 15,000 tokens and 136s thinking. It then hit the 16,000-token cap after 11 shots. The server saw a stop at `max_tokens`, and the phone said the read came back incomplete.
+
+The fix:
+- A read asking for more than 40 shots now thinks at `low`.
+- Every read gets 32,000 tokens.
+- A top-down shot leaves its direction empty, instead of writing a word the app then drops.
+
+Re-measured with the shipped code:
+- 88 asked for: 83 shots in 96s, angles spread across all five, every direction valid.
+- 40 asked for, still at `medium`: all 40 in 91s.
+
+Five paid reads were spent measuring. design.md §5.6 timing.
+**Kind:** bug caught
