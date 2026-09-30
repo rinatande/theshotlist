@@ -26,12 +26,15 @@ export const READ_MODEL = "claude-sonnet-5";
 export const READ_EFFORT = "medium" as const;
 
 /**
- * Above this many shots asked for, the read thinks at "low". With angle,
- * roll and direction on every shot (§5.15), a 66–88 shot long cut at medium
- * thought for 136s and ran out of tokens after 11 shots; at low it wrote 87 in
- * 144s with the angles still spread (Rina, 29 Sep).
+ * Above this many shots asked for, the read thinks at "low"; at or below it,
+ * "medium". With angle, roll and direction on every shot (§5.15), an 88-shot
+ * long cut at medium thought for 136s and ran out of tokens after 11 shots; at
+ * low it wrote 87 in 144s (29 Sep). The first cut-off, 40, also caught 5–10
+ * minute cuts, and their lists got flatter: at medium a two-day 64-shot read
+ * builds proper sequences in 146s. Everything short of the biggest long cuts
+ * stays at medium (Rina, 30 Sep).
  */
-export const LONG_READ = 40;
+export const LONG_READ = 64;
 
 /** How hard a read thinks, by how many shots it's writing. */
 export function readEffort(room: number): "low" | "medium" {

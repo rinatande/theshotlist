@@ -352,3 +352,21 @@ Five paid reads were spent measuring. design.md §5.6 timing.
 
 design.md §5.8 "As built".
 **Kind:** design call
+
+### 2026-09-30 · v1 · Medium effort for everything but long cuts
+
+**Proposed:** The long-cut fix (29 Sep) made any read asking for more than 40 shots think at `low`. That caught 5–10 minute cuts too, which had run fine at `medium` before (64 shots in 75s on 23 Sep).
+**Rina:** Tried a two-day 5–10 minute brief (the coffee morning, then a walk in the park with her partner and dog): "I feel like it's not as accurate as before." Then: "the short videos should still be atleast medium effort".
+**Changed:** See the next entry for what was measured and shipped.
+**Kind:** bug caught
+
+### 2026-09-30 · v1 · Measuring the 5–10 minute read at both efforts
+
+**Proposed:** Before changing anything, Claude measured a two-day 5–10 minute silent read (64 shots: the coffee morning, then the park with Sam and Miso) at both efforts, side by side, with two paid reads.
+**Rina:** Agreed: "the short videos should still be atleast medium effort".
+**Changed:** Both finished with all 64 shots, 32 a day.
+- **Low** was faster (97s) but read more like a list.
+- **Medium** took 146s and built real sequences: the lead in your hand, then released, the chase, the catch, your hand throwing again. It also put you in the day twice as often (22 shots to 11).
+
+`LONG_READ` went from 40 to 64. Every short and 5–10 minute cut reads at `medium`; only long cuts over 64 shots think at `low`, where medium ran out of room on 29 Sep. The earlier threshold was Claude's, set without checking what it did to mid-length cuts. design.md §5.6 timing.
+**Kind:** bug caught
