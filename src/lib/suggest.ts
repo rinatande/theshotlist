@@ -68,8 +68,10 @@ const REVEAL = ["reveal", "door", "enter", "emerg", "unveil"];
 const PULL = ["pull back", "pull-back", "pulls back", "drone"];
 const VIEW = ["view", "skyline", "landscape", "vista", "horizon", "panorama", "across"];
 
-export function suggestMovement(shot: { size: ShotSize; support?: Support; subject: string }): Movement {
+export function suggestMovement(shot: { size: ShotSize; support?: Support; subject: string }, unattended = false): Movement {
   const { size, support, subject } = shot;
+  // Nobody behind the camera: it can't move (Rina, 30 Sep).
+  if (unattended) return "static";
   // Words in the subject say the most about what the shot is doing.
   if (has(subject, PULL)) return "pull-back";
   if (has(subject, REVEAL)) return "reveal";
@@ -136,10 +138,11 @@ const ACTION = ["pour", "tamp", "whisk", "stir", "chop", "slice", "opens", "stri
  * hold, longer for wides and longer again for observational work. Handheld
  * isn't a move: the camera is held, not travelling.
  */
-export function suggestRoll(shot: { size: ShotSize; subject: string; movement?: Movement; audio?: Audio }, treatment: Treatment): Roll {
+export function suggestRoll(shot: { size: ShotSize; subject: string; movement?: Movement; audio?: Audio }, treatment: Treatment, unattended = false): Roll {
   if (shot.movement && MOVES.includes(shot.movement)) return "move";
   if (shot.audio === "speech" || has(shot.subject, ACTION)) return "action";
-  const observational = treatment === "silent";
+  // On its own, the camera rolls while you walk in and settle, so holds run long.
+  const observational = treatment === "silent" || unattended;
   if (shot.size === "WS") return observational ? "15s" : "10s";
   return observational ? "10s" : "6s";
 }

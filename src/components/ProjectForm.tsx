@@ -67,7 +67,7 @@ export function draftFromProject(p: Project): Draft {
     frameRate: p.frameRate,
     kit: p.kitId,
     lead: p.cast.lead,
-    leadName: p.cast.lead === "someone" ? (p.cast.leadMember?.name ?? "") : "",
+    leadName: p.cast.lead === "someone" ? (p.cast.leadMember?.name ?? "") : p.cast.lead === "us" ? (p.cast.coLeads?.[0]?.name ?? "") : "",
   };
 }
 
@@ -180,6 +180,7 @@ function StepOne({ mode, draft, onDraft, defaultName, pastProjects, cancelHref, 
           label="Who is on camera?"
           options={[
             { value: "me", label: "ME" },
+            { value: "us", label: "US" },
             { value: "someone", label: "SOMEONE ELSE" },
             { value: "no-one", label: "NO ONE" },
           ]}
@@ -193,10 +194,10 @@ function StepOne({ mode, draft, onDraft, defaultName, pastProjects, cancelHref, 
                 : undefined
           }
         />
-        {draft.lead === "someone" && (
+        {(draft.lead === "someone" || draft.lead === "us") && (
           <div className={ui.field}>
             <label htmlFor="lead-name" className={ui.label}>
-              THEIR NAME
+              {draft.lead === "us" ? "WHO'S WITH YOU" : "THEIR NAME"}
             </label>
             <input
               id="lead-name"
@@ -207,7 +208,11 @@ function StepOne({ mode, draft, onDraft, defaultName, pastProjects, cancelHref, 
               placeholder="Priya"
               onChange={(e) => set({ leadName: e.target.value })}
             />
-            <p className={ui.hint}>Shots use the name — &quot;Priya to camera&quot; — so the list reads like something you could hand to an assistant. You&apos;re off camera unless you say otherwise.</p>
+            <p className={ui.hint}>
+              {draft.lead === "us"
+                ? "You and them, equal leads — the list shares the shots between you. Add anyone else, and a camera on its own, on the cast screen."
+                : "Shots use the name — \"Priya to camera\" — so the list reads like something you could hand to an assistant. You're off camera unless you say otherwise."}
+            </p>
           </div>
         )}
 

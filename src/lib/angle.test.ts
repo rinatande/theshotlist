@@ -4,7 +4,7 @@ import { moveOtsToView } from "./migrate";
 import type { ReadShot } from "./read";
 import { addReadPicks, readPicks, tidy } from "./readShots";
 import { varietyLine } from "./shoot";
-import { rollLine, splitDirection, suggestAngle, suggestRoll } from "./suggest";
+import { rollLine, splitDirection, suggestAngle, suggestMovement, suggestRoll } from "./suggest";
 import { day, loc, project, REEL_SILENT, shot } from "./test-helpers";
 import type { Format } from "./types";
 
@@ -150,5 +150,40 @@ describe("reads cached before §5.15", () => {
     const read = { hash: "h".repeat(20), dropped: [], result: { quoted: [], inferred: [], deliverables: [], shots: [fresh] } };
     const next = addReadPicks(p, readPicks(p, read).shots, new Date(0), () => "n");
     expect(next.shots[0]).toMatchObject({ angle: "surface", roll: "action", view: undefined, note: "Side-on, cup in front." });
+  });
+});
+
+describe("the camera on its own (Rina, 30 Sep)", () => {
+  it("suggests static, whatever the subject says", () => {
+    expect(suggestMovement({ size: "WS", support: "gimbal", subject: "Walking through the park" }, true)).toBe("static");
+    expect(suggestMovement({ size: "WS", support: "gimbal", subject: "Walking through the park" })).toBe("tracking");
+  });
+
+  it("holds longer, since you're walking into frame", () => {
+    expect(suggestRoll({ size: "MS", subject: "Sam and me on the bench", movement: "static" }, "narrated", true)).toBe("10s");
+    expect(suggestRoll({ size: "WS", subject: "The pond", movement: "static" }, "narrated", true)).toBe("15s");
+  });
+});
+
+describe("a read with the camera on its own", () => {
+  it("keeps every shot static, and re-suggests a roll meant for a move", async () => {
+    const { castFor } = await import("./cast");
+    const p = project({ cast: { ...castFor("us", "Sam", () => "sam"), unattended: true } });
+    const reveal: ReadShot = { size: "WS", subject: "Miso running onto the lawn", reason: "r", beat: "body", light: "any", movement: "reveal", sound: "natural", location: null, day: null, roll: "move" };
+    const read = { hash: "h".repeat(20), dropped: [], result: { quoted: [], inferred: [], deliverables: [], shots: [reveal] } };
+    const next = addReadPicks(p, readPicks(p, read).shots, new Date(0), () => "n");
+    expect(next.shots[0]).toMatchObject({ movement: "static", roll: "15s" }); // a wide, on its own
+  });
+});
+
+describe("who's in a read's shot", () => {
+  it("adds anyone the subject names, when the read left them out", async () => {
+    const { castFor } = await import("./cast");
+    const p = project({ cast: { ...castFor("us", "Sam", () => "sam"), supporting: [{ id: "miso", name: "Miso", presence: "part", voice: false }] } });
+    const shot = (subject: string, people: string[]): ReadShot => ({ size: "MS", subject, reason: "r", beat: "body", light: "any", movement: "static", sound: "natural", location: null, day: null, people });
+    const read = { hash: "h".repeat(20), dropped: [], result: { quoted: [], inferred: [], deliverables: [], shots: [shot("Sam laughing", []), shot("The three of us on the bench", ["Me", "Sam", "Miso"]), shot("Fig trees", [])] } };
+    let n = 0;
+    const next = addReadPicks(p, readPicks(p, read).shots, new Date(0), () => `n${n++}`);
+    expect(next.shots.map((s) => s.people)).toEqual([["sam"], ["you", "sam", "miso"], []]);
   });
 });

@@ -430,6 +430,16 @@ Note what this now allows: *you: not at all* × *Priya: the subject* × *talking
   - A changed cast is a new read, like gear. A default self-shoot is left out of the cache key, so reads cached before this still match.
 - **In the build:** `src/lib/cast.ts` (with tests), the screens under `src/app/cast/`, and `Shot.people`.
 
+**US, and the camera on its own (30 Sep, Rina).** One case the three leads couldn't hold: you and your partner in the video equally, with the dog, and nobody behind the camera. Built from a written plan; not drawn yet (§10 item 26).
+- **`US`** is a fourth lead: you plus one or more named people, all leads. Step 1 and the cast screen ask `WHO'S WITH YOU`. Each lead has their own presence and voice.
+  - **The list and the read:** the strip reads `You & Sam (leads) · Miso`, and the plan bar counts every lead, `YOU 12 · SAM 11`. The read is told the video is about you both equally and to share the coverage.
+  - **Switching leads:** from someone else to `US` keeps the named person as a co-lead, and back again.
+- **`THE CAMERA · ON ITS OWN — TRIPOD, NOBODY BEHIND IT`** is a switch on the cast screen, shown when you're a lead (`ME` or `US`). With it on:
+  - **The read** plans locked-off shots only: framed first, then you walk in. No POV, no handheld, nothing that needs someone behind the camera; moving action is framed wide to cross the shot. Shots it returns are made `STATIC` whatever it called them, and a roll meant for a move is re-suggested.
+  - **Add shot** starts on `TRIPOD` (the shoot's own when one is packed), suggests `STATIC`, and suggests longer holds, since you're walking into frame.
+  - **The brief's `GEAR` line** says so when gear is chosen but no tripod is.
+- **Who's in a read's shot** is the names the read gives, plus anyone the subject names. In a live check the read tagged only shots with two or more of you in them, so the count would have dropped Sam's solo shots. Animals in the cast count.
+
 ### 5.9 Multi-day shoots
 
 **Day is an outer container, not a third grouping option.** You pick a day and see that day's list, grouped by location or beat as usual. On set you only ever see today, which is the point.
@@ -957,6 +967,7 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
     - **GETTING READY** is read off the project: a project brief with text; any shots (counted against the budget); sun times found for the day; every item of this shoot's gear in the bag. An unticked line links to where it's done (`WRITE ›`, `GENERATE ›`, `ADD WHERE ›`, `PACK ›` or `CHOOSE ›` with no gear yet); the board drew only `PACK ›`. The signal line shows only while the list isn't generated — "Do it before you go" says nothing once it's done.
     - **SHOOTING TODAY** rows are absent when there's nothing to say: no location → no `FIRST UP`, no place → no `LIGHT`, no `[★]` today → no `FOR` line. `IN THE BAG` names the kit the shoot started from, else "This shoot's gear", and shows only with gear chosen.
     - **E4**, the empty Projects tab, loses `SET UP MY GEAR`: Gear is a tab now.
+26. **`US` and the camera on its own aren't drawn (Rina, 30 Sep).** Built from a written plan (§5.8, "US, and the camera on its own"): the fourth lead option and its `WHO'S WITH YOU` field on P1 and B7, the co-lead rows on B7, `THE CAMERA` switch, and the plan bar's counts for more than one lead. The canvas should gain them when the boards are next synced.
 
 ---
 

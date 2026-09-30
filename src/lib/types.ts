@@ -70,7 +70,8 @@ export type BeatRole = 'opener' | 'body' | 'closer' | 'any';
 /** Radio, four levels, one per person per project. Default: 'part'. */
 export type Presence = 'none' | 'background' | 'part' | 'subject';
 
-export type LeadKind = 'me' | 'someone' | 'no-one';
+/** 'us': you and one or more named people, equal leads (Rina, 30 Sep). */
+export type LeadKind = 'me' | 'us' | 'someone' | 'no-one';
 
 export interface CastMember {
   id: Id;
@@ -83,8 +84,10 @@ export interface CastMember {
 
 export interface Cast {
   lead: LeadKind;
-  /** Present when lead is 'me' or 'someone'. For 'me', name is "You". */
+  /** Present when lead is 'me', 'us' or 'someone'. For 'me' and 'us', it's you, named "You". */
   leadMember?: CastMember;
+  /** With 'us': the people who lead it with you, equally. */
+  coLeads?: CastMember[];
   supporting: CastMember[];
   /** You, behind the camera. Defaults to 'none' when the lead is someone else. */
   operatorPresence: Presence;
@@ -95,6 +98,11 @@ export interface Cast {
   voiceOver?: boolean;
   /** Warn about street signs, house numbers, a recognisable home. On unless turned off (§5.8). */
   flagDetails?: boolean;
+  /**
+   * The camera is on a tripod with nobody behind it, so you can be in every
+   * shot: locked-off shots only (Rina, 30 Sep). Only for 'me' and 'us'.
+   */
+  unattended?: boolean;
 }
 
 // ─── Gear (§6.1) ─────────────────────────────────────────────────────────────

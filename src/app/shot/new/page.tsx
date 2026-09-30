@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { ShotForm } from "@/components/ShotForm";
 import { NotHere } from "@/components/NotHere";
 import ui from "@/components/ui.module.css";
+import { youLead } from "@/lib/cast";
 import { runningOrder } from "@/lib/runningOrder";
 import { addShot, addShotAfter, shotInputFrom } from "@/lib/shots";
 import type { BeatRole } from "@/lib/types";
@@ -50,10 +51,14 @@ function NewShot() {
   // Default to the first location in the running order, like the board's CLIFF PATH.
   const locationId = loc && project.locations.some((l) => l.id === loc) ? loc : dayId ? runningOrder(project, dayId)[0]?.id : runningOrder(project)[0]?.id;
 
+  // The camera on its own starts every new shot on the tripod — the shoot's own, when one is packed (§5.8).
+  const tripod = project.gear.find((g) => g.specs.category === "support" && g.specs.type === "tripod");
+  const onItsOwn = project.cast.unattended && youLead(project.cast) ? { support: "tripod" as const, supportId: tripod?.id } : {};
+
   return (
     <ShotForm
       project={project}
-      initial={{ size: "WS", subject: "", locationId, dayId, beat: beat ?? undefined }}
+      initial={{ size: "WS", subject: "", locationId, dayId, beat: beat ?? undefined, ...onItsOwn }}
       cancelHref={back}
       onSubmit={async (input) => {
         const [next] = addShot(project, input);

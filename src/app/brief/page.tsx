@@ -9,7 +9,7 @@ import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { projectBrief, setBriefText } from "@/lib/brief";
 import { projectBudget } from "@/lib/budget";
-import { castConflict, castLine } from "@/lib/cast";
+import { castConflict, castLine, youLead } from "@/lib/cast";
 import { bagLine } from "@/lib/gear";
 import { db } from "@/lib/db";
 import { MAX_BRIEF } from "@/lib/read";
@@ -195,6 +195,10 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
           <span className={styles.gearText}>
             {project.gear.length ? bagLine(project.gear) : "NONE CHOSEN — SUGGESTIONS STAY GEAR-FREE"}
             {typeof project.frameRate === "number" ? ` · ${project.frameRate}FPS` : ""}
+            {/* The camera on its own needs something to stand on (§5.8). */}
+            {project.cast.unattended && youLead(project.cast) && project.gear.length > 0 && !project.gear.some((g) => g.specs.category === "support" && g.specs.type === "tripod")
+              ? " · NO TRIPOD PACKED — THE CAMERA ON ITS OWN NEEDS ONE"
+              : ""}
           </span>
           <span aria-hidden="true">›</span>
         </Link>

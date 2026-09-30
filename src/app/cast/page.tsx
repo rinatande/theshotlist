@@ -8,7 +8,7 @@ import { Choice } from "@/components/Choice";
 import { NotHere } from "@/components/NotHere";
 import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
-import { addSupporting, castConflict, leadOf, presenceLabel, setLead, YOU } from "@/lib/cast";
+import { addSupporting, castConflict, leadOf, leadsOf, presenceLabel, setLead, YOU, youLead } from "@/lib/cast";
 import type { LeadKind, Project } from "@/lib/types";
 import { useProject } from "@/lib/useProject";
 import { castBack, saveCast } from "./castNav";
@@ -34,10 +34,12 @@ function CastScreen() {
   const cast = project.cast;
   const lead = leadOf(cast);
   const person = (id: string) => `/cast/person?id=${project.id}&who=${id}${from ? `&from=${from}` : ""}`;
-  const leadName = name ?? (cast.lead === "someone" ? (lead?.name ?? "") : "");
+  const coLead = cast.lead === "us" ? cast.coLeads?.[0] : undefined;
+  const leadName = name ?? (cast.lead === "someone" ? (lead?.name ?? "") : (coLead?.name ?? ""));
+  const named = cast.lead === "someone" || cast.lead === "us";
 
   const done = async () => {
-    if (cast.lead === "someone" && name !== null && name.trim()) await saveCast(project, (c) => setLead(c, "someone", name));
+    if (named && name !== null && name.trim()) await saveCast(project, (c) => setLead(c, c.lead, name));
     router.push(castConflict(project.format.treatment, cast) ? `/cast/conflict?id=${project.id}${from ? `&from=${from}` : ""}` : back.href);
   };
 
@@ -51,23 +53,23 @@ function CastScreen() {
           <Choice
             label="Who the video is about"
             hideLabel
-            variant="segmented"
             options={[
               { value: "me", label: "ME" },
+              { value: "us", label: "US" },
               { value: "someone", label: "SOMEONE ELSE" },
               { value: "no-one", label: "NO ONE" },
             ]}
             value={cast.lead}
             onChange={(l: LeadKind) => {
               setName(null);
-              void saveCast(project, (c) => setLead(c, l, l === "someone" ? "" : undefined));
+              void saveCast(project, (c) => setLead(c, l));
             }}
           />
-          {cast.lead === "someone" && (
+          {named && (
             <>
               <div className={ui.field}>
                 <label htmlFor="lead" className={ui.label}>
-                  THEIR NAME
+                  {cast.lead === "us" ? "WHO'S WITH YOU" : "THEIR NAME"}
                 </label>
                 <input
                   id="lead"
@@ -77,24 +79,28 @@ function CastScreen() {
                   autoComplete="off"
                   placeholder="Priya"
                   onChange={(e) => setName(e.target.value)}
-                  onBlur={() => name !== null && name.trim() && saveCast(project, (c) => setLead(c, "someone", name))}
+                  onBlur={() => name !== null && name.trim() && saveCast(project, (c) => setLead(c, c.lead, name))}
                 />
               </div>
-              <p className={ui.hint}>Shots will use the name — &quot;Priya to camera&quot;, &quot;Priya&apos;s hands on the dough&quot; — so the list reads like something you could hand to an assistant.</p>
+              <p className={ui.hint}>
+                {cast.lead === "us"
+                  ? "You and them, equal leads: the read shares the shots between you, and the list counts you both."
+                  : "Shots will use the name — \"Priya to camera\", \"Priya's hands on the dough\" — so the list reads like something you could hand to an assistant."}
+              </p>
             </>
           )}
           {cast.lead === "no-one" && <p className={ui.hint}>No human subject: the product, food, place or architecture carries every shot.</p>}
         </div>
 
-        {lead && (
-          <Link href={person(lead.id)} className={styles.person}>
+        {leadsOf(cast).map((l) => (
+          <Link key={l.id} href={person(l.id)} className={styles.person}>
             <span className={styles.who}>
-              <span className={styles.name}>{lead.id === YOU ? "You" : lead.name || "Someone"}</span>
+              <span className={styles.name}>{l.id === YOU ? "You" : l.name || "Someone"}</span>
               <span className={styles.what}>LEAD</span>
             </span>
-            <span className={styles.levelLead}>{presenceLabel(lead.presence).toUpperCase()} ›</span>
+            <span className={styles.levelLead}>{presenceLabel(l.presence).toUpperCase()} ›</span>
           </Link>
-        )}
+        ))}
 
         <h2 className={styles.band}>
           <span>ALSO IN IT</span>
@@ -119,7 +125,29 @@ function CastScreen() {
           </button>
         </div>
 
-        {cast.lead !== "me" && (
+        {youLead(cast) ? (
+          <>
+            {/* You're in shot, so nobody may be behind the camera at all (Rina, 30 Sep). */}
+            <h2 className={styles.band}>THE CAMERA</h2>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={!!cast.unattended}
+              className={styles.switch}
+              onClick={() => saveCast(project, (c) => ({ ...c, unattended: c.unattended ? undefined : true }))}
+            >
+              <span className={styles.switchRow}>
+                <span className={styles.switchLabel}>On its own — tripod, nobody behind it</span>
+                <span className={cast.unattended ? styles.on : styles.off}>{cast.unattended ? "ON" : "OFF"}</span>
+              </span>
+              <span className={styles.switchHint}>
+                {cast.unattended
+                  ? "Every shot is locked off: framed first, then you walk in. No camera moves, no POV, no handheld."
+                  : "Turn it on when you're setting the camera up and stepping into shot yourself."}
+              </span>
+            </button>
+          </>
+        ) : (
           <>
             <h2 className={styles.band}>BEHIND THE CAMERA</h2>
             <Link href={person(YOU)} className={styles.person}>

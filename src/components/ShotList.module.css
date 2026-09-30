@@ -2,8 +2,9 @@
 
 .planBar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--s-3);
+  gap: var(--s-2) var(--s-3);
   padding: var(--s-2) var(--gutter);
   border-bottom: 1px solid var(--rule);
 }
@@ -18,9 +19,21 @@
   color: var(--ink-muted);
 }
 
+/* The counts at the right of the plan bar, kept together: they wrap as one (§5.8). */
+.tally {
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.tally .count,
+.tally .countOver {
+  margin-left: 0;
+}
+
 /* The lead's count beside the budget (B8): a name and a number, in accent. */
 .leadCount {
-  margin-left: auto;
   font-size: var(--text-11);
   font-weight: 700;
   letter-spacing: 0.04em;

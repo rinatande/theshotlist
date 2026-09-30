@@ -9,7 +9,7 @@ import { budgetLabel, shortDate } from "@/lib/labels";
 import { runningOrder } from "@/lib/runningOrder";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { dayOfShot, deliverables, toggleExposed } from "@/lib/shots";
-import { leadCount } from "@/lib/cast";
+import { leadCounts } from "@/lib/cast";
 import { rollLine, supportLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import type { Id, Location, Project, Shot } from "@/lib/types";
@@ -126,7 +126,7 @@ export function ShotList({ project, selection }: { project: Project; selection?:
 
 function PlanBar({ project, view, onView, planned, over }: { project: Project; view: View; onView: (v: View) => void; planned: number; over: boolean }) {
   const b = projectBudget(project);
-  const lead = planned > 0 ? leadCount(project) : undefined;
+  const leads = planned > 0 ? leadCounts(project) : [];
   return (
     <div className={styles.planBar}>
       <div className={styles.toggle}>
@@ -145,17 +145,19 @@ function PlanBar({ project, view, onView, planned, over }: { project: Project; v
       <Link href={`/order?id=${project.id}`} className={styles.order}>
         ORDER
       </Link>
-      {lead && (
-        // The lead's share, so the list can't drift into all B-roll or all talking heads (B8, §5.8).
-        <span className={styles.leadCount}>
-          {lead.name} {lead.count}
-          <span className={styles.sr}> shots with {lead.name === "YOU" ? "you" : lead.name.toLowerCase()} in them,</span>
+      <span className={styles.tally}>
+        {leads.length > 0 && (
+          // Each lead's share, so the list can't drift into all B-roll or all talking heads — or all one of you (B8, §5.8).
+          <span className={styles.leadCount}>
+            {leads.map((l) => `${l.name} ${l.count}`).join(" · ")}
+            <span className={styles.sr}> — shots each lead is in,</span>
+          </span>
+        )}
+        <span className={over ? styles.countOver : styles.count}>
+          {over && "! "}
+          {planned} / {budgetLabel(b).replace(" — ", "—")}
+          <span className={styles.sr}> shots planned, budget {budgetLabel(b)}</span>
         </span>
-      )}
-      <span className={over ? styles.countOver : styles.count}>
-        {over && "! "}
-        {planned} / {budgetLabel(b).replace(" — ", "—")}
-        <span className={styles.sr}> shots planned, budget {budgetLabel(b)}</span>
       </span>
     </div>
   );

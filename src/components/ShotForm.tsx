@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { beatName, guessBeat, ROLES } from "@/lib/beats";
-import { castMembers, inShot, multiPerson } from "@/lib/cast";
+import { castMembers, inShot, multiPerson, youLead } from "@/lib/cast";
 import { lensChips, supportChips } from "@/lib/gear";
 import { runningOrder } from "@/lib/runningOrder";
 import { clientsOf, coverageGap, findDuplicate, numberIfAdded, numberIfAddedAfter, type ShotInput } from "@/lib/shots";
@@ -53,13 +53,15 @@ export function ShotForm({ project, shot, copyOf, initial, cancelHref, onSubmit,
   const clients = clientsOf(project);
   const [clientChoice, setClientChoice] = useState(initial.required ? (clients.includes(initial.required.client) ? initial.required.client : NEW_CLIENT) : "");
 
-  const movement: Movement = ownMovement && draft.movement ? draft.movement : suggestMovement(draft);
+  // With the camera on its own there's nobody to move it (§5.8, Rina 30 Sep).
+  const unattended = !!project.cast.unattended && youLead(project.cast);
+  const movement: Movement = ownMovement && draft.movement ? draft.movement : suggestMovement(draft, unattended);
   const audio: Audio = ownAudio && draft.audio ? draft.audio : suggestAudio(draft, project.format.treatment);
   const set = (patch: Partial<ShotInput>) => setDraft((d) => ({ ...d, ...patch }));
   const beat: BeatRole = ownBeat && draft.beat && draft.beat !== "any" ? draft.beat : guessBeat(draft, project);
   const treatment = project.format.treatment;
   const angle: Angle = ownAngle && draft.angle ? draft.angle : suggestAngle(draft, treatment);
-  const roll: Roll = ownRoll && draft.roll ? draft.roll : suggestRoll({ ...draft, movement, audio }, treatment);
+  const roll: Roll = ownRoll && draft.roll ? draft.roll : suggestRoll({ ...draft, movement, audio }, treatment, unattended);
   // WHO'S IN IT only with more than one person on camera; otherwise the subject says it (§5.8, Rina 30 Sep).
   const manyPeople = multiPerson(project.cast);
   const onCamera = castMembers(project.cast).filter((m) => m.presence !== "none");

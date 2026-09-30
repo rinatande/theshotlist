@@ -370,3 +370,18 @@ design.md §5.8 "As built".
 
 `LONG_READ` went from 40 to 64. Every short and 5–10 minute cut reads at `medium`; only long cuts over 64 shots think at `low`, where medium ran out of room on 29 Sep. The earlier threshold was Claude's, set without checking what it did to mid-length cuts. design.md §5.6 timing.
 **Kind:** bug caught
+
+### 2026-09-30 · v1 · US, and the camera on its own
+
+**Proposed:** The cast had three leads: me, someone else, no one. A case they couldn't hold came up: you in the shot with your partner and dog, as equals, with the camera on a tripod and nobody behind it.
+**Rina:** "I want to be in the shot with my partner and dog, and use my camera setup up on a tripod to take the shots. So that way it will only consist of still shots. Also I want me and my partner to be equal parts in the shot but i feel like I would need to make my partner the lead in this way, and dog another cast". Then, to Claude's plan (a fourth lead, `US`, and a project-wide camera switch, still shots only): "sounds good, lets build".
+**Changed:** Built as planned, not drawn yet (design.md §10 item 26).
+
+Two live reads (paid) found two things the unit tests couldn't:
+- **Movement:** the read called 9 of 40 still shots `REVEAL` (Miso running into shot). Shots from the read are now forced static when the camera's on its own.
+- **Who's in it:** the read tagged people only on shots with two or more of them, and never Miso. The prompt now says every shot and that animals count, and the app adds anyone a subject names. The second read came back all static, with Miso counted.
+
+A third paid read ran by mistake: Claude left the live-check test in place and the full suite picked it up.
+
+Screenshots caught the plan bar overflowing with two leads' counts; the counts now wrap together.
+**Kind:** design call

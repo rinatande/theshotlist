@@ -5,7 +5,7 @@ import { Suspense, useState } from "react";
 import { NotHere } from "@/components/NotHere";
 import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
-import { leadCount, memberFor, PRESENCES, presenceLine, removeSupporting, updateMember, YOU } from "@/lib/cast";
+import { leadCounts, memberFor, PRESENCES, presenceLine, removeSupporting, updateMember, YOU } from "@/lib/cast";
 import { useProject } from "@/lib/useProject";
 import styles from "../Cast.module.css";
 import { saveCast } from "../castNav";
@@ -101,7 +101,7 @@ function OnCamera() {
         {kind === "lead" && (
           <p className={styles.line}>
             <span className={styles.lineHead}>ON THE LIST</span>
-            Shots with {you ? "you" : member.name || "them"} in them count as <span className={styles.strong}>{display} {leadCount(project)?.count ?? 0}</span> beside the budget, so the balance is
+            Shots with {you ? "you" : member.name || "them"} in them count as <span className={styles.strong}>{display} {leadCounts(project).find((l) => l.name === display)?.count ?? 0}</span> beside the budget, so the balance is
             checkable without counting rows.
           </p>
         )}

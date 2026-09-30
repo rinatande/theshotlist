@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addSupporting, castConflict, castFor, castLine, castMembers, DEFAULT_ON_CAMERA, inShot, leadCount, memberFor, multiPerson, onCameraLine, peopleFromNames, removeSupporting, setLead, updateMember, YOU } from "./cast";
+import { addSupporting, castConflict, castFor, castLine, castMembers, DEFAULT_ON_CAMERA, inShot, leadCounts, memberFor, multiPerson, onCameraLine, peopleFromNames, removeSupporting, setLead, updateMember, YOU } from "./cast";
 import { applyEdit, createProject } from "./project";
 import { project, REEL_SILENT, shot } from "./test-helpers";
 import type { Cast } from "./types";
@@ -91,8 +91,8 @@ describe("who's in a shot", () => {
 
   it("counts the lead for B8, and nobody for NO ONE", () => {
     const p = project({ cast: priya, shots: [shot("a", 0, { subject: "Priya to camera" }), shot("b", 1, { subject: "The oven" }), shot("c", 2, { subject: "Priya tasting", status: "dropped" })] });
-    expect(leadCount(p)).toEqual({ name: "PRIYA", count: 1 });
-    expect(leadCount(project({ cast: castFor("no-one") }))).toBeUndefined();
+    expect(leadCounts(p)).toEqual([{ name: "PRIYA", count: 1 }]);
+    expect(leadCounts(project({ cast: castFor("no-one") }))).toEqual([]);
   });
 
   it("asks WHO'S IN IT only with more than one person who can be on camera", () => {
@@ -152,5 +152,56 @@ describe("editing the cast (B5, B7)", () => {
     expect(memberFor(c, "priya")?.kind).toBe("lead");
     expect(memberFor(c, YOU)).toMatchObject({ kind: "operator", member: { presence: "none" } });
     expect(memberFor(c, "nobody")).toBeUndefined();
+  });
+});
+
+describe("US: you and someone, equal leads (Rina, 30 Sep)", () => {
+  const us = castFor("us", "Sam", () => "sam");
+
+  it("puts you both in front, and nobody behind", () => {
+    expect(us.leadMember?.id).toBe(YOU);
+    expect(us.coLeads).toEqual([{ id: "sam", name: "Sam", presence: "part", voice: true }]);
+    expect(castMembers(us).map((m) => m.id)).toEqual([YOU, "sam"]);
+    expect(multiPerson(us)).toBe(true);
+  });
+
+  it("counts you both, and reads like the strip", () => {
+    const p = project({ cast: { ...us, supporting: [{ id: "miso", name: "Miso", role: "dog", presence: "part", voice: false }] }, shots: [shot("a", 0, { subject: "Sam and me on the bench" }), shot("b", 1, { subject: "Sam throwing the ball" }), shot("c", 2, { subject: "Miso running" })] });
+    expect(leadCounts(p)).toEqual([{ name: "YOU", count: 1 }, { name: "SAM", count: 2 }]);
+    expect(castLine(p.cast)).toBe("You & Sam (leads) · Miso");
+  });
+
+  it("tells the read to share the coverage", () => {
+    const line = onCameraLine(us);
+    expect(line).toContain("about me, the person filming, and Sam equally");
+    expect(line).toContain("Sam: part of it");
+  });
+
+  it("carries the person across when the lead changes", () => {
+    const priya = castFor("someone", "Priya", () => "priya");
+    expect(setLead(priya, "us").coLeads?.[0]).toMatchObject({ id: "priya", name: "Priya" });
+    expect(setLead(us, "someone").leadMember).toMatchObject({ id: "sam", name: "Sam" });
+    expect(setLead(us, "us", "Sammy").coLeads?.[0].name).toBe("Sammy");
+  });
+
+  it("sets a co-lead's presence without touching yours", () => {
+    const c = updateMember(us, "sam", { presence: "subject" });
+    expect(c.coLeads?.[0].presence).toBe("subject");
+    expect(c.leadMember?.presence).toBe("part");
+    expect(memberFor(us, "sam")?.kind).toBe("lead");
+  });
+});
+
+describe("the camera on its own (Rina, 30 Sep)", () => {
+  it("tells the read every shot is locked off, and shows on the strip", () => {
+    const c = { ...castFor("us", "Sam", () => "sam"), unattended: true };
+    expect(onCameraLine(c)).toContain("tripod with nobody behind it");
+    expect(onCameraLine(c)).toContain("Every shot's movement is 'static'");
+    expect(castLine(c)).toBe("You & Sam (leads) · camera on a tripod");
+  });
+
+  it("only applies when you're in front of it", () => {
+    const c = { ...castFor("someone", "Priya", ids), unattended: true };
+    expect(onCameraLine(c)).not.toContain("tripod");
   });
 });

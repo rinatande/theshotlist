@@ -40,33 +40,58 @@ export function presenceLine(p: Presence, name?: string): string {
  */
 export function castFor(lead: LeadKind, name = "", newId: () => Id = () => crypto.randomUUID()): Cast {
   if (lead === "me") return { lead, leadMember: { id: YOU, name: "You", presence: "part", voice: true }, supporting: [], operatorPresence: "part" };
+  if (lead === "us") {
+    return {
+      lead,
+      leadMember: { id: YOU, name: "You", presence: "part", voice: true },
+      coLeads: [{ id: newId(), name: name.trim(), presence: "part", voice: true }],
+      supporting: [],
+      operatorPresence: "part",
+    };
+  }
   if (lead === "someone") return { lead, leadMember: { id: newId(), name: name.trim(), presence: "part", voice: true }, supporting: [], operatorPresence: "none" };
   return { lead, supporting: [], operatorPresence: "none" };
 }
 
 /** Changing the lead on the cast screen keeps everyone else, and what you'd set for yourself. */
 export function setLead(cast: Cast, lead: LeadKind, name = "", newId: () => Id = () => crypto.randomUUID()): Cast {
-  if (lead === cast.lead && lead !== "someone") return cast;
-  const next = castFor(lead, name, newId);
+  if (lead === cast.lead && lead !== "someone" && lead !== "us") return cast;
   if (lead === "someone" && cast.lead === "someone" && cast.leadMember) {
     return { ...cast, leadMember: { ...cast.leadMember, name: name.trim() || cast.leadMember.name } };
   }
-  return { ...next, supporting: cast.supporting, voiceOver: cast.voiceOver, flagDetails: cast.flagDetails };
+  if (lead === "us" && cast.lead === "us" && cast.coLeads?.length) {
+    const [first, ...rest] = cast.coLeads;
+    return { ...cast, coLeads: [{ ...first, name: name.trim() || first.name }, ...rest] };
+  }
+  const next = castFor(lead, name, newId);
+  // The person named before carries across: someone else → us makes them a co-lead, and back again.
+  const named = cast.lead === "someone" ? cast.leadMember : cast.lead === "us" ? cast.coLeads?.[0] : undefined;
+  if (named && !name.trim()) {
+    if (lead === "us") next.coLeads = [named];
+    if (lead === "someone") next.leadMember = named;
+  }
+  return { ...next, supporting: cast.supporting, voiceOver: cast.voiceOver, flagDetails: cast.flagDetails, unattended: cast.unattended };
 }
+
+/** Whether you're one of the leads — so in shot, and the camera may be on its own. */
+export const youLead = (cast: Cast) => cast.lead === "me" || cast.lead === "us";
 
 /** The lead as a person. A self-shoot saved without one is you, at your operator presence. */
 export function leadOf(cast: Cast): CastMember | undefined {
   if (cast.leadMember) return cast.leadMember;
-  return cast.lead === "me" ? { id: YOU, name: "You", presence: cast.operatorPresence, voice: true } : undefined;
+  return youLead(cast) ? { id: YOU, name: "You", presence: cast.operatorPresence, voice: true } : undefined;
+}
+
+/** Everyone the video is about: you and your co-leads with US, else the one lead. */
+export function leadsOf(cast: Cast): CastMember[] {
+  const lead = leadOf(cast);
+  return lead ? [lead, ...(cast.lead === "us" ? (cast.coLeads ?? []) : [])] : [];
 }
 
 /** Everyone who could be in a shot: the lead, the rest of the cast, and you behind the camera. */
 export function castMembers(cast: Cast): CastMember[] {
-  const out: CastMember[] = [];
-  const lead = leadOf(cast);
-  if (lead) out.push(lead);
-  out.push(...cast.supporting);
-  if (cast.lead !== "me") out.push({ id: YOU, name: "You", presence: cast.operatorPresence, voice: true });
+  const out: CastMember[] = [...leadsOf(cast), ...cast.supporting];
+  if (!youLead(cast)) out.push({ id: YOU, name: "You", presence: cast.operatorPresence, voice: true });
   return out;
 }
 
@@ -102,10 +127,20 @@ export function onCameraLine(cast: Cast): string {
   const parts: string[] = [];
   const lead = leadOf(cast);
   if (cast.lead === "me" && lead) parts.push(person(lead, "the lead is me, the person filming"));
-  else if (cast.lead === "someone" && lead) parts.push(person(lead, `the lead is ${lead.name || "someone else, not named yet"}`));
+  else if (cast.lead === "us" && lead) {
+    const others = (cast.coLeads ?? []).map((m) => m.name || "someone not named yet");
+    parts.push(`the video is about me, the person filming, and ${others.join(" and ")} equally — share the coverage evenly between us`);
+    parts.push(person(lead, "me"));
+    for (const m of cast.coLeads ?? []) parts.push(person(m, m.name || "my co-lead"));
+  } else if (cast.lead === "someone" && lead) parts.push(person(lead, `the lead is ${lead.name || "someone else, not named yet"}`));
   else parts.push("no one is the subject — product, food, place or architecture");
   for (const m of cast.supporting) parts.push(person(m, `${m.name}${m.role ? ` (${m.role})` : ""}`));
-  if (cast.lead !== "me") parts.push(`me, the person filming: ${PRESENCE_WORDS[cast.operatorPresence]}`);
+  if (!youLead(cast)) parts.push(`me, the person filming: ${PRESENCE_WORDS[cast.operatorPresence]}`);
+  if (youLead(cast) && cast.unattended) {
+    parts.push(
+      "the camera is on a tripod with nobody behind it, so every shot is locked off: framed first, then we walk into it. Every shot's movement is 'static' — someone running or walking into frame is still static. No POV, no handheld, nothing that needs someone behind the camera; for moving action, frame wide and let it cross",
+    );
+  }
   if (cast.voiceOver) parts.push("nobody talks on screen: pieces to camera become voice-over, and those shots are rewritten, not dropped");
   if (cast.flagDetails !== false) parts.push("avoid street signs, house numbers, station names and a recognisable home exterior, or say so in the reason line");
   return parts.join(". ");
@@ -124,22 +159,24 @@ export function inShot(shot: Pick<Shot, "people" | "subject">, member: Pick<Cast
   return !!name && new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "i").test(shot.subject);
 }
 
-/** B8's counter: the lead's name and how many live shots they're in. None for NO ONE. */
-export function leadCount(p: Pick<Project, "cast" | "shots">): { name: string; count: number } | undefined {
-  const lead = leadOf(p.cast);
-  if (!lead) return undefined;
-  const count = p.shots.filter((s) => s.status !== "dropped" && inShot(s, lead)).length;
-  return { name: lead.id === YOU ? "YOU" : (lead.name || "Someone").toUpperCase(), count };
+/** B8's counter: each lead's name and how many live shots they're in — "YOU 12 · SAM 11" with US. None for NO ONE. */
+export function leadCounts(p: Pick<Project, "cast" | "shots">): { name: string; count: number }[] {
+  return leadsOf(p.cast).map((lead) => ({
+    name: lead.id === YOU ? "YOU" : (lead.name || "Someone").toUpperCase(),
+    count: p.shots.filter((s) => s.status !== "dropped" && inShot(s, lead)).length,
+  }));
 }
 
 /** B8's strip: "Priya (lead) · Mei · Buno · you off camera". */
 export function castLine(cast: Cast): string {
   const parts: string[] = [];
   if (cast.lead === "me") parts.push("You (lead)");
+  else if (cast.lead === "us") parts.push(`${["You", ...(cast.coLeads ?? []).map((m) => m.name || "Someone")].join(" & ")} (leads)`);
   else if (cast.lead === "someone") parts.push(`${leadOf(cast)?.name || "Someone"} (lead)`);
   else parts.push("No one on camera");
   parts.push(...cast.supporting.map((m) => m.name));
-  if (cast.lead !== "me") parts.push(cast.operatorPresence === "none" ? "you off camera" : `you ${presenceLabel(cast.operatorPresence).toLowerCase()}`);
+  if (!youLead(cast)) parts.push(cast.operatorPresence === "none" ? "you off camera" : `you ${presenceLabel(cast.operatorPresence).toLowerCase()}`);
+  if (youLead(cast) && cast.unattended) parts.push("camera on a tripod");
   return parts.join(" · ");
 }
 
@@ -161,9 +198,11 @@ export function peopleFromNames(cast: Cast, names: string[]): Id[] {
  */
 export function updateMember(cast: Cast, id: Id, patch: Partial<Pick<CastMember, "presence" | "voice" | "name" | "role">>): Cast {
   let next: Cast;
-  if (cast.leadMember?.id === id || (id === YOU && cast.lead === "me")) {
+  if (cast.leadMember?.id === id || (id === YOU && youLead(cast))) {
     const lead = leadOf(cast)!;
-    next = { ...cast, leadMember: { ...lead, ...patch }, operatorPresence: cast.lead === "me" ? (patch.presence ?? lead.presence) : cast.operatorPresence };
+    next = { ...cast, leadMember: { ...lead, ...patch }, operatorPresence: youLead(cast) ? (patch.presence ?? lead.presence) : cast.operatorPresence };
+  } else if (cast.coLeads?.some((m) => m.id === id)) {
+    next = { ...cast, coLeads: cast.coLeads.map((m) => (m.id === id ? { ...m, ...patch } : m)) };
   } else if (id === YOU) {
     next = { ...cast, operatorPresence: patch.presence ?? cast.operatorPresence };
   } else {
@@ -186,6 +225,8 @@ export function removeSupporting(cast: Cast, id: Id): Cast {
 export function memberFor(cast: Cast, id: Id): { member: CastMember; kind: "lead" | "supporting" | "operator" } | undefined {
   const lead = leadOf(cast);
   if (lead && lead.id === id) return { member: lead, kind: "lead" };
+  const co = cast.coLeads?.find((x) => x.id === id);
+  if (co) return { member: co, kind: "lead" };
   if (id === YOU) return { member: { id: YOU, name: "You", presence: cast.operatorPresence, voice: true }, kind: "operator" };
   const m = cast.supporting.find((x) => x.id === id);
   return m ? { member: m, kind: "supporting" } : undefined;

@@ -1,5 +1,5 @@
 import type { ReadResult, ReadShot } from "./read";
-import { multiPerson, peopleFromNames } from "./cast";
+import { castMembers, inShot, multiPerson, peopleFromNames, youLead } from "./cast";
 import { addLocation, addShot } from "./shots";
 import { DIRECTIONS, suggestAngle, suggestRoll } from "./suggest";
 import type { Id, Project, ShotSize, ShotView } from "./types";
@@ -55,6 +55,16 @@ export function tidy(shot: ReadShot): TidyShot {
   };
 }
 
+/**
+ * Who's in a read's shot: the names it gave, plus anyone its subject names —
+ * the read sometimes tags only shots with two of you in them, and a missed tag
+ * mustn't drop someone from the count (30 Sep).
+ */
+function taggedPeople(project: Project, shot: TidyShot): Id[] {
+  const named = castMembers(project.cast).filter((m) => m.presence !== "none" && inShot({ subject: shot.subject }, m)).map((m) => m.id);
+  return [...new Set([...peopleFromNames(project.cast, shot.people ?? []), ...named])];
+}
+
 /** Everything a read offers, minus what's dropped or already on the list. */
 export function readPicks(project: Project, read: { hash: string; result: ReadResult; dropped: string[] }) {
   const onList = new Set(project.shots.map((s) => s.templateId).filter(Boolean));
@@ -100,6 +110,9 @@ export function addReadPicks(project: Project, picks: ReadPick[], now = new Date
       else [next, locationId] = addLocation(next, { name: p.newLocation, dayId: p.dayId }, now, newId);
     }
     const treatment = project.format.treatment;
+    // The camera on its own can't move, whatever the read called it (a "reveal" of Miso running in is still static).
+    const unattended = !!project.cast.unattended && youLead(project.cast);
+    const movement = unattended ? "static" : p.shot.movement;
     // A read cached before 29 Sep has no angle or roll: suggest them, as for a hand-added shot.
     const [q, id] = addShot(
       next,
@@ -111,12 +124,12 @@ export function addReadPicks(project: Project, picks: ReadPick[], now = new Date
         beat: p.shot.beat,
         angle: p.shot.angle ?? suggestAngle(p.shot, treatment),
         view: p.shot.view,
-        movement: p.shot.movement,
+        movement,
         audio: p.shot.sound,
-        roll: p.shot.roll ?? suggestRoll({ ...p.shot, audio: p.shot.sound }, treatment),
+        roll: p.shot.roll && !(unattended && p.shot.roll === "move") ? p.shot.roll : suggestRoll({ ...p.shot, movement, audio: p.shot.sound }, treatment, unattended),
         note: p.shot.direction,
         // WHO'S IN IT only matters with more than one person on camera (§5.8).
-        people: multiPerson(project.cast) && p.shot.people ? peopleFromNames(project.cast, p.shot.people) : undefined,
+        people: multiPerson(project.cast) ? taggedPeople(project, p.shot) : undefined,
       },
       now,
       newId,
