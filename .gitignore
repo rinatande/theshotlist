@@ -51,3 +51,6 @@ docs/sessions/
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Case-study images and exports made outside the repo
+/Claude outputs/
