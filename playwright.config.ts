@@ -16,7 +16,8 @@ export default defineConfig({
     ...devices["Pixel 7"],
     trace: "retain-on-failure",
   },
-  projects: [{ name: "phone", use: { ...devices["Pixel 7"] } }],
+  // The installed Chrome, so the tests run without downloading Playwright's own browser.
+  projects: [{ name: "phone", use: { ...devices["Pixel 7"], channel: "chrome" } }],
   webServer: {
     command: `npm run dev -- -p ${PORT}`,
     url: `http://localhost:${PORT}`,
