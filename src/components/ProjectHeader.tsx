@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { castLine } from "@/lib/cast";
 import { formatLine } from "@/lib/labels";
 import { progress } from "@/lib/status";
 import type { Project } from "@/lib/types";
@@ -47,6 +48,12 @@ export function ProjectHeader({ project, tab, onTab, onActions }: Props) {
         </button>
       </div>
       <p className={styles.format}>{formatLine(project.format)}</p>
+      {/* Who is on camera, and the way to change it (B8, §5.8). */}
+      <Link href={`/cast?id=${project.id}&from=list`} className={styles.cast}>
+        <span className={styles.castLabel}>CAST</span>
+        <span className={styles.castLine}>{castLine(project.cast)}</span>
+        <span aria-hidden="true">›</span>
+      </Link>
 
       {planned > 0 && (
         <div className={styles.meter}>

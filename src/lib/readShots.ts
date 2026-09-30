@@ -1,4 +1,5 @@
 import type { ReadResult, ReadShot } from "./read";
+import { multiPerson, peopleFromNames } from "./cast";
 import { addLocation, addShot } from "./shots";
 import { DIRECTIONS, suggestAngle, suggestRoll } from "./suggest";
 import type { Id, Project, ShotSize, ShotView } from "./types";
@@ -114,6 +115,8 @@ export function addReadPicks(project: Project, picks: ReadPick[], now = new Date
         audio: p.shot.sound,
         roll: p.shot.roll ?? suggestRoll({ ...p.shot, audio: p.shot.sound }, treatment),
         note: p.shot.direction,
+        // WHO'S IN IT only matters with more than one person on camera (§5.8).
+        people: multiPerson(project.cast) && p.shot.people ? peopleFromNames(project.cast, p.shot.people) : undefined,
       },
       now,
       newId,

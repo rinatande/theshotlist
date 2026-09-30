@@ -331,3 +331,24 @@ Re-measured with the shipped code:
 
 Five paid reads were spent measuring. design.md §5.6 timing.
 **Kind:** bug caught
+
+### 2026-09-30 · v1 · Cast and presence
+
+**Proposed:** Claude laid out the cast build from §5.8 and boards B5–B8, and asked three questions:
+- count who's in a shot from the subject's wording, with no new field;
+- put the identifying-details switch on the cast screen, where all it can do is tell the read;
+- treat *interview* with nobody on screen as a conflict, like *talking to camera*.
+
+**Rina:** "lets go with who's in it if there are multiple people, else use subject's wording." Yes to the other two.
+**Changed:**
+- **Counting:** a `WHO'S IN IT` row on add and edit shot, only when more than one person can be on camera. It's suggested from the subject until tapped, and the read fills it too. With one person, the count reads the subject.
+- **The switch and the conflict:** built as proposed.
+- **Filled in by Claude:**
+  - `GENERATE SHOTS` waits while the conflict is open, per B6's "before it suggests anything".
+  - A voice-over choice clears once someone is raised to *part of it* or above.
+  - A default self-shoot stays out of the read's cache key, so old reads still match.
+- **Caught in screenshots:** "Mei passing Priya the tray" was suggested `TOP-DOWN` because of *tray*. Tray, plate and map now mean top-down only on an insert or close-up.
+- **Checked live** with one paid read: names in subjects, and who's in each shot filled in.
+
+design.md §5.8 "As built".
+**Kind:** design call

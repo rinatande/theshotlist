@@ -36,7 +36,7 @@ Projects → new project → empty list → brief → what it read → shot list
 
 Also in v0: project edit and delete (the `⋯` sheet, §5.14) and a minimal Settings (theme, time format, storage — §8).
 
-Both themes. Installable. Fully usable offline — except generating, which is the online read (Rina, 23 Sep). **Gear, look board, cast, per-day briefs and adding days are stubbed**: the tab or screen exists and loads, with a line saying it's coming, but the core route never depends on them.
+Both themes. Installable. Fully usable offline — except generating, which is the online read (Rina, 23 Sep). **The look board, per-day briefs and adding days are stubbed** (gear left the stubs in v1, cast on 30 Sep): the tab or screen exists and loads, with a line saying it's coming, but the core route never depends on them.
 
 ## Milestones
 

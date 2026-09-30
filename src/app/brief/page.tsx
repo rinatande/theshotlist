@@ -9,6 +9,7 @@ import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { projectBrief, setBriefText } from "@/lib/brief";
 import { projectBudget } from "@/lib/budget";
+import { castConflict, castLine } from "@/lib/cast";
 import { bagLine } from "@/lib/gear";
 import { db } from "@/lib/db";
 import { MAX_BRIEF } from "@/lib/read";
@@ -172,6 +173,22 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
           )
         )}
 
+        {/* Who's on camera, which the read is told (§5.8). */}
+        {castConflict(project.format.treatment, project.cast) && (
+          <Link href={`/cast/conflict?id=${project.id}`} className={styles.castWarn}>
+            <span className={ui.boxHeadingWarn}>! CAST</span>
+            <span className={styles.castWarnText}>
+              {project.format.treatment === "interview" ? "An interview" : "Talking to camera"} needs someone on screen, and nobody in the cast is. Choose which way
+              to lean before you generate.
+            </span>
+            <span aria-hidden="true">›</span>
+          </Link>
+        )}
+        <Link href={`/cast?id=${project.id}`} className={styles.gearLine}>
+          <span className={ui.boxHeading}>CAST</span>
+          <span className={styles.gearText}>{castLine(project.cast).toUpperCase()}</span>
+          <span aria-hidden="true">›</span>
+        </Link>
         {/* What generating will know about how you're shooting (Rina, 23 Sep). */}
         <Link href={`/project?id=${project.id}&tab=gear`} className={styles.gearLine}>
           <span className={ui.boxHeading}>GEAR</span>
@@ -195,6 +212,16 @@ function Editor({ project, onGenerate }: { project: Project; onGenerate: () => v
           <>
             <p className={ui.hint} id="gen-why">
               Write something first, or skip above.
+            </p>
+            <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="gen-why">
+              GENERATE SHOTS
+            </button>
+          </>
+        ) : castConflict(project.format.treatment, project.cast) ? (
+          // B6: the app needs to know which way to lean before it suggests anything (§5.8).
+          <>
+            <p className={ui.hint} id="gen-why">
+              Settle the cast first — the line above says what disagrees.
             </p>
             <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="gen-why">
               GENERATE SHOTS

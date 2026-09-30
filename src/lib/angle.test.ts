@@ -19,6 +19,8 @@ describe("suggestAngle", () => {
     expect(suggestAngle({ size: "INS", subject: "Latte art in the cup" }, "narrated")).toBe("top-down");
     expect(suggestAngle({ size: "WS", subject: "The shopfront against the morning" }, "silent")).toBe("low");
     expect(suggestAngle({ size: "CU", subject: "Her face as she tastes it" }, "silent")).toBe("eye-level");
+    // A tray in a wide with people isn't a flat lay.
+    expect(suggestAngle({ size: "WS", subject: "Mei passing Priya the tray" }, "interview")).toBe("eye-level");
   });
 
   it("leans on SURFACE for the small stuff in observational work", () => {

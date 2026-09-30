@@ -88,6 +88,13 @@ export interface Cast {
   supporting: CastMember[];
   /** You, behind the camera. Defaults to 'none' when the lead is someone else. */
   operatorPresence: Presence;
+  /**
+   * B6's "keep both": the treatment wants someone talking on screen and nobody
+   * is, so pieces to camera become voice-over (§5.8).
+   */
+  voiceOver?: boolean;
+  /** Warn about street signs, house numbers, a recognisable home. On unless turned off (§5.8). */
+  flagDetails?: boolean;
 }
 
 // ─── Gear (§6.1) ─────────────────────────────────────────────────────────────
@@ -240,6 +247,11 @@ export interface Shot {
   support?: Support;
   angle?: Angle;          // suggested by the app, changeable (§5.15)
   view?: ShotView;
+  /**
+   * Who's identifiably in it, by cast id ("you" for the person filming), when
+   * the cast has more than one person. Otherwise read from the subject (§5.8).
+   */
+  people?: Id[];
   movement?: Movement;    // suggested by the app, changeable (§5.13)
   audio?: Audio;
   roll?: Roll;            // suggested by the app, changeable (§5.15)

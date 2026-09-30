@@ -1,4 +1,5 @@
-import type { Cast, Day, Format, Id, IsoDate, IsoDateTime, Project, FrameRate } from "./types";
+import { castFor, setLead } from "./cast";
+import type { Cast, Day, Format, Id, IsoDate, IsoDateTime, LeadKind, Project, FrameRate } from "./types";
 
 export interface NewProjectInput {
   name?: string;
@@ -7,6 +8,9 @@ export interface NewProjectInput {
   dayCount: number;
   where?: string;
   frameRate?: FrameRate;
+  /** Step 1's WHO IS ON CAMERA (§5.8); the rest of the cast is on the cast screen. */
+  lead?: LeadKind;
+  leadName?: string;
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -16,14 +20,9 @@ export function defaultProjectName(date: Date): string {
   return `${date.getDate()} ${MONTHS[date.getMonth()]} shoot`;
 }
 
-/** v0 has no cast screen: every project starts self-shot, "part of it" (§5.8). */
+/** A self-shoot, "part of it" (§5.8) — new project's default. */
 export function defaultCast(): Cast {
-  return {
-    lead: "me",
-    leadMember: { id: "you", name: "You", presence: "part", voice: true },
-    supporting: [],
-    operatorPresence: "part",
-  };
+  return castFor("me");
 }
 
 /** Day 1…n, dated from the start date when there is one. */
@@ -50,7 +49,7 @@ export function createProject(
     dayCount: Math.max(1, input.dayCount),
     where: input.where?.trim() || undefined,
     frameRate: input.frameRate,
-    cast: defaultCast(),
+    cast: input.lead ? castFor(input.lead, input.leadName, newId) : defaultCast(),
     gear: [],
     packedIds: [],
     days: makeDays(input.dayCount, input.startDate, newId),
@@ -131,6 +130,8 @@ export function applyEdit(
     startDate: input.startDate,
     where: input.where?.trim() || undefined,
     frameRate: input.frameRate,
+    // Keeps the rest of the cast; only the lead follows step 1.
+    cast: input.lead ? setLead(project.cast, input.lead, input.leadName, newId) : project.cast,
     dayCount: count,
     days,
     locations,

@@ -1,4 +1,5 @@
 import { projectBudget } from "./budget";
+import { DEFAULT_ON_CAMERA, onCameraLine } from "./cast";
 import { specLine } from "./gear";
 import { formatLine } from "./labels";
 import { runningOrder } from "./runningOrder";
@@ -93,6 +94,8 @@ export interface ReadShot {
   roll?: Roll;
   /** Where the camera faces, opening the shot's note: "Side-on, cup in front". */
   direction?: string;
+  /** Cast names identifiably in it, when the cast is more than one person (§5.8). */
+  people?: string[];
 }
 
 export interface ReadResult {
@@ -135,7 +138,8 @@ export function readContext(project: Project): ReadContext {
     days: [...project.days].sort((a, b) => a.index - b.index).map((d) => ({ day: d.index, date: d.date })),
     locations: runningOrder(project).map((l) => ({ name: l.name, day: multi ? dayOf(l.dayId) : undefined, start: clock(l.startTime) })),
     onList: project.shots.filter((s) => s.status !== "dropped").slice(0, 80).map((s) => s.subject),
-    onCamera: "the videographer themselves, part of it — hands and body are fine, face optional",
+    // Who's on camera, from the cast screen (§5.8).
+    onCamera: onCameraLine(project.cast),
     gear: (project.gear ?? []).map((g) => `${g.name} (${g.specs.category}: ${specLine(g.specs)})`),
     frameRate: project.frameRate,
   };
@@ -149,6 +153,7 @@ const SHOT_SCHEMA = {
     view: { type: "string", enum: ["none", "pov", "ots"] },
     roll: { type: "string", enum: ["6s", "10s", "15s", "move", "action"] },
     direction: { type: "string" },
+    people: { type: "array", items: { type: "string" } },
     subject: { type: "string" },
     reason: { type: "string" },
     beat: { type: "string", enum: ["opener", "body", "closer"] },
@@ -158,7 +163,7 @@ const SHOT_SCHEMA = {
     location: { type: ["string", "null"] },
     day: { type: ["integer", "null"] },
   },
-  required: ["size", "subject", "reason", "beat", "light", "movement", "sound", "location", "day", "angle", "view", "roll", "direction"],
+  required: ["size", "subject", "reason", "beat", "light", "movement", "sound", "location", "day", "angle", "view", "roll", "direction", "people"],
   additionalProperties: false,
 } as const;
 
@@ -205,7 +210,9 @@ What good looks like:
 - Shots specific to this brief, in the order the thing actually happens. Name the real objects and moments ("descaler going into the water tank", not "a detail shot").
 - A list one person can shoot alone, with whatever they carry: nothing that needs a crew.
 - Every shot has a reason line: one plain sentence, under 25 words, on why it's worth getting or how to get it on the day. Practical and specific — framing, light, timing, what to match it to. Never generic praise like "looks satisfying".
-- Subjects are short and start with a capital letter. The person holding the camera is "me" ("Me walking away down the alley", "My hands pouring the beans"), never "the videographer".
+- Subjects are short and start with a capital letter. The person holding the camera is "me" ("Me walking away down the alley", "My hands pouring the beans"), never "the videographer". Anyone else on camera is called by their name ("Priya to camera", "Priya's hands on the dough").
+- On camera: follow what you're told about each person. "Not at all" rewrites rather than removes — hands, POV, back of head, silhouette, reflections — and their pieces to camera become voice-over. "In the background" puts them in a handful of shots, none about them. "The subject" adds a presenter beat and makes the other coverage support them. With no one on camera, the product, food or place carries every shot.
+- People: list the cast names identifiably in each shot ("Me" for the person filming), or none. Only needed when more than one person is on camera; otherwise leave it empty ([]).
 - Plain words, not film-set jargon. Say "location", not "setup"; "start time", not "call time".
 - Sizes are how much is in frame: WS (wide), MS (medium), CU (close-up), INS (insert). Beats: opener, body, closer. Light: any, sunrise, golden, blue, night, day.
 - Angle is how high the camera is, measured against the subject: "top-down" (straight down, flat), "high" (above, looking down), "eye-level" (at a person's eye height), "surface" (the lens just above the counter, table or floor the action is on — objects loom, the background falls away), "low" (below, looking up). Spread angles across a sequence the way an editor would want them; never a run of eye-level mediums. Silent and observational films lean on "surface" and "top-down" for the small things.
@@ -287,8 +294,10 @@ export function readPrompt(req: ReadRequest): string {
 export async function readHash(req: ReadRequest): Promise<string> {
   const gear = [...(req.context.gear ?? [])].sort();
   const frameRate = req.context.frameRate;
+  // A changed cast is a new read, like gear; the default self-shoot keeps older reads' keys (§5.8).
+  const onCamera = req.context.onCamera !== DEFAULT_ON_CAMERA ? req.context.onCamera : undefined;
   const bytes = new TextEncoder().encode(
-    JSON.stringify({ model: READ_MODEL, v: READ_VERSION, brief: req.brief.trim(), ...(gear.length ? { gear } : {}), ...(frameRate !== undefined ? { frameRate } : {}) }),
+    JSON.stringify({ model: READ_MODEL, v: READ_VERSION, brief: req.brief.trim(), ...(gear.length ? { gear } : {}), ...(frameRate !== undefined ? { frameRate } : {}), ...(onCamera ? { onCamera } : {}) }),
   );
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");

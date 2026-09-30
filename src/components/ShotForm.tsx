@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { beatName, guessBeat, ROLES } from "@/lib/beats";
+import { castMembers, inShot, multiPerson } from "@/lib/cast";
 import { lensChips, supportChips } from "@/lib/gear";
 import { runningOrder } from "@/lib/runningOrder";
 import { clientsOf, coverageGap, findDuplicate, numberIfAdded, numberIfAddedAfter, type ShotInput } from "@/lib/shots";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { ANGLES, AUDIO, MOVEMENTS, ROLLS, suggestAngle, suggestAudio, suggestMovement, suggestRoll, SUPPORTS, VIEWS } from "@/lib/suggest";
-import type { Angle, Audio, BeatRole, Movement, Project, Roll, Shot, ShotSize } from "@/lib/types";
+import type { Angle, Audio, BeatRole, Id, Movement, Project, Roll, Shot, ShotSize } from "@/lib/types";
 import { Choice } from "./Choice";
 import styles from "./ShotForm.module.css";
 import { StepHeader } from "./StepHeader";
@@ -45,6 +46,7 @@ export function ShotForm({ project, shot, copyOf, initial, cancelHref, onSubmit,
   const [ownAudio, setOwnAudio] = useState(!!(shot ?? copyOf)?.audio);
   const [ownAngle, setOwnAngle] = useState(!!(shot ?? copyOf)?.angle);
   const [ownRoll, setOwnRoll] = useState(!!(shot ?? copyOf)?.roll);
+  const [ownPeople, setOwnPeople] = useState(!!(shot ?? copyOf)?.people);
   // A beat from a beat's + ADD, or on a saved shot, is already chosen; otherwise it's guessed (§10 item 17).
   const [ownBeat, setOwnBeat] = useState(!!initial.beat && initial.beat !== "any");
   // [★] by hand (§10 item 16): not required, one of the project's clients, or a new one typed.
@@ -58,7 +60,15 @@ export function ShotForm({ project, shot, copyOf, initial, cancelHref, onSubmit,
   const treatment = project.format.treatment;
   const angle: Angle = ownAngle && draft.angle ? draft.angle : suggestAngle(draft, treatment);
   const roll: Roll = ownRoll && draft.roll ? draft.roll : suggestRoll({ ...draft, movement, audio }, treatment);
-  const final: ShotInput = { ...draft, movement, audio, beat, angle, roll };
+  // WHO'S IN IT only with more than one person on camera; otherwise the subject says it (§5.8, Rina 30 Sep).
+  const manyPeople = multiPerson(project.cast);
+  const onCamera = castMembers(project.cast).filter((m) => m.presence !== "none");
+  const people: Id[] | undefined = manyPeople
+    ? ownPeople && draft.people
+      ? draft.people
+      : onCamera.filter((m) => inShot({ subject: draft.subject }, m)).map((m) => m.id)
+    : undefined;
+  const final: ShotInput = { ...draft, movement, audio, beat, angle, roll, people };
 
   const editing = !!shot;
   const n = editing ? shotNumbers(project).get(shot.id) : copyOf ? numberIfAddedAfter(project, final, copyOf.id) : numberIfAdded(project, final);
@@ -141,6 +151,35 @@ export function ShotForm({ project, shot, copyOf, initial, cancelHref, onSubmit,
           onChange={(v) => set({ view: draft.view === v ? undefined : v })}
           hint={draft.view === "pov" ? "What you see — your own hands. Usually a high angle." : draft.view === "ots" ? "Over someone's shoulder." : undefined}
         />
+
+        {manyPeople && people && (
+          <div className={ui.fieldset}>
+            <span id="people" className={ui.label}>
+              {ownPeople ? "Who's in it" : "Who's in it · suggested"}
+            </span>
+            <div role="group" aria-labelledby="people" className={ui.chips}>
+              {onCamera.map((m) => {
+                const on = people.includes(m.id);
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    role="checkbox"
+                    aria-checked={on}
+                    className={ui.chip}
+                    onClick={() => {
+                      setOwnPeople(true);
+                      set({ people: on ? people.filter((id) => id !== m.id) : [...people, m.id] });
+                    }}
+                  >
+                    {(m.name || "Someone").toUpperCase()}
+                  </button>
+                );
+              })}
+            </div>
+            <p className={ui.hint}>{ownPeople ? "Tap to add or take someone out." : "Read from the subject. Tap to add or take someone out."}</p>
+          </div>
+        )}
 
         {lenses.length > 0 ? (
           // §6.4: chips from this shoot's gear, so the spec stays honest. A lens typed before gear stays as its own chip.

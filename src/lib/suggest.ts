@@ -100,7 +100,9 @@ export function suggestAudio(shot: { size: ShotSize; subject: string }, treatmen
   }
 }
 
-const OVERHEAD = ["overhead", "top-down", "top down", "from above", "flat lay", "flat-lay", "bird's-eye", "birds-eye", "latte art", "tray", "map", "spread", "layout", "plate"];
+const OVERHEAD = ["overhead", "top-down", "top down", "from above", "flat lay", "flat-lay", "bird's-eye", "birds-eye"];
+/** Things laid flat — top-down only when the frame is close on them, not a wide with people. */
+const LAID_OUT = ["latte art", "tray", "map", "spread", "layout", "plate"];
 const BELOW = ["from below", "looking up", "low angle", "sky", "tower", "shopfront", "facade", "façade", "building", "tree", "spire", "towering"];
 const FACE = ["face", "eyes", "smile", "expression", "portrait", "laugh", "looks at", "glance"];
 const AERIAL = ["drone", "aerial"];
@@ -115,6 +117,7 @@ export function suggestAngle(shot: { size: ShotSize; subject: string; view?: Sho
   const { size, subject, view } = shot;
   if (view === "pov") return "high";
   if (has(subject, OVERHEAD)) return "top-down";
+  if ((size === "INS" || size === "CU") && has(subject, LAID_OUT)) return "top-down";
   if (has(subject, AERIAL)) return "high";
   if (has(subject, BELOW)) return "low";
   if (view === "ots" || has(subject, FACE)) return "eye-level";

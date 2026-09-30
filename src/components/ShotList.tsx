@@ -9,6 +9,7 @@ import { budgetLabel, shortDate } from "@/lib/labels";
 import { runningOrder } from "@/lib/runningOrder";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { dayOfShot, deliverables, toggleExposed } from "@/lib/shots";
+import { leadCount } from "@/lib/cast";
 import { rollLine, supportLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import type { Id, Location, Project, Shot } from "@/lib/types";
@@ -94,6 +95,19 @@ export function ShotList({ project, selection }: { project: Project; selection?:
 
       {selection?.ids && <p className={styles.pickHint}>Long-press any shot to start picking, or SELECT on a band. Tap more to add them.</p>}
 
+      {project.cast.lead === "someone" && project.cast.operatorPresence === "none" && (
+        // B8: you're behind the camera, and the list says so rather than leaving it implied.
+        <p className={styles.youNone}>
+          <span className={styles.youNoneLabel}>YOU 0</span>
+          <span>
+            You&apos;re behind the camera on this one, so nothing here is yours to be in.
+            {project.format.treatment === "talking-to-camera" || project.format.treatment === "interview"
+              ? ` The talking-head coverage belongs to ${project.cast.leadMember?.name || "them"}.`
+              : ""}
+          </span>
+        </p>
+      )}
+
       {over && (
         // One advisory, once, at the foot — never a warning per shot (§5.2).
         <div className={styles.advisory} role="note">
@@ -112,6 +126,7 @@ export function ShotList({ project, selection }: { project: Project; selection?:
 
 function PlanBar({ project, view, onView, planned, over }: { project: Project; view: View; onView: (v: View) => void; planned: number; over: boolean }) {
   const b = projectBudget(project);
+  const lead = planned > 0 ? leadCount(project) : undefined;
   return (
     <div className={styles.planBar}>
       <div className={styles.toggle}>
@@ -130,6 +145,13 @@ function PlanBar({ project, view, onView, planned, over }: { project: Project; v
       <Link href={`/order?id=${project.id}`} className={styles.order}>
         ORDER
       </Link>
+      {lead && (
+        // The lead's share, so the list can't drift into all B-roll or all talking heads (B8, §5.8).
+        <span className={styles.leadCount}>
+          {lead.name} {lead.count}
+          <span className={styles.sr}> shots with {lead.name === "YOU" ? "you" : lead.name.toLowerCase()} in them,</span>
+        </span>
+      )}
       <span className={over ? styles.countOver : styles.count}>
         {over && "! "}
         {planned} / {budgetLabel(b).replace(" — ", "—")}

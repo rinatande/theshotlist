@@ -15,7 +15,7 @@ import {
 } from "@/lib/labels";
 import type { DayChange, NewProjectInput } from "@/lib/project";
 import { kitLine, STARTER_KITS } from "@/lib/gear";
-import type { Aspect, Delivery, Format, FrameRate, GearItem, Genre, Kit, Project, Treatment } from "@/lib/types";
+import type { Aspect, Delivery, Format, FrameRate, GearItem, Genre, Kit, LeadKind, Project, Treatment } from "@/lib/types";
 import { BottomSheet } from "./BottomSheet";
 import { Choice } from "./Choice";
 import styles from "./ProjectForm.module.css";
@@ -37,6 +37,9 @@ export interface Draft {
   frameRate?: FrameRate;
   /** A library kit's id, "starter:<id>" for a starter kit, or empty to decide later. */
   kit?: string;
+  /** Who is on camera (§5.8). The rest of the cast is on the cast screen. */
+  lead: LeadKind;
+  leadName: string;
 }
 
 export const EMPTY_DRAFT: Draft = {
@@ -46,6 +49,8 @@ export const EMPTY_DRAFT: Draft = {
   startDate: "",
   where: "",
   dayCount: 1,
+  lead: "me",
+  leadName: "",
 };
 
 export function draftFromProject(p: Project): Draft {
@@ -61,6 +66,8 @@ export function draftFromProject(p: Project): Draft {
     dayCount: p.dayCount,
     frameRate: p.frameRate,
     kit: p.kitId,
+    lead: p.cast.lead,
+    leadName: p.cast.lead === "someone" ? (p.cast.leadMember?.name ?? "") : "",
   };
 }
 
@@ -85,6 +92,8 @@ export function draftInput(d: Draft): NewProjectInput | undefined {
     dayCount: d.dayCount,
     where: d.where,
     frameRate: d.frameRate,
+    lead: d.lead,
+    leadName: d.leadName,
   };
 }
 
@@ -171,13 +180,36 @@ function StepOne({ mode, draft, onDraft, defaultName, pastProjects, cancelHref, 
           label="Who is on camera?"
           options={[
             { value: "me", label: "ME" },
-            { value: "someone", label: "SOMEONE ELSE", disabled: true },
-            { value: "no-one", label: "NO ONE", disabled: true },
+            { value: "someone", label: "SOMEONE ELSE" },
+            { value: "no-one", label: "NO ONE" },
           ]}
-          value="me"
-          onChange={() => {}}
-          hint="Just you for now. Filming someone else, or no one at all, comes with the cast screen."
+          value={draft.lead}
+          onChange={(lead) => set({ lead })}
+          hint={
+            draft.lead === "me"
+              ? "You, part of it. Set how much on the cast screen."
+              : draft.lead === "no-one"
+                ? "Product, food, place or architecture — no one on camera, you included."
+                : undefined
+          }
         />
+        {draft.lead === "someone" && (
+          <div className={ui.field}>
+            <label htmlFor="lead-name" className={ui.label}>
+              THEIR NAME
+            </label>
+            <input
+              id="lead-name"
+              className={ui.input}
+              type="text"
+              value={draft.leadName}
+              autoComplete="off"
+              placeholder="Priya"
+              onChange={(e) => set({ leadName: e.target.value })}
+            />
+            <p className={ui.hint}>Shots use the name — &quot;Priya to camera&quot; — so the list reads like something you could hand to an assistant. You&apos;re off camera unless you say otherwise.</p>
+          </div>
+        )}
 
         <Consequence genre={draft.genre} treatment={draft.treatment} />
       </div>

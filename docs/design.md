@@ -416,6 +416,20 @@ Note what this now allows: *you: not at all* × *Priya: the subject* × *talking
 
 **Location privacy** is independent of all of it, and on by default: flags shots likely to reveal street signs, house numbers, station names or a recognisable home exterior. Relevant at every presence level — being *the subject* of a video doesn't mean broadcasting where you live.
 
+**As built (30 Sep, Rina).** Cast left the stubs. Where the build fills gaps in the boards (B5–B8):
+- **New project, step 1:** `WHO IS ON CAMERA` is live: `ME` (the default), `SOMEONE ELSE` (which asks `THEIR NAME`), or `NO ONE` (you're off camera too). Everything finer is on the cast screen. Project edit changes the lead the same way and keeps the rest of the cast.
+- **Where the cast screens are reached:** a `CAST` line on the brief, above `GEAR`, and B8's cast strip under the format line on every project tab. Back and `DONE` return to wherever you came from.
+- **Cast (B7)** adds people from a sheet (name, optional role), and each starts at *part of it* with voice allowed. **On camera (B5)** is one screen per person: the lead, a supporting member (who can also be renamed or removed there), or you behind the camera, which has presence only.
+- **Flag identifying details** is project-wide, so its switch is on the cast screen, not one person's (Rina). With no offline engine, it tells the read to keep street signs, house numbers, station names and a recognisable home out of shot, or to say so in the reason line. There's no per-shot flag yet.
+- **The conflict (B6)** covers *interview* as well as *talking to camera* (Rina): an interview needs someone on screen too. It comes up when leaving the cast screen, and as a `! CAST` warning on the brief. `GENERATE SHOTS` waits, with its reason, until it's settled. `KEEP BOTH — USE VOICE-OVER` saves the choice, and it clears itself once anyone is raised to *part of it* or above. The "if you keep both" rows are fixed examples, since the list may still be empty.
+- **Counting (B8):** the plan bar shows the lead's name and how many live shots they're in (`PRIYA 3`, `YOU 4`), and none for `NO ONE`.
+  - **With more than one person who can be on camera,** add and edit shot have a `WHO'S IN IT` row — one chip per person, suggested from the subject until tapped — and the count uses it (Rina).
+  - **With one person,** the count reads the subject's wording: their name, or *me* / *my* / *I* for you.
+  - `YOU 0` sits at the foot of the list when someone else leads and you're at *not at all*.
+- **The read** is told the cast: the lead, everyone else with their role, presence and voice, you behind the camera, the voice-over choice, and the identifying-details rule. It writes names into subjects, and returns who's identifiably in each shot. Hands alone don't count, which matches how *not at all* uses hands.
+  - A changed cast is a new read, like gear. A default self-shoot is left out of the cache key, so reads cached before this still match.
+- **In the build:** `src/lib/cast.ts` (with tests), the screens under `src/app/cast/`, and `Shot.people`.
+
 ### 5.9 Multi-day shoots
 
 **Day is an outer container, not a third grouping option.** You pick a day and see that day's list, grouped by location or beat as usual. On set you only ever see today, which is the point.

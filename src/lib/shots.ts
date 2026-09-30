@@ -19,6 +19,7 @@ export interface ShotInput {
   supportId?: Id;
   angle?: Angle;
   view?: ShotView;
+  people?: Id[];
   movement?: Movement;
   audio?: Audio;
   roll?: Roll;
@@ -71,6 +72,7 @@ export function addShot(p: Project, input: ShotInput, now = new Date(), newId = 
     supportId: input.supportId,
     angle: input.angle,
     view: input.view,
+    people: input.people,
     movement: input.movement,
     audio: input.audio,
     roll: input.roll,
@@ -105,6 +107,7 @@ export function updateShot(p: Project, id: Id, input: ShotInput, now = new Date(
           supportId: input.supportId,
           angle: input.angle,
           view: input.view,
+          people: input.people,
           movement: input.movement,
           audio: input.audio,
           roll: input.roll,
@@ -158,6 +161,7 @@ export function shotInputFrom(s: Shot): ShotInput {
     supportId: s.supportId,
     angle: s.angle,
     view: s.view,
+    people: s.people,
     movement: s.movement,
     audio: s.audio,
     roll: s.roll,
