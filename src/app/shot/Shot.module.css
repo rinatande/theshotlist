@@ -190,3 +190,29 @@
 .direction {
   font-weight: 700;
 }
+
+/* S3g: REFS · N and + PIN, then the strip (§5.16). */
+.refs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.refsHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.refsPin {
+  min-height: var(--target);
+  margin: -12px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: var(--text-12);
+  font-weight: 500;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}

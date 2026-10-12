@@ -324,3 +324,15 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* N4c: the subject, and the first pinned ref to its right (§5.16). */
+.subjectRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+.subjectRow .subject {
+  flex: 1;
+  min-width: 0;
+}

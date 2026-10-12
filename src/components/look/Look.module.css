@@ -1,0 +1,259 @@
+/* The look (§5.16, L0–L2). The board is the one screen that breaks the paper-
+   and-rules format on purpose: full-bleed images, 2px gaps, no side padding,
+   no borders. Radius stays 0. */
+
+.look {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.counts {
+  margin: 0;
+  padding: 10px var(--gutter);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  color: var(--ink-muted);
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* FROM @MM_FAVE · INSTAGRAM … 4 FRAMES › */
+.band {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--target);
+  padding: 0 var(--gutter);
+  margin-bottom: 2px;
+  background: var(--band);
+  color: var(--ink-faint);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  text-decoration: none;
+}
+
+.grid {
+  display: flex;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+.column {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* An image keeps its aspect, cropped to 4:5 at most; opened, it's whole. */
+.frame {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: var(--band);
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tags in solid ink on the image: → 03 bottom-left, 0:12 bottom-right. */
+.tag,
+.noteTag {
+  padding: 4px 6px;
+  background: var(--tag);
+  color: var(--tag-ink);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.tag {
+  position: absolute;
+  bottom: 8px;
+}
+
+.tagLeft {
+  left: 8px;
+}
+
+.tagRight {
+  right: 8px;
+}
+
+.noteTag {
+  align-self: flex-start;
+}
+
+.note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: 14px 14px 16px;
+  background: var(--band);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.noteHead {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-faint);
+}
+
+.noteText {
+  font-size: var(--text-13);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* A link: dark in both themes, ▶, title, the moments. No thumbnail yet. */
+.link {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--tile);
+  color: var(--tile-ink);
+  text-decoration: none;
+}
+
+.link .noteTag {
+  background: transparent;
+  color: var(--tile-ink);
+  border: 1px solid var(--tile-muted);
+}
+
+.linkTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.linkTitle {
+  font-size: var(--text-12);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.linkMeta {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--tile-muted);
+}
+
+/* + ADD: accent, 48px, bottom-right, over the board as it scrolls. */
+.fabWrap {
+  position: sticky;
+  bottom: calc(var(--s-6) + env(safe-area-inset-bottom));
+  margin-top: auto;
+  padding: var(--s-4) var(--gutter) 0;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.fab {
+  pointer-events: auto;
+  height: var(--target-btn);
+  padding: 0 var(--s-5);
+  border: 1px solid var(--accent-ink);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: var(--track-ui);
+  cursor: pointer;
+}
+
+/* ---- L0, and the L2 sheet ------------------------------------------------- */
+
+.empty {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.emptyText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px var(--gutter) 18px;
+}
+
+.emptyLead {
+  margin: 0;
+  font-size: var(--text-20);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.emptyLine {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+.routes {
+  list-style: none;
+  margin: 0 0 28px;
+  padding: 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.route {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: var(--s-4) var(--gutter);
+  border: 0;
+  border-top: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.routeText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.routeTitle {
+  font-size: var(--text-15);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.routeLine {
+  font-size: var(--text-12);
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+
+.chev {
+  font-size: var(--text-13);
+  font-weight: 700;
+  color: var(--ink-muted);
+}

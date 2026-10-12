@@ -8,10 +8,12 @@ import { ProjectHeader, type Tab } from "@/components/ProjectHeader";
 import { MoveSheet } from "@/components/MoveSheet";
 import { ShotDelete } from "@/components/ShotDelete";
 import { GearTab } from "@/components/GearTab";
+import { LookTab } from "@/components/look/LookTab";
 import { ShotList, type Selection } from "@/components/ShotList";
 import ui from "@/components/ui.module.css";
 import { db } from "@/lib/db";
 import { writeLastViewed } from "@/lib/lastViewed";
+import { deleteProjectImages } from "@/lib/lookImages";
 import { fillCoords } from "@/lib/place";
 import { currentDay } from "@/lib/shoot";
 import { deleteShots } from "@/lib/shots";
@@ -20,14 +22,13 @@ import type { Id } from "@/lib/types";
 import { saveProject, useProject } from "@/lib/useProject";
 import styles from "./Project.module.css";
 
-const LOOK_COMING = "The look board is coming. It's where references for this shoot will live.";
 
 /** A project behind its header and tabs (§7). SHOTS is the shot list, GEAR the gear tab; LOOK is a stub. */
 export function ProjectScreen() {
   const router = useRouter();
   const { id, project, params } = useProject();
   // ?tab=gear brings you back to the tab you left from (the gear screens use it).
-  const [tab, setTab] = useState<Tab>(() => (params.get("tab") === "gear" ? "gear" : "shots"));
+  const [tab, setTab] = useState<Tab>(() => { const t = params.get("tab"); return t === "gear" || t === "look" ? t : "shots"; });
   const [actions, setActions] = useState(false);
   const [picked, setPicked] = useState<Set<Id> | null>(null);
   const [moving, setMoving] = useState(false);
@@ -121,9 +122,7 @@ export function ProjectScreen() {
       ) : tab === "gear" ? (
         <GearTab project={project} />
       ) : (
-        <div className={ui.body}>
-          <p className={styles.coming}>{LOOK_COMING}</p>
-        </div>
+        <LookTab project={project} />
       )}
 
       {moving && picked && (
@@ -158,7 +157,11 @@ export function ProjectScreen() {
           project={project}
           onClose={() => setActions(false)}
           onDelete={async () => {
-            await db.projects.delete(project.id);
+            // The look's images live outside the project, so they go with it here (§5.16).
+            await db.transaction("rw", db.projects, db.refImages, async () => {
+              await db.projects.delete(project.id);
+              await deleteProjectImages(project.id);
+            });
             router.replace("/projects");
           }}
         />

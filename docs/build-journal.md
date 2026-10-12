@@ -385,3 +385,23 @@ A third paid read ran by mistake: Claude left the live-check test in place and t
 
 Screenshots caught the plan bar overflowing with two leads' counts; the counts now wrap together.
 **Kind:** design call
+
+### 2026-10-12 · v1 · The look, from the L boards
+
+**Proposed:** Rina gave a written brief for the `LOOK` tab (boards L0–L9, S3g, N4c, N4d; A–D and E7 superseded) and asked for a plan first. Claude's plan raised four things the boards and brief didn't settle:
+- **Instagram names.** An Instagram link only carries an account name when the URL has one. Without it, the band reads `INSTAGRAM · <CODE>`, with an optional `WHO IT'S FROM` field.
+- **The ref counter** (`2 / 4`) counts within the ref's group, since swiping stays in the group.
+- **Shared links.** The share target also takes a shared link with no images, and opens L7.
+- **No projects.** With none, L8 shows `ADD` disabled and `+ NEW PROJECT`.
+
+**Rina:** "go ahead, those sound good!"
+**Changed:** Built as planned (design.md §5.16; case-study-log 2.34). Where the build differs from the boards:
+- **Tag text is 11px,** not the board's 10px, which is under the type floor.
+- **Five new tokens** (`--tile`, `--tile-ink`, `--tile-muted`, `--tag`, `--tag-ink`, §4.1), each checked for AA. No existing pair gave a dark tile and solid tags in both themes.
+- **The pin sheet lists every shot,** not only "the day's": a look is put together before days are.
+- **`+ PIN` on shot detail** opens a sheet of the look's refs to tick. S3g doesn't draw what it opens.
+- **Notes open on the ref screen,** with their pins and why, like frames and links. No board draws a note opened.
+- **The frame's `FROM` button** is disabled with no signal, the same as L5's moments.
+
+Not covered by the tests: share-in from Android's share sheet. The service worker only runs in a production build, so Playwright can't reach it; the handler is unit tested against a stand-in cache. It needs checking on Rina's phone, in the installed app.
+**Kind:** design call

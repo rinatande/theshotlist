@@ -10,6 +10,8 @@ import { db } from "@/lib/db";
 import { lightLeft } from "@/lib/light";
 import { currentDay, dayCount, dayShots, flagShot, markExposed, shootQueue, skip } from "@/lib/shoot";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
+import { ShootRefThumb, ShootRefView } from "@/components/look/ShootRefView";
+import { refsForShot } from "@/lib/look";
 import { angleLabel, movementLabel, supportLabel, viewLabel } from "@/lib/suggest";
 import { formatClock, readTimeFormat, type TimeFormat } from "@/lib/timeFormat";
 import type { Id, Project, Shot } from "@/lib/types";
@@ -49,6 +51,7 @@ function Shooting({ project, dayId, first }: { project: Project; dayId: Id; firs
   // SHOOT IT NOW from wrap puts that shot first, once.
   const [front, setFront] = useState<Id | null>(first);
   const [flagging, setFlagging] = useState(false);
+  const [viewing, setViewing] = useState<Id | null>(null);
   const [said, setSaid] = useState("");
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -137,7 +140,11 @@ function Shooting({ project, dayId, first }: { project: Project; dayId: Id; firs
                   </span>
                 )}
               </div>
-              <p className={styles.subject}>{current.subject}</p>
+              {/* N4c: the first pinned ref beside the subject; N4d opens them full screen (§5.16). */}
+              <div className={styles.subjectRow}>
+                <p className={styles.subject}>{current.subject}</p>
+                <ShootRefThumb refs={refsForShot(project, current)} shotLabel={label(current)} onOpen={() => setViewing(current.id)} />
+              </div>
               <Spec shot={current} />
               {current.flagNote && <p className={styles.flag}>! {current.flagNote.toUpperCase()}</p>}
               {(current.note || current.reason) && <p className={styles.why}>{current.note || current.reason}</p>}
@@ -194,6 +201,13 @@ function Shooting({ project, dayId, first }: { project: Project; dayId: Id; firs
         <Through project={project} dayId={dayId} total={count.total} flagged={flagged} />
       )}
 
+      {viewing && (() => {
+        const shot = project.shots.find((s) => s.id === viewing);
+        const refs = shot ? refsForShot(project, shot) : [];
+        return shot && refs.length ? (
+          <ShootRefView refs={refs} shotNo={formatShotNumber(numbers.get(shot.id) ?? 0)} onClose={() => setViewing(null)} />
+        ) : null;
+      })()}
       {flagging && current && (
         <FlagSheet
           heading={`FLAG SHOT ${formatShotNumber(numbers.get(current.id) ?? 0)}`}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A link, opened with no signal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<style>
+body { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; background: #F2EBDD; }
+a { color: #A83B2A; } a:hover { color: #8A2E20; }
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F2EBDD; background-image: radial-gradient(#1C171412 0.5px, transparent 0.6px); background-size: 3px 3px; color: #1C1714; font-family: 'JetBrains Mono', ui-monospace, monospace; display: flex; flex-direction: column; position: relative; overflow: hidden;">
+  <div style="background: #1C1714; color: #E8EDE9; display: flex; flex-direction: column;">
+    <div style="padding: 18px 20px 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+      <a href="L1-LookBoard.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; margin: -12px 0; font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-decoration: none; color: #E8EDE9;">← LOOK</a>
+      <span style="display: flex; align-items: center; gap: 4px;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.12em; color: #A8B2AC;"></span><a href="L3-RefOpen.dc.html" aria-label="Ref options" style="flex-shrink: 0; width: 44px; height: 44px; margin: -12px -12px -12px 0; display: flex; align-items: center; justify-content: center; color: #E8EDE9; text-decoration: none;"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" fill="currentColor"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg></a></span>
+    </div>
+    <div style="box-sizing: border-box; padding: 20px; background: #141816; border-top: 1px solid #262C29; display: flex; flex-direction: column; gap: 14px;">
+      <span style="color: #E8EDE9;"><svg width="30" height="30" viewBox="0 0 22 22" aria-hidden="true"><path d="M7 4.5v13l11-6.5z" fill="currentColor"/></svg></span>
+      <span style="font-size: 16px; font-weight: 700; line-height: 1.35;">Mornings at our Home Cafe</span>
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #A8B2AC;">TARO'S HOUSE · YOUTUBE · 2 MOMENTS</span>
+    </div>
+
+  </div>
+  <div style="flex-grow: 1; overflow: hidden; padding: 18px 20px 0 20px; display: flex; flex-direction: column; gap: 18px;">
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border: 1px solid #8F4F0C;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #8F4F0C;">! NO SIGNAL</span>
+      <span style="font-size: 13px; line-height: 1.5;">The video opens when you're back online. Moments, frames and pins are on this phone.</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">MOMENTS</span>
+      <div style="border-top: 1px solid #D8CDB8;">
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 48px; border-bottom: 1px solid #D8CDB8;">
+        <span style="width: 52px; font-size: 15px; font-weight: 700;">0:40</span>
+        <button type="button" disabled style="margin-left: auto; min-height: 40px; padding: 0 12px; background: transparent; border: 1px solid #D8CDB8; color: #6B5F52; cursor: not-allowed; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.1em;">OPEN · NEEDS SIGNAL</button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 48px; border-bottom: 1px solid #D8CDB8;">
+        <span style="width: 52px; font-size: 15px; font-weight: 700;">1:12</span>
+        <button type="button" disabled style="margin-left: auto; min-height: 40px; padding: 0 12px; background: transparent; border: 1px solid #D8CDB8; color: #6B5F52; cursor: not-allowed; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.1em;">OPEN · NEEDS SIGNAL</button>
+      </div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #6B5F52;">FRAMES FROM THIS VIDEO · 0</span>
+      <span style="font-size: 13px; line-height: 1.5; color: #6B5F52;">Screenshot the moments while you watch and share them here. They'll sit with this link.</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

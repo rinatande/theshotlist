@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from "dexie";
-import type { GearItem, Kit, Project } from "./types";
+import type { GearItem, Kit, Project, RefImage } from "./types";
 import { moveOtsToView } from "./migrate";
 
 /**
@@ -14,6 +14,8 @@ export class ShotListDB extends Dexie {
   projects!: EntityTable<Project, "id">;
   gear!: EntityTable<GearItem, "id">;
   kits!: EntityTable<Kit, "id">;
+  /** The look's images (§5.16): Blobs, kept out of the project so a project stays small to read and write. */
+  refImages!: EntityTable<RefImage, "id">;
 
   constructor(name = "theshotlist") {
     super(name);
@@ -53,6 +55,13 @@ export class ShotListDB extends Dexie {
             p.shots = moveOtsToView(p).shots;
           }),
       );
+    // v4: the look's images (§5.16).
+    this.version(4).stores({
+      projects: "id, updatedAt, createdAt, startDate",
+      gear: "id, specs.category",
+      kits: "id",
+      refImages: "id, projectId",
+    });
   }
 }
 

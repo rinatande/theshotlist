@@ -531,6 +531,31 @@ These are canvas only, not built. *(Built into the PWA on 25 Sep — design.md �
 
 *Artifacts:* `docs/design.md` §8 Shot detail; `src/lib/stepping.ts`; boards `S3`, `N3`, `S3c`.
 
+### 2.34 The look breaks the format, and meets the platforms — 12 Oct
+
+**What broke.** Open problem 1 had said it since the first draft: the look board was mono captions on paper, handsome but not evocative, in the half of the app meant to make you want to shoot. The earlier boards (A–D, E7) never got past that. Building the redraw then hit three things the boards couldn't know:
+- **Instagram doesn't say whose reel it is.** The board's `FROM @MM_FAVE` band assumes a name, but a shared reel link usually has only a code in it.
+- **iOS has no web share target.** "Share your screenshots straight in" is Android only.
+- **A time is only half a link.** YouTube opens at a time and Instagram doesn't, so the same `0:12` means different things.
+
+**Options.**
+- For the board, keep the paper format and add bigger images, or deliberately break format on this one screen.
+- For Instagram names, fetch them (Instagram's oEmbed needs a registered Meta app and token), show the code, or ask once.
+- For iOS, fake a share flow, or offer only the gallery picker there and never mention sharing.
+
+**Decision. [R]** Rina redrew the look as L0–L9, plus S3g, N4c and N4d, and broke the format on purpose:
+- **The board:** a full-bleed grid with 2px gaps and no rules, padding or radius. Solid tags are the only chrome.
+- **The same refs on set:** a strip on shot detail, a thumbnail beside the subject in shoot mode, and a full-screen view there.
+
+On the platforms, she approved Claude's plan:
+- **Instagram:** show the code, and ask once with an optional `WHO IT'S FROM` field. The name is kept per reel, so every frame from it groups under it.
+- **iOS:** `PHOTOS` only, and no screen mentions sharing.
+- **Times:** stored either way. Instagram's button says `OPEN THE REEL`, with *"0:12 is your reminder."*
+
+**Why it's evidence.** It closes the oldest open problem by doing what it said, in code, not by softening it. The three platform limits are the kind a board can't show: each one was found by building against the real link format or share API, and each is answered in the interface's own words rather than hidden. An Instagram button that pretended to open at a time would have been the easy lie.
+
+*Artifacts:* `docs/design.md` §5.16; `src/lib/look.ts`; `src/lib/shareInbox.ts`; boards `L0`–`L9`, `S3g`, `N4c`, `N4d`; build-journal 12 Oct.
+
 ---
 
 ## 3. Artifact inventory

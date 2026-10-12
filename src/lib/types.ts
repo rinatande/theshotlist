@@ -326,6 +326,57 @@ export interface Brief {
   };
 }
 
+// ─── The look (§5.16) ────────────────────────────────────────────────────────
+
+/** What a note on the look is about, shown above it on the board. */
+export type NoteTag = 'mood' | 'grade' | 'pace' | 'sound';
+
+interface RefBase {
+  id: Id;
+  addedAt: IsoDateTime;
+  /** "Why this one": a line on what to take from it. */
+  why?: string;
+}
+
+/** A screenshot or photo. The image itself is in the refImages table, never in the project. */
+export interface FrameRef extends RefBase {
+  kind: 'frame';
+  imageId: Id;
+  width: number;
+  height: number;
+  /** The video it came from, when you say so. */
+  source?: string;
+  /** Where in that video, in seconds. */
+  at?: number;
+}
+
+/** A video link and the moments in it. Nothing is downloaded or played in the app. */
+export interface LinkRef extends RefBase {
+  kind: 'link';
+  url: string;
+  /** From YouTube's oEmbed, when there was signal; Instagram has none. */
+  title?: string;
+  channel?: string;
+  /** Seconds into the video. */
+  moments: number[];
+}
+
+export interface NoteRef extends RefBase {
+  kind: 'note';
+  text: string;
+  tags: NoteTag[];
+}
+
+export type Ref = FrameRef | LinkRef | NoteRef;
+
+/** One image on this phone: the 1600px one you open, and the 400px one on the board. */
+export interface RefImage {
+  id: Id;
+  projectId: Id;
+  full: Blob;
+  thumb: Blob;
+}
+
 // ─── Project ─────────────────────────────────────────────────────────────────
 
 export interface Project {
@@ -360,6 +411,13 @@ export interface Project {
   locations: Location[];
   shots: Shot[];
   briefs: Brief[];
+  /**
+   * The look (§5.16): one per project. Pins live on each shot's `refIds`, so
+   * deleting a shot takes its pins with it. Never sent to the read.
+   */
+  refs?: Ref[];
+  /** A name you gave a source, keyed by sourceKey(): "@mm_fave" for a reel with no handle in its link. */
+  sourceNames?: Record<string, string>;
 
   createdAt: IsoDateTime;
   updatedAt: IsoDateTime;

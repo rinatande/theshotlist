@@ -7,9 +7,12 @@ import { BottomSheet } from "@/components/BottomSheet";
 import { RequiredMark, StatusMark } from "@/components/Marks";
 import { NotHere } from "@/components/NotHere";
 import sheet from "@/components/ProjectActions.module.css";
+import { RefPickSheet, RefStrip } from "@/components/look/RefStrip";
 import { ShotDelete } from "@/components/ShotDelete";
 import ui from "@/components/ui.module.css";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
+import { db } from "@/lib/db";
+import { refsForShot, setShotRefs } from "@/lib/look";
 import { deleteShots, toggleExposed } from "@/lib/shots";
 import { neighbours, readListView, stepOrder } from "@/lib/stepping";
 import { angleLabel, audioLabel, movementLabel, rollLabel, splitDirection, supportLabel, viewLabel } from "@/lib/suggest";
@@ -29,7 +32,7 @@ function ShotDetail() {
   const [tf, setTf] = useState<TimeFormat>("12h");
   const [fresh, setFresh] = useState(false);
   // The ⋯ sheet (S3a), and its delete confirmation (S3b) in its place.
-  const [sheetOpen, setSheetOpen] = useState<"menu" | "delete" | null>(null);
+  const [sheetOpen, setSheetOpen] = useState<"menu" | "delete" | "refs" | null>(null);
   const touch = useRef<{ x: number; y: number } | null>(null);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setTf(readTimeFormat()), []);
@@ -45,6 +48,8 @@ function ShotDetail() {
   const where = location
     ? [location.name.toUpperCase(), location.startTime !== undefined ? formatClock(location.startTime, tf) : undefined].filter(Boolean).join(" · ")
     : "UNPLACED";
+
+  const refs = refsForShot(project, shot);
 
   // Only the rows that say something (§8: the information you check at the camera).
   const spec = [
@@ -157,6 +162,19 @@ function ShotDetail() {
         {/* Why a suggested shot is here — the line that ties it to the brief or the kit (§6.2). */}
         {shot.reason && <p className={styles.reason}>{shot.reason}</p>}
 
+        {/* S3g: the refs pinned to this shot, under the reason, above the spec (§5.16). */}
+        <section className={styles.refs} aria-labelledby="refs">
+          <span className={styles.refsHead}>
+            <span id="refs" className={ui.label}>
+              REFS · {refs.length}
+            </span>
+            <button type="button" className={styles.refsPin} onClick={() => setSheetOpen("refs")}>
+              + PIN
+            </button>
+          </span>
+          {refs.length > 0 && <RefStrip project={project} refs={refs} />}
+        </section>
+
         {spec.length > 0 && (
           <dl className={styles.spec}>
             {spec.map(([k, v]) => (
@@ -232,6 +250,19 @@ function ShotDetail() {
             </li>
           </ul>
         </BottomSheet>
+      )}
+      {sheetOpen === "refs" && (
+        <RefPickSheet
+          project={project}
+          title={`PIN REFS TO SHOT ${n !== undefined ? formatShotNumber(n) : ""}`}
+          initial={refs.map((r) => r.id)}
+          onClose={() => setSheetOpen(null)}
+          onSave={async (ids) => {
+            setSheetOpen(null);
+            const latest = (await db.projects.get(project.id)) ?? project;
+            await saveProject(setShotRefs(latest, shot.id, ids));
+          }}
+        />
       )}
       {sheetOpen === "delete" && (
         <ShotDelete

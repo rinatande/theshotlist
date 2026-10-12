@@ -124,6 +124,16 @@ Semantic names, two value sets. Nothing in a component references a raw hex.
 | `--accent-ink` on `--accent` | 5.33 ✓ AA | 10.59 ✓ AAA |
 | `--ink` on `--field` | 16.47 ✓ AAA | 14.10 ✓ AAA |
 
+**Five more for the look (§5.16, added 12 Oct).** The board puts dark tiles and solid tags over photographs in both themes, which none of the eleven could do by day:
+
+| Token | Day | Night | Role | Contrast |
+|---|---|---|---|---|
+| `--tile` | `#1C1714` | `#1A1F1C` | a link tile, dark in both themes | — |
+| `--tile-ink` | `#E8EDE9` | `#E8EDE9` | a link tile's title | 15.0 / 14.1 on `--tile` ✓ AAA |
+| `--tile-muted` | `#A8B2AC` | `#A8B2AC` | a link tile's moments | 8.1 / 7.7 on `--tile` ✓ AAA |
+| `--tag` | `#1C1714` | `#0C0E0D` | the solid tags on a tile (`→ 03`, `0:12`), the `1/3` in shoot mode | — |
+| `--tag-ink` | `#F2EBDD` | `#E8EDE9` | text on a tag | 15.0 / 16.3 on `--tag` ✓ AAA |
+
 Two colours are deliberately *not* interchangeable across themes: day's accent is red and its warning amber; night inverts them (accent amber, warning orange-red). Red on near-black reads as an error state; amber doesn't. The semantic slot is stable even though the hue flips.
 
 **Implementation.** Tokens on `:root`, redefined under `[data-theme="night"]` and under `@media (prefers-color-scheme: dark)` guarded by `:root:not([data-theme="day"])`, so Auto works without JS and an explicit choice always wins.
@@ -665,6 +675,75 @@ Before this, a shot was described by its **size** and nothing else about where t
 
 **In the build:** `Shot.angle`, `Shot.view`, `Shot.roll` (`src/lib/types.ts`); the migration in `src/lib/migrate.ts`; the rules in `src/lib/suggest.ts`; the read's schema and prompt in `src/lib/read.ts` and its tidying in `src/lib/readShots.ts`; tests in `src/lib/angle.test.ts`.
 
+### 5.16 The look — as built (12 Oct, Rina)
+
+*Drawn by Rina as L0–L9, S3g, N4c and N4d, and built from her written brief on 12 Oct. Those boards replace the earlier look boards A–D and E7. Where the build departs from the boards, it says so below.*
+
+The look is the half of the app that makes you want to shoot: what this should feel like, collected while you're watching other people's work, and in your hand on set. Each project has one look. It lives on the `LOOK` tab and is **never sent to the read** (§5.6).
+
+**Three kinds of ref.** Each can carry a short *why this one* line and can be pinned to any number of shots.
+
+| Kind | What it holds |
+|---|---|
+| `FRAME` | A screenshot or photo, with an optional source video link and an optional time in that video (m:ss) |
+| `LINK` | A video URL and its *moments*, a list of times. Nothing is downloaded or played in the app. |
+| `NOTE` | Text, with any of `MOOD · GRADE · PACE · SOUND` |
+
+**Storage, on the phone.**
+- **Images live in their own table, as Blobs**, not inside the project record. On import each one is resized to 1600px on the long edge, with a 400px thumbnail for the board (JPEG, 0.85). The first import asks the browser to keep storage persistent (`navigator.storage.persist()`).
+- **Out of space adds nothing:** the batch is saved in one transaction, and if the phone is full it says *"This phone is out of space for images — nothing was added."*
+- **Pins live on the shot** (`Shot.refIds`), so deleting a shot takes its pins with it, and deleting a ref takes it off every shot. Deleting a project deletes its images in the same transaction.
+
+**The board (L1, L1n).** The one screen that breaks the paper-and-rules format on purpose.
+- **Under the tabs:** `8 REFS · 4 PINNED TO SHOTS`.
+- **The grid:** two columns, full-bleed, with 2px gaps. No side padding, no borders, no radius. Images keep their shape, but anything taller than 4:5 is cropped to 4:5 on the board and shown whole when opened.
+- **Groups.** Refs that share a source (two or more) sit together under a full-width band, `FROM @MM_FAVE · INSTAGRAM … 4 FRAMES ›`. A link's moments join its video's group, and the count says so: `1 FRAME · 2 MOMENTS`. Groups run newest first; inside one, frames go by their time in the video and the link comes last. Everything else sits under `OTHER REFS · N`, newest first (the board said *FROM YOUR OWN*; changed in the brief).
+- **Tiles:**
+  - *Frames* show solid tags in `--tag`: `→ 03` bottom-left when pinned, and the time bottom-right.
+  - *Notes* sit on `--band`.
+  - *Links* are `--tile`, dark in both themes, with ▶, the title, `2 MOMENTS` and the times. No thumbnail yet.
+- **`+ ADD`:** floating, accent fill, 48px, bottom-right.
+- **Empty (L0):** *"Nothing on the look yet."* with the three ways in listed below it.
+
+**Adding (L2: `PHOTOS · LINK · NOTE`).**
+- **`PHOTOS`** opens the gallery picker, several at once, and lands on the same screen as share-in.
+- **Share-in (L8)** is for Android, from the installed app. The manifest declares a Web Share Target (POST, multipart, `image/*`). The service worker catches the POST, keeps the files in Cache Storage and sends you to L8. L8 has:
+  - the frames, each with an optional m:ss;
+  - `TO`, the project's look, changeable because sharing starts outside the app — it defaults to the project you last had open;
+  - `FROM A VIDEO · OPTIONAL`, one link for the whole batch;
+  - `PIN TO A SHOT · OPTIONAL`;
+  - `ADD N TO LOOK`.
+- **iOS has no web share target,** so there it's `PHOTOS` only, and no screen mentions sharing.
+- **`LINK` (L7):** paste a URL, and the start time in it becomes the first moment (`youtu.be/ID?t=40`, `watch?v=ID&t=72`, `t=1m12s`, also Shorts). `+ ADD MOMENT` adds one; `✕` removes one.
+  - YouTube's title and channel come from its oEmbed, through `/api/oembed`, which takes YouTube links only and rebuilds the URL from the video id, so it can't be used as an open proxy. With no signal the link saves without a title, and the title is filled in the next time the look opens online.
+  - Instagram has no lookup: it shows *Instagram* and the URL.
+- **`NOTE` (L6):** the text and the four tags as on/off chips, then `SAVE NOTE`.
+
+**Opening a ref.**
+- **A frame (L9, L3):** the image whole on a dark top, then `FROM @SOURCE · AT 0:12` and an open button. YouTube opens at the time (`watch?v=ID&t=72s`). Instagram can't, so the button reads `OPEN THE REEL`, with *"Instagram doesn't open at a time, so 0:12 is your reminder."* Then `PINNED TO` rows with `UNPIN`, `+ PIN TO ANOTHER SHOT`, and `WHY THIS ONE` with `EDIT` (or `+ ADD` when there's none).
+- **A link (L5):** its moments, each with an open button, and `FRAMES FROM THIS VIDEO · N`. With no signal, the `! NO SIGNAL` box shows and each button says why in its label, `OPEN · NEEDS SIGNAL`, on a dashed edge. It's never dimmed.
+- **A note** opens on the same screen, with the text on `--band` and the same pins and why.
+- **Swipe** moves between refs in the same group. The header counts within the group: `@MM_FAVE · 2 / 4`.
+- **`⋯`** offers `EDIT MOMENTS` or `EDIT NOTE`, and `DELETE REF`, which asks first in the S3b pattern (`DELETE · FRAME`, *"Delete this ref?"*).
+- **Pinning (L4):** a sheet of shots under their location bands, each with a tick box. Footer: `PIN TO N` and `CANCEL`, and the line *"A ref can sit on more than one shot."*
+
+**Where pins show.**
+- **Shot detail (S3g):** `REFS · N` with `+ PIN`, under the reason and above the spec, then a strip of 96px-tall tiles. Tapping one opens it.
+- **Shoot mode (N4c):** a 96×96 thumbnail of the first pinned ref, right of the subject, with a `1/3` tag. It's absent when nothing is pinned.
+- **The ref in shoot mode (N4d):** tapping the thumbnail opens the shot's refs full screen, at night: `← SHOT 03`, `REF 1 / 3`, the why line, *SWIPE FOR THE NEXT REF*, and `BACK TO THE SHOT`. That button is 56px and outlined, so it can't be mistaken for `GOT IT`. All of it works with no signal.
+
+**Where the build departs from the boards**, and why (build-journal, 12 Oct):
+- **Tag text is 11px**, not the board's 10px, which is under the type floor (§3).
+- **Five new tokens** (§4.1): no existing pair gave a dark tile and solid tags in both themes.
+- **Instagram sources.** An Instagram link only names its account when it's in the URL. Without one, the band reads `INSTAGRAM · <CODE>`, and L7 and L8 offer `WHO IT'S FROM · OPTIONAL`, named once per reel.
+- **A shared link without images** opens L7 with `TO`, not L8, which has nothing to show.
+- **With no projects,** L8 shows `ADD` disabled and `+ NEW PROJECT`.
+- **The pin sheet lists every shot** in running order under its location bands, not only the day's: a look is planned before days are.
+- **`+ PIN` on shot detail** opens a sheet of the look's refs to tick, the same pattern from the other side.
+- **The frame's `FROM` button** is disabled with no signal, the same as L5's.
+
+**In the build:** `Ref`, `RefImage`, `Project.refs`, `Project.sourceNames`, `Shot.refIds` (`src/lib/types.ts`); the `refImages` table (`src/lib/db.ts`, version 4); the rules in `src/lib/look.ts`; images in `src/lib/lookImages.ts`; share-in in `src/lib/shareInbox.ts`, `src/app/sw.ts` and `src/app/manifest.ts`; screens in `src/components/look/` and `src/app/look/`; tests in `src/lib/look.test.ts`, `src/lib/shareInbox.test.ts` and `e2e/look.spec.ts`.
+
 ---
 
 ## 6. Gear
@@ -826,7 +905,7 @@ The core screen. Tabs for **Shots / Look / Gear** (§6.3), and a plan bar carryi
 *States:* all exposed (the payoff — meter full, header count in `--ok`) · empty list · a location with no shots · offline with queued edits.
 
 ### Shot detail
-Reference image full-bleed at 176px, then the size chip and location, then the subject as a sentence-case title. A spec table — lens, support, movement, audio — as hairline-separated rows, because that's the information you check at the camera. Note beneath in body type. Linked refs as a three-up strip. `MARK EXPOSED` is the primary action; `EDIT` sits beside it.
+The size chip and location, then the subject as a sentence-case title. A spec table — lens, support, movement, audio — as hairline-separated rows, because that's the information you check at the camera. Note beneath in body type. *(Superseded 12 Oct: the 176px reference image on top and the three-up strip are gone. Pinned refs are a `REFS · N` strip under the reason, above the spec — §5.16, S3g.)* `MARK EXPOSED` is the primary action; `EDIT` sits beside it.
 
 *States:* no reference (the image block becomes a `--band` placeholder with `+ ADD REF`) · already exposed (primary becomes `UNMARK`, secondary) · flagged.
 
@@ -924,8 +1003,11 @@ It's night-only because it's a screen you'd only ever open on a set. If usage sa
 
 ## 10. Open problems
 
-1. **The look board is still the weak screen.** Mono captions on paper are handsome but not evocative, and that's the half of the product that's supposed to make you want to shoot. The fix is to deliberately break format there: full-bleed tiles, chrome pulled almost entirely away, the reference images doing all the talking. Worth designing next.
-2. **Reference images are placeholders throughout.** Every tile on the canvas is a flat tonal block. The directions should be re-judged with real frames from your own work before anything is built — imagery changes the read of a design more than any token does.
+1. **The look board is still the weak screen — addressed (12 Oct).** Mono captions on paper are handsome but not evocative, and that's the half of the product that's supposed to make you want to shoot. The fix is to deliberately break format there: full-bleed tiles, chrome pulled almost entirely away, the reference images doing all the talking.
+    - **Done:** redrawn as L0–L9 and built that way (§5.16). The grid is full-bleed with 2px gaps and no rules, padding or radius, and the only chrome on a tile is a solid tag.
+2. **Reference images are placeholders throughout — addressed (12 Oct).** Every tile on the canvas is a flat tonal block. The directions should be re-judged with real frames from your own work before anything is built — imagery changes the read of a design more than any token does.
+    - **Done:** the look now holds your own frames (§5.16), so the board can be judged with real imagery on the phone.
+    - **Still to do:** that judging. The canvas boards' images still only load on the canvas.
 3. **Suggestion templates need writing — partly drafted.** On 23 Sep Claude Code drafted 13 gear-aware ones (§6.2 as built). On 22 Sep it drafted 41 more (flagged `"draft": true` in `templates.json`) to fill the thinnest areas: gear-free pieces to camera, interview room tone and cutaways, events, tutorials, scripted coverage. They're a starting point to rewrite from real lists, not a finished library. The engine in §6.2 is only as good as its template library, and that's a content problem more than a design one — a few dozen shots per shoot type, each with honest requirements and a reason line worth reading. Worth drafting by hand from your own past lists before anything generative goes near it.
 4. **Shoot mode in day theme** — see above. Unresolved on purpose.
 5. **Multi-day projects.** The model has `Project → Location → Shot` but a three-day shoot needs a day axis, and it isn't in the screens yet — it also collides with beats, since a beat can span days.
@@ -1002,8 +1084,9 @@ Self-hosted from JetBrains' own release (OFL; `src/fonts/`), three weights, one 
 
 ## Appendix C — what's next
 
-- Redesign the Look board against problem 1 above.
-- Swap real reference frames into every tile and re-judge.
+- ~~Redesign the Look board against problem 1 above.~~ Drawn as L0–L9 and built (§5.16, 12 Oct). Boards A–D and E7 are superseded.
+- Fill the look with real frames from a shoot and re-judge the board on the phone (problem 2).
+- The look, next: a thumbnail on link tiles; Instagram names without asking; share-in on iOS when Safari supports it.
 - Draft the suggestion template library per genre × treatment × format, and design the multi-day axis.
 - Design wrap / end of day, including the blocked wrap when a deliverable is outstanding.
 - Design shot-level edit, duplicate, delete and reorder.

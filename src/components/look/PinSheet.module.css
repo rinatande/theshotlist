@@ -1,0 +1,155 @@
+/* L4: shots under their location bands, a tick box each. Scrolls inside the sheet. */
+
+.list {
+  max-height: 55dvh;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--rule);
+}
+
+.none {
+  margin: 0;
+  padding: var(--s-4) var(--gutter);
+  font-size: var(--text-13);
+  color: var(--ink-muted);
+}
+
+.band {
+  margin: 0;
+  padding: 6px var(--gutter);
+  background: var(--band);
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  color: var(--ink-faint);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--target);
+  padding: 11px var(--gutter);
+  border-top: 1px solid var(--rule);
+  cursor: pointer;
+}
+
+.on {
+  background: var(--field);
+}
+
+.tick {
+  appearance: none;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border: 2px solid var(--ink);
+  background: transparent;
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+}
+
+.tick:checked {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.tick:checked::after {
+  content: "✓";
+  color: var(--accent-ink);
+  font-size: var(--text-13);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tick:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.no {
+  width: 24px;
+  flex-shrink: 0;
+  font-size: var(--text-13);
+  font-weight: 500;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.size {
+  width: 34px;
+  flex-shrink: 0;
+  font-size: var(--text-13);
+  font-weight: 700;
+}
+
+.subject {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--text-15);
+  overflow-wrap: anywhere;
+}
+
+.required {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.foot {
+  padding: var(--s-3) var(--gutter) var(--s-6);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* TO (L8): the project a share goes to, changeable. */
+.to {
+  width: 100%;
+  min-height: var(--target-btn);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 0 12px;
+  border: 1px solid var(--ink);
+  background: var(--field);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.change {
+  flex-shrink: 0;
+  font-size: var(--text-12);
+  color: var(--accent);
+  letter-spacing: var(--track-ui);
+}
+
+.projects {
+  list-style: none;
+  margin: 0 0 var(--s-6);
+  padding: 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.projects .row {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+}
+
+.projects .row.on {
+  background: var(--field);
+}

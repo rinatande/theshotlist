@@ -26,6 +26,12 @@
   --track:      #E0D5BE; /* progress-meter track */
   --grain:      #1C171412; /* paper dot texture (day only) */
   --scrim:      #1C171485; /* behind a bottom sheet: ink at 52%. Sheet ground 3.44:1, --ink edge 4.36:1 against it (§7) */
+  /* The look (§5.16): link tiles and the ref viewer stay dark in both themes; tags sit on images. */
+  --tile:       #1C1714; /* --tile-ink on it 15.0:1, --tile-muted 8.1:1 */
+  --tile-ink:   #E8EDE9;
+  --tile-muted: #A8B2AC;
+  --tag:        #1C1714; /* --tag-ink on it 15.0:1 */
+  --tag-ink:    #F2EBDD;
 
   color-scheme: light;
 
@@ -76,6 +82,11 @@
   --track:      #262C29;
   --grain:      transparent;
   --scrim:      #000000B3; /* black at 70%: page mutes to ~2:1; the --ink top border carries the edge at 17:1 (§7) */
+  --tile:       #1A1F1C; /* --tile-ink on it 14.1:1, --tile-muted 7.7:1 */
+  --tile-ink:   #E8EDE9;
+  --tile-muted: #A8B2AC;
+  --tag:        #0C0E0D; /* --tag-ink on it 16.3:1 */
+  --tag-ink:    #E8EDE9;
   color-scheme: dark;
 }
 
@@ -96,6 +107,11 @@
     --track:      #262C29;
     --grain:      transparent;
   --scrim:      #000000B3; /* black at 70%: page mutes to ~2:1; the --ink top border carries the edge at 17:1 (§7) */
+    --tile:       #1A1F1C; /* --tile-ink on it 14.1:1, --tile-muted 7.7:1 */
+    --tile-ink:   #E8EDE9;
+    --tile-muted: #A8B2AC;
+    --tag:        #0C0E0D; /* --tag-ink on it 16.3:1 */
+    --tag-ink:    #E8EDE9;
     color-scheme: dark;
   }
 }

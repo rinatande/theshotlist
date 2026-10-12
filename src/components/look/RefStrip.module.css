@@ -1,0 +1,165 @@
+/* A shot's refs (S3g, N4c): 96px-tall tiles, 2px apart, running off the right edge. */
+
+.strip {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  margin-right: calc(-1 * var(--gutter));
+}
+
+.cell {
+  flex-shrink: 0;
+  display: block;
+  height: 96px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.frame {
+  display: block;
+  height: 100%;
+  background: var(--band);
+}
+
+.frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cell .frame {
+  width: auto;
+  max-width: 220px;
+}
+
+.note {
+  display: flex;
+  width: 140px;
+  height: 100%;
+  padding: 10px;
+  background: var(--band);
+  overflow: hidden;
+}
+
+.noteText {
+  font-size: var(--text-11);
+  line-height: 1.45;
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 120px;
+  height: 100%;
+  padding: 10px;
+  background: var(--tile);
+  color: var(--tile-ink);
+}
+
+.linkText {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--tile-muted);
+}
+
+/* ---- + PIN from a shot -------------------------------------------------------- */
+
+.pickList {
+  max-height: 55dvh;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--rule);
+}
+
+.none {
+  margin: 0;
+  padding: var(--s-4) var(--gutter);
+  font-size: var(--text-13);
+  color: var(--ink-muted);
+}
+
+.pick {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--target);
+  padding: 8px var(--gutter);
+  border-top: 1px solid var(--rule);
+  cursor: pointer;
+}
+
+.on {
+  background: var(--field);
+}
+
+.tick {
+  appearance: none;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border: 2px solid var(--ink);
+  background: transparent;
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+}
+
+.tick:checked {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.tick:checked::after {
+  content: "✓";
+  color: var(--accent-ink);
+  font-size: var(--text-13);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tick:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.pickThumb {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+}
+
+.pickThumb .frame,
+.pickThumb .note,
+.pickThumb .link {
+  width: 56px;
+  height: 56px;
+  padding: 6px;
+}
+
+.pickThumb .frame {
+  padding: 0;
+}
+
+.pickText {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-13);
+  line-height: 1.45;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.foot {
+  padding: var(--s-3) var(--gutter) var(--s-6);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
