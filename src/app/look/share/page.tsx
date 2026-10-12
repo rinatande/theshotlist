@@ -8,6 +8,7 @@ import { ProjectTo, useShareProject } from "@/components/look/ProjectPicker";
 import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { parseTime, parseVideo, sourceLabel } from "@/lib/look";
+import { clearSearch, waitingSearch, type WaitingSearch } from "@/lib/findRef";
 import { addFrames, importImage, OutOfSpace } from "@/lib/lookImages";
 import { clearInbox, readInbox, type InboxMeta } from "@/lib/shareInbox";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
@@ -18,6 +19,9 @@ import styles from "../Look.module.css";
  * L8 Share-in (§5.16): screenshots shared from another app, or picked with
  * PHOTOS. Where in the video each one is, which look, which video they came
  * from, and a shot to pin them to — all optional — then ADD N TO LOOK.
+ *
+ * L8b (§5.17): with a FIND A REF search waiting, they're for that shot — the
+ * look is its project's, the shot is ticked, and adding goes back to it.
  */
 function ShareIn() {
   const router = useRouter();
@@ -31,6 +35,7 @@ function ShareIn() {
   const [pinning, setPinning] = useState(false);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
+  const [search, setSearch] = useState<WaitingSearch | undefined>(undefined);
 
   useEffect(() => {
     let previews: string[] = [];
@@ -39,9 +44,17 @@ function ShareIn() {
       previews = r.files.map((f) => URL.createObjectURL(f));
       setInbox({ ...r, previews });
       setTimes(r.files.map(() => ""));
+      // A search from FIND A REF, still under an hour old, sets the look and the shot.
+      const w = waitingSearch(window.localStorage);
+      if (w) {
+        setSearch(w);
+        choose(w.projectId);
+        setPinTo([w.shotId]);
+      }
     });
     return () => previews.forEach((u) => URL.revokeObjectURL(u));
-  }, []);
+    // choose is a state setter: this runs once, on arrival.
+  }, [choose]);
 
   const cancelTo = project ? `/project?id=${project.id}&tab=look` : "/";
   if (params.get("nosw") || inbox === null) {
@@ -72,6 +85,10 @@ function ShareIn() {
   const numbers = project ? shotNumbers(project) : new Map();
   const pinnedLabel = pinTo.map((id) => numbers.get(id)).filter((x) => x !== undefined).map((x) => formatShotNumber(x as number)).join(", ");
   const ready = !!project && !badTime && !(link.trim() && !video) && !busy;
+  // The search's shot, if it's still there — a deleted one just means an ordinary share.
+  const sought = search && project?.id === search.projectId ? project.shots.find((s) => s.id === search.shotId) : undefined;
+  const pinned = project ? pinTo.flatMap((id) => project.shots.find((s) => s.id === id) ?? []) : [];
+  const action = sought && pinnedLabel ? `ADD${n === 1 ? "" : ` ${n}`} AND PIN TO ${pinnedLabel}` : n === 1 ? "ADD 1 TO LOOK" : `ADD ${n} TO LOOK`;
 
   const add = async () => {
     if (!project) return;
@@ -80,13 +97,16 @@ function ShareIn() {
     try {
       const images = [];
       for (const f of inbox.files) images.push(await importImage(f));
-      await addFrames(
+      const ids = await addFrames(
         project.id,
         images.map((image, i) => ({ image, at: parsed[i], source: video?.url })),
-        { pinTo, sourceName: video && source.trim() ? { key: video.key, name: source } : undefined },
+        { pinTo, pinFirst: !!sought, sourceName: video && source.trim() ? { key: video.key, name: source } : undefined },
       );
       await clearInbox(window.caches);
-      router.replace(`/project?id=${project.id}&tab=look`);
+      clearSearch(window.localStorage);
+      // Back to the shot you were finding a ref for, with what you added marked (S3j).
+      const back = sought && pinTo.length ? (pinTo.includes(sought.id) ? sought.id : pinTo[0]) : undefined;
+      router.replace(back ? `/shot?id=${project.id}&shot=${back}&added=${ids.join(",")}` : `/project?id=${project.id}&tab=look`);
     } catch (e) {
       setBusy(false);
       setProblem(e instanceof OutOfSpace ? e.message : "Those couldn't be added — one of them may not be an image. Nothing was added.");
@@ -103,10 +123,16 @@ function ShareIn() {
           label: "CANCEL",
           onClick: async () => {
             await clearInbox(window.caches);
-            router.replace(cancelTo);
+            clearSearch(window.localStorage);
+            router.replace(sought ? `/shot?id=${project!.id}&shot=${sought.id}` : cancelTo);
           },
         }}
       />
+      {sought && (
+        <div className={styles.forShot}>
+          YOU WERE FINDING A REF FOR {[numbers.get(sought.id) !== undefined ? formatShotNumber(numbers.get(sought.id)) : undefined, sought.subject.toUpperCase()].filter(Boolean).join(" · ")}
+        </div>
+      )}
       <div className={ui.body}>
         <div className={ui.fieldset}>
           <span id="at" className={ui.label}>
@@ -131,10 +157,42 @@ function ShareIn() {
           {badTime && <p className={ui.hint}>&quot;{badTime}&quot; isn&apos;t a time. Write it as m:ss, like 0:12.</p>}
         </div>
 
-        <ProjectTo projects={projects} project={project} onChoose={(id) => {
-          choose(id);
-          setPinTo([]);
-        }} />
+        {sought && project && (
+          <div className={ui.field}>
+            <span id="pin-to" className={ui.label}>
+              PIN TO
+            </span>
+            <div role="group" aria-labelledby="pin-to" className={styles.pinned}>
+              {/* CHANGE sits on the last row, as L8b draws it on the one. */}
+              {(pinned.length ? pinned : [undefined]).map((s, i, all) => (
+                <span key={s?.id ?? "none"} className={s ? styles.pinnedShot : styles.pinnedNone}>
+                  {s ? (
+                    <>
+                      <span aria-hidden="true" className={styles.pinnedTick}>✓</span>
+                      <span className={styles.pinnedNo}>{numbers.get(s.id) !== undefined ? formatShotNumber(numbers.get(s.id)) : ""}</span>
+                      <span className={styles.pinnedSize}>{s.size}</span>
+                      <span className={styles.pinnedSubject}>{s.subject}</span>
+                    </>
+                  ) : (
+                    <span className={styles.pinnedSubject}>No shot — it goes on the look only.</span>
+                  )}
+                  {i === all.length - 1 && (
+                    <button type="button" className={styles.pinnedChange} onClick={() => setPinning(true)} aria-label="Change which shots it's pinned to">
+                      CHANGE
+                    </button>
+                  )}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!sought && (
+          <ProjectTo projects={projects} project={project} onChoose={(id) => {
+            choose(id);
+            setPinTo([]);
+          }} />
+        )}
 
         <div className={ui.field}>
           <label htmlFor="from" className={ui.label}>
@@ -160,12 +218,15 @@ function ShareIn() {
           </div>
         )}
 
-        {project && project.shots.length > 0 && (
+        {!sought && project && project.shots.length > 0 && (
           <button type="button" className={styles.pinRow} onClick={() => setPinning(true)}>
             <span>PIN TO A SHOT · OPTIONAL</span>
             <span className={styles.pinRowValue}>{pinnedLabel ? `→ ${pinnedLabel}` : "›"}</span>
           </button>
         )}
+
+        {/* L8b: the look is the search's project's, so TO is a line, not a choice. */}
+        {sought && project && <p className={styles.toLine}>TO {project.name.toUpperCase()} · LOOK</p>}
 
         {problem && (
           <div className={ui.box} role="alert">
@@ -177,7 +238,7 @@ function ShareIn() {
       <div className={ui.footer}>
         {ready ? (
           <button type="button" className={ui.primary} onClick={add}>
-            {n === 1 ? "ADD 1 TO LOOK" : `ADD ${n} TO LOOK`}
+            {action}
           </button>
         ) : (
           <>
@@ -185,7 +246,7 @@ function ShareIn() {
               {busy ? "Adding…" : !project ? "Make a project first." : badTime ? "Fix the time above first." : "Fix the link above, or clear it."}
             </p>
             <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="share-why">
-              {n === 1 ? "ADD 1 TO LOOK" : `ADD ${n} TO LOOK`}
+              {action}
             </button>
           </>
         )}

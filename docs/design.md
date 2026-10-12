@@ -744,6 +744,60 @@ The look is the half of the app that makes you want to shoot: what this should f
 
 **In the build:** `Ref`, `RefImage`, `Project.refs`, `Project.sourceNames`, `Shot.refIds` (`src/lib/types.ts`); the `refImages` table (`src/lib/db.ts`, version 4); the rules in `src/lib/look.ts`; images in `src/lib/lookImages.ts`; share-in in `src/lib/shareInbox.ts`, `src/app/sw.ts` and `src/app/manifest.ts`; screens in `src/components/look/` and `src/app/look/`; tests in `src/lib/look.test.ts`, `src/lib/shareInbox.test.ts` and `e2e/look.spec.ts`.
 
+### 5.17 Find a ref — as built (12 Oct, Rina)
+
+*Drawn by Rina as S3i, S3k, L8b and S3j, and built from her written brief on 12 Oct. Where the build departs from the boards, it says so below.*
+
+The look (§5.16) fills up when you're already watching something. Find a ref works from the other end: you're on a shot with nothing pinned to it, and want to see how someone else shot it. The app doesn't search. It writes a search phrase, opens the places worth searching, and keeps the shot ready for the screenshot you come back with. **No image is fetched, no search API is called, and nothing goes to the read.**
+
+**On shot detail (S3i).** `FIND A REF` sits beside `+ PIN` in the `REFS · N` header, with 44px targets. It shows even when the shot has no refs.
+
+**The sheet (S3k): `FIND A REF · SHOT 03 · THE POUR`.**
+- **`SEARCH FOR`** is an editable box, with *"Made from the shot and your look's notes. Change anything."* The phrase is built on the phone (`buildQuery`) from:
+  - **the subject**, without a leading *the*, *a* or *an*;
+  - **a word of context**, when the subject is two words or fewer: the first subject or work chip from the brief's read, if the subject doesn't already say it. So "The pour" becomes *espresso pour*. With no read, the subject stands alone (Rina, 12 Oct);
+  - **the note's opening direction** (§5.15), as words: *side on*;
+  - **the angle** in plain words: *top down*, *high angle*, *eye level*, *surface level*, *low angle*;
+  - **up to three look words** from the look's MOOD and GRADE notes, from a fixed list in a fixed order (colour, then quality, then the grade). Light words are followed by *light*: *warm soft light*.
+
+  It's kept to about ten words. Look words go first, then the angle, then the direction. An edit is kept on the shot (`Shot.refQuery`); clearing the box goes back to the built phrase.
+- **Three rows**, each a link that opens in a new tab or the installed app:
+
+  | Row | Where it goes | Its line |
+  |---|---|---|
+  | `PINTEREST` | `pinterest.com/search/pins/?q=` | *Stills, often graded. Good for light and colour.* |
+  | `YOUTUBE` | `youtube.com/results?search_query=` | *Whole sequences. Note the time when you screenshot.* |
+  | `INSTAGRAM` | `instagram.com/explore/tags/<tag>/` | *Searches one hashtag: #espressopour* |
+
+  The hashtag is made from the context word and the subject, not the edited phrase. It's lowercase with accents and punctuation removed, skips filler words (*the*, *into*, *before*…) and keeps the first two words left: "Empty lane before the crowds" → `#emptylane`. With nothing left to make one from, the row says so and can't be tapped.
+- **With no signal,** the rows are disabled on a dashed edge, with the reason in the label: `PINTEREST · NEEDS SIGNAL`. They're never dimmed.
+- **`THEN`:** *"Screenshot one that fits your look and share it here. It'll be ready to pin to 03."* On iOS, which has no share target, it reads *"…then come back and add it."* instead.
+- **`ADD YOUR SCREENSHOT`** (outlined) shows once a search is waiting for this shot, and opens the gallery picker. It's the iOS route, and works anywhere.
+
+**The waiting search.** Tapping a row saves `{projectId, shotId, startedAt}` on the phone (localStorage: it's a moment's state on one phone, not project data). Share-in and the picker use it while it's under an hour old, and drop it silently if the shot has gone. It's cleared on add, on `CANCEL`, or when it expires.
+
+**Shared in for a shot (L8b).** With a search waiting, L8 becomes:
+- **Header:** `CANCEL`, and `ADD 1 SCREENSHOT`.
+- **A band:** `YOU WERE FINDING A REF FOR 03 · THE POUR`.
+- **The frames,** each with `WHERE IN THE VIDEO · OPTIONAL`.
+- **`PIN TO`:** that shot, ticked, with `CHANGE` on its row, which opens the L4 sheet.
+- **The source fields:** `FROM A VIDEO` and `WHO IT'S FROM`, as on L8.
+- **`TO KYOTO MORNING · LOOK`,** a line rather than a choice: the look is the shot's project's.
+- **The button:** `ADD AND PIN TO 03` (`ADD 2 AND PIN TO 03` for two).
+
+Adding goes back to that shot's detail. `CANCEL` goes back there too, and clears the search.
+
+**Back on the shot (S3j).**
+- **The new ref** goes first in the strip, and stays first. It's tagged `NEW` until you leave the screen.
+- **A status line** sits over the footer: `PINNED TO 03 · ON THE LOOK TOO` with `UNDO`. UNDO takes the new ref off the look, with its image and pins. The line is drawn in inverse ink (`--ink` behind `--ground`), so it reads in both themes. The page leaves room at its foot, so it never covers the end of the note.
+
+**Where the build departs from the boards**, and why (build-journal, 12 Oct):
+- **The context word.** S3k's *espresso pour* needs a word the subject "The pour" doesn't have. It comes from the brief's read (Rina chose this of three options). Hand-added shots on an unread brief search on the subject alone.
+- **iOS wording.** THEN can't say *share it here* where nothing can be shared in.
+- **More than one shot under `CHANGE`** lists them all, with `CHANGE` on the last row. Unticking them all gives *"No shot — it goes on the look only."*, the button goes back to `ADD N TO LOOK`, and adding goes to the look. The board draws only the one shot.
+
+**In the build:** the phrase, links, hashtag and waiting search in `src/lib/findRef.ts`; the sheet in `src/components/look/FindRefSheet.tsx`; L8b in `src/app/look/share/page.tsx`; S3j in `src/app/shot/page.tsx`; `addFrames(…, { pinFirst })` and `removeRefs` in `src/lib/lookImages.ts`; tests in `src/lib/findRef.test.ts` and `e2e/find-ref.spec.ts`.
+
 ---
 
 ## 6. Gear

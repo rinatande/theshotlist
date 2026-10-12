@@ -40,12 +40,18 @@ export function RefThumb({ r, square }: { r: Ref; square?: boolean }) {
 const describe = (r: Ref) => (r.kind === "frame" ? `Frame${(r as FrameRef).at !== undefined ? ` at ${formatTime((r as FrameRef).at!)}` : ""}` : r.kind === "note" ? `Note: ${r.text}` : `Link${r.title ? `, ${r.title}` : ""}`);
 
 /** S3g: a shot's refs as a strip of 96px-tall tiles under its reason line. Tapping one opens it. */
-export function RefStrip({ project, refs }: { project: Project; refs: Ref[] }) {
+export function RefStrip({ project, refs, fresh = [] }: { project: Project; refs: Ref[]; fresh?: Id[] }) {
   return (
     <div className={styles.strip}>
       {refs.map((r) => (
-        <Link key={r.id} href={`/look/ref?id=${project.id}&ref=${r.id}`} aria-label={`Open ${describe(r)}`} className={styles.cell}>
+        <Link key={r.id} href={`/look/ref?id=${project.id}&ref=${r.id}`} aria-label={`Open ${describe(r)}${fresh.includes(r.id) ? ", just added" : ""}`} className={styles.cell}>
           <RefThumb r={r} />
+          {/* S3j: just added from FIND A REF, until you leave (§5.17). */}
+          {fresh.includes(r.id) && (
+            <span className={styles.new} aria-hidden="true">
+              NEW
+            </span>
+          )}
         </Link>
       ))}
     </div>

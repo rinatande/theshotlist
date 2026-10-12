@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "./db";
-import { addRefs, FULL_EDGE, fitSize, THUMB_EDGE } from "./look";
+import { addRefs, deleteRef, FULL_EDGE, fitSize, THUMB_EDGE } from "./look";
 import type { FrameRef, Id, IsoDateTime, Project, RefImage } from "./types";
 import { useLive } from "./useLive";
 
@@ -63,9 +63,17 @@ export interface NewFrame {
 
 /**
  * Add frames to a project's look, and pin them, in one transaction: all of
- * them go in, or none do. Throws OutOfSpace when the phone is full.
+ * them go in, or none do. Throws OutOfSpace when the phone is full. Returns
+ * the new refs' ids. `pinFirst` puts them at the front of each shot's
+ * strip — a ref you went looking for leads it (§5.17).
  */
-export async function addFrames(projectId: Id, frames: NewFrame[], options: { pinTo?: Id[]; sourceName?: { key: string; name: string } } = {}, now = new Date()): Promise<void> {
+export async function addFrames(
+  projectId: Id,
+  frames: NewFrame[],
+  options: { pinTo?: Id[]; pinFirst?: boolean; sourceName?: { key: string; name: string } } = {},
+  now = new Date(),
+): Promise<Id[]> {
+  const added: Id[] = [];
   await persist();
   try {
     await db.transaction("rw", db.projects, db.refImages, async () => {
@@ -89,14 +97,30 @@ export async function addFrames(projectId: Id, frames: NewFrame[], options: { pi
       let next: Project = addRefs(project, refs, now);
       if (options.pinTo?.length) {
         const ids = new Set(refs.map((r) => r.id));
-        next = { ...next, shots: next.shots.map((s) => (options.pinTo!.includes(s.id) ? { ...s, refIds: [...(s.refIds ?? []).filter((x) => !ids.has(x)), ...ids] } : s)) };
+        const pin = (have: Id[]) => (options.pinFirst ? [...ids, ...have.filter((x) => !ids.has(x))] : [...have.filter((x) => !ids.has(x)), ...ids]);
+        next = { ...next, shots: next.shots.map((s) => (options.pinTo!.includes(s.id) ? { ...s, refIds: pin(s.refIds ?? []) } : s)) };
       }
       if (options.sourceName?.name.trim()) next = { ...next, sourceNames: { ...next.sourceNames, [options.sourceName.key]: options.sourceName.name.trim() } };
       await db.projects.put(next);
+      added.push(...refs.map((r) => r.id));
     });
   } catch (e) {
     throw isQuota(e) ? new OutOfSpace() : e;
   }
+  return added;
+}
+
+/** Take refs back off the look, with their pins and images: S3j's UNDO. */
+export async function removeRefs(projectId: Id, refIds: Id[], now = new Date()): Promise<void> {
+  await db.transaction("rw", db.projects, db.refImages, async () => {
+    const project = await db.projects.get(projectId);
+    if (!project) return;
+    const going = (project.refs ?? []).filter((r) => refIds.includes(r.id));
+    let next = project;
+    for (const r of going) next = deleteRef(next, r.id, now);
+    for (const r of going) if (r.kind === "frame") await db.refImages.delete(r.imageId);
+    await db.projects.put(next);
+  });
 }
 
 /** Remove a frame's image along with its ref. */

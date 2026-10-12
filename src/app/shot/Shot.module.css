@@ -204,6 +204,12 @@
   align-items: baseline;
 }
 
+.refsActions {
+  display: flex;
+  gap: 18px;
+}
+
+.refsFind,
 .refsPin {
   min-height: var(--target);
   margin: -12px 0;
@@ -215,4 +221,45 @@
   font-weight: 500;
   letter-spacing: var(--track-ui);
   cursor: pointer;
+}
+
+.refsFind {
+  font-weight: 700;
+}
+
+/* S3j: what FIND A REF just added, with UNDO, over the footer (§5.17). Inverse ink, so it reads in both themes. */
+.added {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(100% + var(--s-3));
+  min-height: 48px;
+  padding-left: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  background: var(--ink);
+  color: var(--ground);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.undo {
+  flex: 0 0 auto;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 0;
+  background: none;
+  color: var(--ground);
+  font: inherit;
+  letter-spacing: 0.12em;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.addedRoom {
+  height: calc(48px + var(--s-3));
+  flex-shrink: 0;
 }

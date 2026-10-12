@@ -7,12 +7,14 @@ import { BottomSheet } from "@/components/BottomSheet";
 import { RequiredMark, StatusMark } from "@/components/Marks";
 import { NotHere } from "@/components/NotHere";
 import sheet from "@/components/ProjectActions.module.css";
+import { FindRefSheet } from "@/components/look/FindRefSheet";
 import { RefPickSheet, RefStrip } from "@/components/look/RefStrip";
 import { ShotDelete } from "@/components/ShotDelete";
 import ui from "@/components/ui.module.css";
 import { formatShotNumber, shotNumbers } from "@/lib/shotNumbers";
 import { db } from "@/lib/db";
 import { refsForShot, setShotRefs } from "@/lib/look";
+import { removeRefs } from "@/lib/lookImages";
 import { deleteShots, toggleExposed } from "@/lib/shots";
 import { neighbours, readListView, stepOrder } from "@/lib/stepping";
 import { angleLabel, audioLabel, movementLabel, rollLabel, splitDirection, supportLabel, viewLabel } from "@/lib/suggest";
@@ -32,7 +34,7 @@ function ShotDetail() {
   const [tf, setTf] = useState<TimeFormat>("12h");
   const [fresh, setFresh] = useState(false);
   // The ⋯ sheet (S3a), and its delete confirmation (S3b) in its place.
-  const [sheetOpen, setSheetOpen] = useState<"menu" | "delete" | "refs" | null>(null);
+  const [sheetOpen, setSheetOpen] = useState<"menu" | "delete" | "refs" | "find" | null>(null);
   const touch = useRef<{ x: number; y: number } | null>(null);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setTf(readTimeFormat()), []);
@@ -50,6 +52,8 @@ function ShotDetail() {
     : "UNPLACED";
 
   const refs = refsForShot(project, shot);
+  // S3j: refs just added from FIND A REF, tagged NEW until you leave (§5.17).
+  const added = (params.get("added") ?? "").split(",").filter((id) => shot.refIds?.includes(id));
 
   // Only the rows that say something (§8: the information you check at the camera).
   const spec = [
@@ -168,11 +172,16 @@ function ShotDetail() {
             <span id="refs" className={ui.label}>
               REFS · {refs.length}
             </span>
-            <button type="button" className={styles.refsPin} onClick={() => setSheetOpen("refs")}>
-              + PIN
-            </button>
+            <span className={styles.refsActions}>
+              <button type="button" className={styles.refsFind} onClick={() => setSheetOpen("find")}>
+                FIND A REF
+              </button>
+              <button type="button" className={styles.refsPin} onClick={() => setSheetOpen("refs")}>
+                + PIN
+              </button>
+            </span>
           </span>
-          {refs.length > 0 && <RefStrip project={project} refs={refs} />}
+          {refs.length > 0 && <RefStrip project={project} refs={refs} fresh={added} />}
         </section>
 
         {spec.length > 0 && (
@@ -195,7 +204,24 @@ function ShotDetail() {
 
       </div>
 
+      {/* Room for S3j's status line, so it never sits over the last of the note. */}
+      {added.length > 0 && <div className={styles.addedRoom} aria-hidden="true" />}
       <div className={`${ui.footer} ${styles.footer}`}>
+        {added.length > 0 && (
+          <div role="status" className={styles.added}>
+            <span>PINNED TO {n !== undefined ? formatShotNumber(n) : "THIS SHOT"} · ON THE LOOK TOO</span>
+            <button
+              type="button"
+              className={styles.undo}
+              onClick={async () => {
+                await removeRefs(project.id, added);
+                router.replace(`/shot?id=${project.id}&shot=${shot.id}`);
+              }}
+            >
+              UNDO
+            </button>
+          </div>
+        )}
         <Link href={`/shot/edit?id=${project.id}&shot=${shot.id}`} className={ui.secondary}>
           EDIT
         </Link>
@@ -251,6 +277,7 @@ function ShotDetail() {
           </ul>
         </BottomSheet>
       )}
+      {sheetOpen === "find" && <FindRefSheet project={project} shot={shot} shotNo={n !== undefined ? formatShotNumber(n) : undefined} onClose={() => setSheetOpen(null)} />}
       {sheetOpen === "refs" && (
         <RefPickSheet
           project={project}

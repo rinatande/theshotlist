@@ -405,3 +405,29 @@ Screenshots caught the plan bar overflowing with two leads' counts; the counts n
 
 Not covered by the tests: share-in from Android's share sheet. The service worker only runs in a production build, so Playwright can't reach it; the handler is unit tested against a stand-in cache. It needs checking on Rina's phone, in the installed app.
 **Kind:** design call
+
+### 2026-10-12 · v1 · Find a ref: where "espresso" comes from
+
+**Proposed:** Rina gave a brief for FIND A REF (boards S3i, S3k, L8b, S3j) and asked for a plan first. Claude pointed out a gap: S3k's search reads *"espresso pour …"* with `#espressopour`, but the shot's subject is just "The pour". Built from the subject alone, it would search *"pour"* and `#pour`. Three options:
+- **(a)** the subject only;
+- **(b)** a word of context from the brief's read when the subject is two words or fewer;
+- **(c)** the subject only, with the box focused for editing.
+
+Claude recommended (b). The plan also proposed:
+- the search phrase kept on the shot in Dexie, not localStorage;
+- the waiting search in localStorage, because it's a moment's state on one phone;
+- iOS wording for THEN that doesn't mention sharing;
+- L8b's TO as a fixed line, following the board.
+
+**Rina:** "go with what you recommend"
+**Changed:** Built with (b) (design.md §5.17).
+
+Screenshots caught two things the tests didn't:
+- **L8b:** `CHANGE` had a row of its own under the shot. It's on the shot's row now, as drawn.
+- **S3j:** the status line covered the end of the note with nothing below to scroll to. The page now leaves room at its foot.
+
+Where the build differs from the boards:
+- **The context word** comes from the read, so hand-added shots on an unread brief search on the subject alone.
+- **THEN has iOS wording.**
+- **L8b with more than one shot,** or none, isn't drawn: the shots are listed, and with none the button goes back to `ADD N TO LOOK`.
+**Kind:** spec gap

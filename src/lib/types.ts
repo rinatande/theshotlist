@@ -266,6 +266,8 @@ export interface Shot {
   /** Opens with where the camera faces when the read knows it: "Side-on, cup in front." (§5.15) */
   note?: string;
   refIds?: Id[];          // look-board references
+  /** FIND A REF's search phrase, when you've changed the one built from the shot (§5.17). */
+  refQuery?: string;
 
   locationId?: Id;        // absent → the UNPLACED group
   dayId?: Id;
