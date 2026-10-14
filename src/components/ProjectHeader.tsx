@@ -12,7 +12,7 @@ export type Tab = "shots" | "look" | "gear";
 
 const TABS: { value: Tab; label: string }[] = [
   { value: "shots", label: "SHOTS" },
-  { value: "look", label: "LOOK" },
+  { value: "look", label: "MOODBOARD" },
   { value: "gear", label: "GEAR" },
 ];
 

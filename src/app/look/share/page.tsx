@@ -18,7 +18,7 @@ import styles from "../Look.module.css";
 /**
  * L8 Share-in (§5.16): screenshots shared from another app, or picked with
  * PHOTOS. Where in the video each one is, which look, which video they came
- * from, and a shot to pin them to — all optional — then ADD N TO LOOK.
+ * from, and a shot to pin them to — all optional — then ADD N TO MOODBOARD.
  *
  * L8b (§5.17): with a FIND A REF search waiting, they're for that shot — the
  * look is its project's, the shot is ticked, and adding goes back to it.
@@ -60,15 +60,15 @@ function ShareIn() {
   if (params.get("nosw") || inbox === null) {
     return (
       <div className={ui.screen}>
-        <StepHeader label="Add to look" back={{ label: "← BACK", href: cancelTo }} />
+        <StepHeader label="Add to moodboard" back={{ label: "← BACK", href: cancelTo }} />
         <div className={ui.body}>
           <p className={ui.boxText}>
             {params.get("nosw")
               ? "The share didn't reach the app — it needs to be open once first. Open TheShotList, then share the screenshots again."
-              : "Nothing to add — the screenshots weren't kept. Share them again, or add them with PHOTOS on the look."}
+              : "Nothing to add — the screenshots weren't kept. Share them again, or add them with PHOTOS on the moodboard."}
           </p>
           <Link href={cancelTo} className={ui.secondary}>
-            {project ? "TO THE LOOK" : "TO THE APP"}
+            {project ? "TO THE MOODBOARD" : "TO THE APP"}
           </Link>
         </div>
       </div>
@@ -88,7 +88,7 @@ function ShareIn() {
   // The search's shot, if it's still there — a deleted one just means an ordinary share.
   const sought = search && project?.id === search.projectId ? project.shots.find((s) => s.id === search.shotId) : undefined;
   const pinned = project ? pinTo.flatMap((id) => project.shots.find((s) => s.id === id) ?? []) : [];
-  const action = sought && pinnedLabel ? `ADD${n === 1 ? "" : ` ${n}`} AND PIN TO ${pinnedLabel}` : n === 1 ? "ADD 1 TO LOOK" : `ADD ${n} TO LOOK`;
+  const action = sought && pinnedLabel ? `ADD${n === 1 ? "" : ` ${n}`} AND PIN TO ${pinnedLabel}` : n === 1 ? "ADD 1 TO MOODBOARD" : `ADD ${n} TO MOODBOARD`;
 
   const add = async () => {
     if (!project) return;
@@ -174,7 +174,7 @@ function ShareIn() {
                       <span className={styles.pinnedSubject}>{s.subject}</span>
                     </>
                   ) : (
-                    <span className={styles.pinnedSubject}>No shot — it goes on the look only.</span>
+                    <span className={styles.pinnedSubject}>No shot — it goes on the moodboard only.</span>
                   )}
                   {i === all.length - 1 && (
                     <button type="button" className={styles.pinnedChange} onClick={() => setPinning(true)} aria-label="Change which shots it's pinned to">
@@ -226,7 +226,7 @@ function ShareIn() {
         )}
 
         {/* L8b: the look is the search's project's, so TO is a line, not a choice. */}
-        {sought && project && <p className={styles.toLine}>TO {project.name.toUpperCase()} · LOOK</p>}
+        {sought && project && <p className={styles.toLine}>TO {project.name.toUpperCase()} · MOODBOARD</p>}
 
         {problem && (
           <div className={ui.box} role="alert">

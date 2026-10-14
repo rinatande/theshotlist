@@ -40,6 +40,16 @@
   text-decoration: none;
 }
 
+/* The count stays whole — "4 FRAMES ›" on one line — and the source name wraps instead. */
+.band > span:last-child {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.band > span:first-child {
+  padding: 6px 0;
+}
+
 .grid {
   display: flex;
   gap: 2px;

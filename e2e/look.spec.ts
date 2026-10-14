@@ -22,7 +22,7 @@ async function newProject(page: Page, name: string) {
 }
 
 async function openLook(page: Page) {
-  await page.getByRole("button", { name: "LOOK", exact: true }).click();
+  await page.getByRole("button", { name: "MOODBOARD", exact: true }).click();
 }
 
 async function addLink(page: Page) {
@@ -33,15 +33,15 @@ async function addLink(page: Page) {
   await expect(page.getByText("Mornings at our Home Cafe · Taro's House · YouTube")).toBeVisible();
   await page.getByRole("button", { name: "+ ADD MOMENT" }).click();
   await page.getByLabel("Moment 2, minutes and seconds").fill("1:12");
-  await page.getByRole("button", { name: "ADD TO LOOK" }).click();
+  await page.getByRole("button", { name: "ADD TO MOODBOARD" }).click();
 }
 
 test("a note goes on the look", async ({ page }) => {
   await newProject(page, "Look notes");
   await openLook(page);
-  await expect(page.getByText("Nothing on the look yet.")).toBeVisible();
+  await expect(page.getByText("Nothing on the moodboard yet.")).toBeVisible();
   await page.getByRole("link", { name: /^NOTE/ }).click();
-  await page.getByLabel("THE LOOK, IN YOUR WORDS").fill("Slow, soft and quiet. Warm grade with soft highlights.");
+  await page.getByLabel("THE FEEL, IN YOUR WORDS").fill("Slow, soft and quiet. Warm grade with soft highlights.");
   await page.getByRole("checkbox", { name: "GRADE" }).click();
   await page.getByRole("button", { name: "SAVE NOTE" }).click();
   await expect(page.getByText("1 REF · 0 PINNED TO SHOTS")).toBeVisible();
@@ -79,7 +79,7 @@ test("a frame pinned to a shot shows on the shot and in shoot mode", async ({ pa
   await page.getByRole("button", { name: /PIN TO A SHOT/ }).click();
   await page.getByRole("checkbox").first().check();
   await page.getByRole("button", { name: "PIN TO 1" }).click();
-  await page.getByRole("button", { name: "ADD 1 TO LOOK" }).click();
+  await page.getByRole("button", { name: "ADD 1 TO MOODBOARD" }).click();
   await expect(page.getByText("1 REF · 1 PINNED TO SHOTS")).toBeVisible();
   await expect(page.getByRole("link", { name: "Frame at 0:12, pinned to shot 01" })).toBeVisible();
 

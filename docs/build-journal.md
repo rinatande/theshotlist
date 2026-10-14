@@ -460,3 +460,13 @@ Claude also suggested "close up detail" rather than "insert shot", which on Pint
 - **A test caught a bug in the owner stripping:** JavaScript's `\b` is ASCII-only, so "crème" lost its "me". It now matches on spaces.
 - **Not yet checked against a live read:** no paid read was run. Whether the read names things well needs one real brief.
 **Kind:** bug caught
+
+### 2026-10-14 · v1 · LOOK becomes MOODBOARD
+
+**Proposed:** The tab and its screens said LOOK, from the boards.
+**Rina:** Renamed it MOODBOARD on the boards (14 Oct), with the brief: change only the words people see; files, routes, types, tables and functions stay `look`. The note field becomes THE FEEL, IN YOUR WORDS. FIND A REF and REFS stay.
+**Changed:**
+- **Every user-facing LOOK** is now MOODBOARD: the tab, back links, ADD TO and ADD N TO, `TO … · MOODBOARD`, ADD TO WHICH MOODBOARD, the empty lines, Find a ref's lines and S3j's status. The end-to-end tests now look for the new words. design.md §5.16 is renamed "The moodboard", and §5.17 and the tab mentions in §6.3 and §8 follow it. "Look words" (words describing a look) and the diffusion filter's "changes the look" are left alone.
+- **320px,** measured in a production build: the tabs end at 216px of the 300 between the gutters, each tab is 49px tall, and nothing scrolls sideways.
+- **Found in passing:** at 320px, a group band's `4 FRAMES ›` wrapped and left the `›` on its own line. The count now stays on one line and the source name wraps instead.
+**Kind:** design call

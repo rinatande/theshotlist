@@ -58,14 +58,14 @@ export function RefStrip({ project, refs, fresh = [] }: { project: Project; refs
   );
 }
 
-/** + PIN from a shot: which of the look's refs sit on it. */
+/** + PIN from a shot: which of the moodboard's refs sit on it. */
 export function RefPickSheet({ project, title, initial, onClose, onSave }: { project: Project; title: string; initial: Id[]; onClose: () => void; onSave: (ids: Id[]) => void }) {
   const [picked, setPicked] = useState<Id[]>(initial);
   const refs = project.refs ?? [];
   return (
     <BottomSheet title={title} onClose={onClose}>
       <div className={styles.pickList}>
-        {refs.length === 0 && <p className={styles.none}>Nothing on the look yet. Add refs on the LOOK tab, then pin them here.</p>}
+        {refs.length === 0 && <p className={styles.none}>Nothing on the moodboard yet. Add refs on the MOODBOARD tab, then pin them here.</p>}
         {refs.map((r) => {
           const on = picked.includes(r.id);
           return (

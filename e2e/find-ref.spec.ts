@@ -43,10 +43,10 @@ test("find a ref, add the screenshot, and it lands pinned on the shot", async ({
   await expect(page.getByRole("button", { name: "ADD YOUR SCREENSHOT" })).toBeVisible();
   await page.getByTestId("look-photos").setInputFiles(path.join(__dirname, "fixtures", "frame.png"));
   await expect(page.getByText("YOU WERE FINDING A REF FOR 01 · ESPRESSO INTO THE GLASS")).toBeVisible();
-  await expect(page.getByText("TO FIND A REF · LOOK")).toBeVisible();
+  await expect(page.getByText("TO FIND A REF · MOODBOARD")).toBeVisible();
   await page.getByRole("button", { name: "ADD AND PIN TO 01" }).click();
 
-  await expect(page.getByRole("status")).toHaveText(/PINNED TO 01 · ON THE LOOK TOO/);
+  await expect(page.getByRole("status")).toHaveText(/PINNED TO 01 · ON THE MOODBOARD TOO/);
   await expect(page.getByText("REFS · 1")).toBeVisible();
   await expect(page.getByRole("link", { name: /just added/ })).toBeVisible();
 

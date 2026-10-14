@@ -36,11 +36,11 @@ function NoteScreen() {
 
   return (
     <div className={ui.screen}>
-      <StepHeader label="Note" back={{ label: editing ? "← REF" : "← LOOK", href: back }} />
+      <StepHeader label="Note" back={{ label: editing ? "← REF" : "← MOODBOARD", href: back }} />
       <div className={ui.body}>
         <div className={ui.field}>
           <label htmlFor="note" className={ui.label}>
-            THE LOOK, IN YOUR WORDS
+            THE FEEL, IN YOUR WORDS
           </label>
           <textarea
             id="note"

@@ -38,7 +38,7 @@ function RefScreen() {
 
   if (project === undefined) return <div className={ui.screen} aria-busy="true" />;
   const ref = project?.refs?.find((r) => r.id === params.get("ref"));
-  if (!project || !ref) return <NotHere href={project ? `/project?id=${project.id}&tab=look` : "/projects"} label="← LOOK" />;
+  if (!project || !ref) return <NotHere href={project ? `/project?id=${project.id}&tab=look` : "/projects"} label="← MOODBOARD" />;
 
   const look = `/project?id=${project.id}&tab=look`;
   const group = groupRefs(project).find((g) => g.refs.some((r) => r.id === ref.id))!;
@@ -67,7 +67,7 @@ function RefScreen() {
   const bar = (dark: boolean) => (
     <div className={dark ? styles.topBar : styles.bandBar}>
       <Link href={look} className={dark ? styles.topBack : ui.backLink}>
-        ← LOOK
+        ← MOODBOARD
       </Link>
       <span className={styles.topRight}>
         <span className={styles.position}>{position}</span>

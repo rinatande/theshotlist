@@ -209,7 +209,7 @@ function ShotDetail() {
       <div className={`${ui.footer} ${styles.footer}`}>
         {added.length > 0 && (
           <div role="status" className={styles.added}>
-            <span>PINNED TO {n !== undefined ? formatShotNumber(n) : "THIS SHOT"} · ON THE LOOK TOO</span>
+            <span>PINNED TO {n !== undefined ? formatShotNumber(n) : "THIS SHOT"} · ON THE MOODBOARD TOO</span>
             <button
               type="button"
               className={styles.undo}

@@ -23,7 +23,7 @@ import { saveProject, useProject } from "@/lib/useProject";
 import styles from "./Project.module.css";
 
 
-/** A project behind its header and tabs (§7). SHOTS is the shot list, GEAR the gear tab; LOOK is a stub. */
+/** A project behind its header and tabs (§7). SHOTS is the shot list, MOODBOARD the look board (§5.16), GEAR the gear tab. */
 export function ProjectScreen() {
   const router = useRouter();
   const { id, project, params } = useProject();

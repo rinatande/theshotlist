@@ -675,11 +675,11 @@ Before this, a shot was described by its **size** and nothing else about where t
 
 **In the build:** `Shot.angle`, `Shot.view`, `Shot.roll` (`src/lib/types.ts`); the migration in `src/lib/migrate.ts`; the rules in `src/lib/suggest.ts`; the read's schema and prompt in `src/lib/read.ts` and its tidying in `src/lib/readShots.ts`; tests in `src/lib/angle.test.ts`.
 
-### 5.16 The look — as built (12 Oct, Rina)
+### 5.16 The moodboard — as built (12 Oct, Rina; renamed 14 Oct)
 
-*Drawn by Rina as L0–L9, S3g, N4c and N4d, and built from her written brief on 12 Oct. Those boards replace the earlier look boards A–D and E7. Where the build departs from the boards, it says so below.*
+*Drawn by Rina as L0–L9, S3g, N4c and N4d, and built from her written brief on 12 Oct. Those boards replace the earlier look boards A–D and E7. Where the build departs from the boards, it says so below. Rina renamed the tab from LOOK to MOODBOARD on 14 Oct; only the words people see changed — files, routes, types and the `look.ts` names stayed.*
 
-The look is the half of the app that makes you want to shoot: what this should feel like, collected while you're watching other people's work, and in your hand on set. Each project has one look. It lives on the `LOOK` tab and is **never sent to the read** (§5.6).
+The moodboard is the half of the app that makes you want to shoot: what this should feel like, collected while you're watching other people's work, and in your hand on set. Each project has one moodboard. It lives on the `MOODBOARD` tab and is **never sent to the read** (§5.6).
 
 **Three kinds of ref.** Each can carry a short *why this one* line and can be pinned to any number of shots.
 
@@ -703,19 +703,19 @@ The look is the half of the app that makes you want to shoot: what this should f
   - *Notes* sit on `--band`.
   - *Links* are `--tile`, dark in both themes, with ▶, the title, `2 MOMENTS` and the times. No thumbnail yet.
 - **`+ ADD`:** floating, accent fill, 48px, bottom-right.
-- **Empty (L0):** *"Nothing on the look yet."* with the three ways in listed below it.
+- **Empty (L0):** *"Nothing on the moodboard yet."* with the three ways in listed below it.
 
 **Adding (L2: `PHOTOS · LINK · NOTE`).**
 - **`PHOTOS`** opens the gallery picker, several at once, and lands on the same screen as share-in.
 - **Share-in (L8)** is for Android, from the installed app. The manifest declares a Web Share Target (POST, multipart, `image/*`). The service worker catches the POST, keeps the files in Cache Storage and sends you to L8. L8 has:
   - the frames, each with an optional m:ss;
-  - `TO`, the project's look, changeable because sharing starts outside the app — it defaults to the project you last had open;
+  - `TO`, the project's moodboard, changeable because sharing starts outside the app — it defaults to the project you last had open;
   - `FROM A VIDEO · OPTIONAL`, one link for the whole batch;
   - `PIN TO A SHOT · OPTIONAL`;
-  - `ADD N TO LOOK`.
+  - `ADD N TO MOODBOARD`.
 - **iOS has no web share target,** so there it's `PHOTOS` only, and no screen mentions sharing.
 - **`LINK` (L7):** paste a URL, and the start time in it becomes the first moment (`youtu.be/ID?t=40`, `watch?v=ID&t=72`, `t=1m12s`, also Shorts). `+ ADD MOMENT` adds one; `✕` removes one.
-  - YouTube's title and channel come from its oEmbed, through `/api/oembed`, which takes YouTube links only and rebuilds the URL from the video id, so it can't be used as an open proxy. With no signal the link saves without a title, and the title is filled in the next time the look opens online.
+  - YouTube's title and channel come from its oEmbed, through `/api/oembed`, which takes YouTube links only and rebuilds the URL from the video id, so it can't be used as an open proxy. With no signal the link saves without a title, and the title is filled in the next time the moodboard opens online.
   - Instagram has no lookup: it shows *Instagram* and the URL.
 - **`NOTE` (L6):** the text and the four tags as on/off chips, then `SAVE NOTE`.
 
@@ -738,8 +738,8 @@ The look is the half of the app that makes you want to shoot: what this should f
 - **Instagram sources.** An Instagram link only names its account when it's in the URL. Without one, the band reads `INSTAGRAM · <CODE>`, and L7 and L8 offer `WHO IT'S FROM · OPTIONAL`, named once per reel.
 - **A shared link without images** opens L7 with `TO`, not L8, which has nothing to show.
 - **With no projects,** L8 shows `ADD` disabled and `+ NEW PROJECT`.
-- **The pin sheet lists every shot** in running order under its location bands, not only the day's: a look is planned before days are.
-- **`+ PIN` on shot detail** opens a sheet of the look's refs to tick, the same pattern from the other side.
+- **The pin sheet lists every shot** in running order under its location bands, not only the day's: a moodboard is planned before days are.
+- **`+ PIN` on shot detail** opens a sheet of the moodboard's refs to tick, the same pattern from the other side.
 - **The frame's `FROM` button** is disabled with no signal, the same as L5's.
 
 **In the build:** `Ref`, `RefImage`, `Project.refs`, `Project.sourceNames`, `Shot.refIds` (`src/lib/types.ts`); the `refImages` table (`src/lib/db.ts`, version 4); the rules in `src/lib/look.ts`; images in `src/lib/lookImages.ts`; share-in in `src/lib/shareInbox.ts`, `src/app/sw.ts` and `src/app/manifest.ts`; screens in `src/components/look/` and `src/app/look/`; tests in `src/lib/look.test.ts`, `src/lib/shareInbox.test.ts` and `e2e/look.spec.ts`.
@@ -748,17 +748,17 @@ The look is the half of the app that makes you want to shoot: what this should f
 
 *Drawn by Rina as S3i, S3k, L8b and S3j, and built from her written brief on 12 Oct. Where the build departs from the boards, it says so below.*
 
-The look (§5.16) fills up when you're already watching something. Find a ref works from the other end: you're on a shot with nothing pinned to it, and want to see how someone else shot it. The app doesn't search. It writes a search phrase, opens the places worth searching, and keeps the shot ready for the screenshot you come back with. **No image is fetched, no search API is called, and nothing goes to the read.**
+The moodboard (§5.16) fills up when you're already watching something. Find a ref works from the other end: you're on a shot with nothing pinned to it, and want to see how someone else shot it. The app doesn't search. It writes a search phrase, opens the places worth searching, and keeps the shot ready for the screenshot you come back with. **No image is fetched, no search API is called, and nothing goes to the read.**
 
 **On shot detail (S3i).** `FIND A REF` sits beside `+ PIN` in the `REFS · N` header, with 44px targets. It shows even when the shot has no refs.
 
 **The sheet (S3k): `FIND A REF · SHOT 03 · THE POUR`.**
-- **`SEARCH FOR`** is an editable box, with *"Made from the shot and your look's notes. Change anything."* The phrase is built on the phone (`buildQuery`), in this order:
+- **`SEARCH FOR`** is an editable box, with *"Made from the shot and your moodboard's notes. Change anything."* The phrase is built on the phone (`buildQuery`), in this order:
   - **what it's of.** The read's search words when the shot has them (`Shot.searchWords`, below). Otherwise the subject, without a leading *the*, *a* or *an*, and without *me*, *my*, *your*, *our*, *his*, *her*, *their* or a possessive *'s*. When that subject is two words or fewer, a word of context goes in front: the first subject or work chip from the brief's read, if the subject doesn't already say it. So "The pour" becomes *espresso pour*;
   - **the size,** in the words photo sites tag with: *wide shot*, *medium shot*, *close up*, and *close up detail* for an insert. "Insert" is set talk, and searched it finds film-school diagrams (Rina, 14 Oct);
   - **the note's opening direction** (§5.15), as words: *side on*;
   - **the angle** in plain words: *top down*, *high angle*, *eye level*, *surface level*, *low angle*;
-  - **up to three look words** from the look's MOOD and GRADE notes, from a fixed list in a fixed order (colour, then quality, then the grade). Light words are followed by *light*: *warm soft light*.
+  - **up to three look words** from the moodboard's MOOD and GRADE notes, from a fixed list in a fixed order (colour, then quality, then the grade). Light words are followed by *light*: *warm soft light*.
 
   For example: *"breville barista pro power switch, close up detail, front on"*.
 
@@ -773,7 +773,7 @@ The look (§5.16) fills up when you're already watching something. Find a ref wo
 
   The hashtag is made from what the shot is of (the read's words, or the context word and subject), not the edited phrase. It's lowercase with accents and punctuation removed, skips filler words (*the*, *into*, *before*…) and keeps the first two words left: "Empty lane before the crowds" → `#emptylane`. With nothing left to make one from, the row says so and can't be tapped.
 - **With no signal,** the rows are disabled on a dashed edge, with the reason in the label: `PINTEREST · NEEDS SIGNAL`. They're never dimmed.
-- **`THEN`:** *"Screenshot one that fits your look and share it here. It'll be ready to pin to 03."* On iOS, which has no share target, it reads *"…then come back and add it."* instead.
+- **`THEN`:** *"Screenshot one that fits your moodboard and share it here. It'll be ready to pin to 03."* On iOS, which has no share target, it reads *"…then come back and add it."* instead.
 - **`ADD YOUR SCREENSHOT`** (outlined) shows once a search is waiting for this shot, and opens the gallery picker. It's the iOS route, and works anywhere.
 
 **What the read names (since 14 Oct).** The shot's subject says *"the machine's power switch"*; only the brief says it's a Breville Barista Pro, and nothing on the phone can tie the two together. So the read (§5.6) returns a `search` field with every shot: under 8 words naming the specific things in it as the brief names them, with no people's names, no *me* or *my*, and no camera words. The app adds those.
@@ -789,20 +789,20 @@ The look (§5.16) fills up when you're already watching something. Find a ref wo
 - **The frames,** each with `WHERE IN THE VIDEO · OPTIONAL`.
 - **`PIN TO`:** that shot, ticked, with `CHANGE` on its row, which opens the L4 sheet.
 - **The source fields:** `FROM A VIDEO` and `WHO IT'S FROM`, as on L8.
-- **`TO KYOTO MORNING · LOOK`,** a line rather than a choice: the look is the shot's project's.
+- **`TO KYOTO MORNING · MOODBOARD`,** a line rather than a choice: the moodboard is the shot's project's.
 - **The button:** `ADD AND PIN TO 03` (`ADD 2 AND PIN TO 03` for two).
 
 Adding goes back to that shot's detail. `CANCEL` goes back there too, and clears the search.
 
 **Back on the shot (S3j).**
 - **The new ref** goes first in the strip, and stays first. It's tagged `NEW` until you leave the screen.
-- **A status line** sits over the footer: `PINNED TO 03 · ON THE LOOK TOO` with `UNDO`. UNDO takes the new ref off the look, with its image and pins. The line is drawn in inverse ink (`--ink` behind `--ground`), so it reads in both themes. The page leaves room at its foot, so it never covers the end of the note.
+- **A status line** sits over the footer: `PINNED TO 03 · ON THE MOODBOARD TOO` with `UNDO`. UNDO takes the new ref off the moodboard, with its image and pins. The line is drawn in inverse ink (`--ink` behind `--ground`), so it reads in both themes. The page leaves room at its foot, so it never covers the end of the note.
 
 **Where the build departs from the boards**, and why (build-journal, 12 Oct):
 - **The context word.** S3k's *espresso pour* needs a word the subject "The pour" doesn't have. It comes from the brief's read (Rina chose this of three options). Hand-added shots on an unread brief search on the subject alone.
 - **The size is in the phrase, and the read names things (Rina, 14 Oct).** S3k's phrase has neither. Built from the shot alone, *"my hand flipping the machine's power switch front on"* found light switches.
 - **iOS wording.** THEN can't say *share it here* where nothing can be shared in.
-- **More than one shot under `CHANGE`** lists them all, with `CHANGE` on the last row. Unticking them all gives *"No shot — it goes on the look only."*, the button goes back to `ADD N TO LOOK`, and adding goes to the look. The board draws only the one shot.
+- **More than one shot under `CHANGE`** lists them all, with `CHANGE` on the last row. Unticking them all gives *"No shot — it goes on the moodboard only."*, the button goes back to `ADD N TO MOODBOARD`, and adding goes to the moodboard. The board draws only the one shot.
 
 **In the build:** the phrase, links, hashtag and waiting search in `src/lib/findRef.ts`; the sheet in `src/components/look/FindRefSheet.tsx`; L8b in `src/app/look/share/page.tsx`; S3j in `src/app/shot/page.tsx`; `addFrames(…, { pinFirst })` and `removeRefs` in `src/lib/lookImages.ts`; tests in `src/lib/findRef.test.ts` and `e2e/find-ref.spec.ts`.
 
@@ -897,7 +897,7 @@ A count of withheld suggestions is shown, without listing them: *"Four more that
 | **Kit for this shoot** | Start from a kit, then tick items in or out. Three bands: *Bringing* / *Added for this shoot* / *Leaving behind*, with added items marked `+ NOT IN DOC DAY`. `SAVE AS NEW KIT` sits beside `DONE`. |
 | **Gear tab** | On the shot list, third tab. Kit summary with an `EDIT` route, then `IN THE BAG · 5 / 7` — the same `[ ]` / `[✓]` control as a shot row, striking items through as they go in. `SUGGEST SHOTS FROM THIS KIT` is the primary action. |
 
-**Gear appears in two contexts, and the empty state has to exist in both.** Reached from Projects it's the standalone library, with its own `My gear · 0` header. Reached from inside a project it's the third tab, and then it keeps the project header and the `SHOTS / LOOK / GEAR` bar — you are still in Kyoto Morning, and losing that chrome would read as having navigated away. Same content either way; only the frame differs. Both are drawn.
+**Gear appears in two contexts, and the empty state has to exist in both.** Reached from Projects it's the standalone library, with its own `My gear · 0` header. Reached from inside a project it's the third tab, and then it keeps the project header and the `SHOTS / MOODBOARD / GEAR` bar — you are still in Kyoto Morning, and losing that chrome would read as having navigated away. Same content either way; only the frame differs. Both are drawn.
 
 The project-tab version is the more common route to an empty library, because most people meet gear for the first time while setting up a shoot rather than by going looking for a settings screen.
 
@@ -962,7 +962,7 @@ Entry point. Grouped by status via `--band` bands: **In progress / Planning / Wr
 *States:* empty (no projects yet — the onboarding board, §7) · syncing · offline. Its `+ NEW PROJECT` goes to the first-run step 1; the populated list goes to the ordinary empty one.
 
 ### Shot list
-The core screen. Tabs for **Shots / Look / Gear** (§6.3), and a plan bar carrying the delivery summary, the shot budget and the location/beat toggle (§5.4). Column header, then location bands with shot rows beneath, in running order. Progress meter in the header. Two actions in the thumb zone: `SHOOT MODE` (secondary) and `+ ADD SHOT` (primary).
+The core screen. Tabs for **Shots / Moodboard / Gear** (§6.3), and a plan bar carrying the delivery summary, the shot budget and the location/beat toggle (§5.4). Column header, then location bands with shot rows beneath, in running order. Progress meter in the header. Two actions in the thumb zone: `SHOOT MODE` (secondary) and `+ ADD SHOT` (primary).
 
 *States:* all exposed (the payoff — meter full, header count in `--ok`) · empty list · a location with no shots · offline with queued edits.
 

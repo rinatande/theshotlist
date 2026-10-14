@@ -65,7 +65,7 @@ function LinkScreen() {
   }, [lookup, online]);
 
   if (!projects) return <div className={ui.screen} aria-busy="true" />;
-  if (editingId && !editing) return <NotHere href={project ? `/project?id=${project.id}&tab=look` : "/projects"} label="← LOOK" />;
+  if (editingId && !editing) return <NotHere href={project ? `/project?id=${project.id}&tab=look` : "/projects"} label="← MOODBOARD" />;
 
   // Until the person touches them, moments follow the link: its own time first.
   const list: Moment[] = moments ?? (editing ? editing.moments.map((m, i) => ({ key: i, text: formatTime(m), fromLink: false })) : video?.start !== undefined ? [{ key: 0, text: formatTime(video.start), fromLink: true }] : []);
@@ -104,7 +104,7 @@ function LinkScreen() {
 
   return (
     <div className={ui.screen}>
-      <StepHeader label={editing ? "Moments" : "Link"} back={{ label: editing ? "← REF" : params.get("shared") ? "CANCEL" : "← LOOK", href: back }} />
+      <StepHeader label={editing ? "Moments" : "Link"} back={{ label: editing ? "← REF" : params.get("shared") ? "CANCEL" : "← MOODBOARD", href: back }} />
       <div className={ui.body}>
         {params.get("shared") && projects && <ProjectTo projects={projects} project={project} onChoose={choose} />}
 
@@ -183,7 +183,7 @@ function LinkScreen() {
       <div className={ui.footer}>
         {ready ? (
           <button type="button" className={ui.primary} onClick={save}>
-            {editing ? "SAVE MOMENTS" : "ADD TO LOOK"}
+            {editing ? "SAVE MOMENTS" : "ADD TO MOODBOARD"}
           </button>
         ) : (
           <>
@@ -191,7 +191,7 @@ function LinkScreen() {
               {!project ? "Make a project first." : badTime ? "Fix the time above first." : "Paste a link to a video."}
             </p>
             <button type="button" className={ui.disabled} aria-disabled="true" aria-describedby="link-why">
-              {editing ? "SAVE MOMENTS" : "ADD TO LOOK"}
+              {editing ? "SAVE MOMENTS" : "ADD TO MOODBOARD"}
             </button>
           </>
         )}

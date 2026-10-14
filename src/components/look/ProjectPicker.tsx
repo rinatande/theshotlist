@@ -42,11 +42,11 @@ export function ProjectTo({ projects, project, onChoose }: { projects: Project[]
         TO
       </span>
       <button type="button" aria-labelledby="to" className={styles.to} onClick={() => setOpen(true)} disabled={projects.length < 2}>
-        <span>{project.name.toUpperCase()} · LOOK</span>
+        <span>{project.name.toUpperCase()} · MOODBOARD</span>
         {projects.length > 1 && <span className={styles.change}>CHANGE</span>}
       </button>
       {open && (
-        <BottomSheet title="ADD TO WHICH LOOK" onClose={() => setOpen(false)}>
+        <BottomSheet title="ADD TO WHICH MOODBOARD" onClose={() => setOpen(false)}>
           <ul className={styles.projects}>
             {projects.map((p) => (
               <li key={p.id}>

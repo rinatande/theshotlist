@@ -44,7 +44,7 @@ export function usePhotoPicker(projectId: Id) {
 }
 
 /**
- * The LOOK tab (§5.16): L1 the board, L0 when it's empty. The one screen that
+ * The MOODBOARD tab (§5.16): L1 the board, L0 when it's empty. The one screen that
  * breaks the paper-and-rules format on purpose — a full-bleed grid of images
  * with 2px gaps, no side padding, no borders.
  */
@@ -66,7 +66,7 @@ export function LookTab({ project }: { project: Project }) {
     return (
       <div className={styles.empty}>
         <div className={styles.emptyText}>
-          <p className={styles.emptyLead}>Nothing on the look yet.</p>
+          <p className={styles.emptyLead}>Nothing on the moodboard yet.</p>
           <p className={styles.emptyLine}>
             Collect what you want this to feel like.{share ? " Watching something good? Screenshot the moments and share them here." : ""} Pin any ref to a shot and
             it&apos;s there on set.
@@ -120,7 +120,7 @@ export function LookTab({ project }: { project: Project }) {
       </div>
 
       {adding && (
-        <BottomSheet title="ADD TO LOOK" onClose={() => setAdding(false)}>
+        <BottomSheet title="ADD TO MOODBOARD" onClose={() => setAdding(false)}>
           <AddRoutes
             project={project}
             share={share}

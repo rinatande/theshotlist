@@ -42,7 +42,7 @@ export function FindRefSheet({ project, shot, shotNo, onClose }: { project: Proj
           SEARCH FOR
         </label>
         <textarea id="find-query" className={styles.textarea} rows={2} value={query} onChange={(e) => setQuery(e.target.value)} onBlur={keep} />
-        <span className={styles.hint}>Made from the shot and your look&apos;s notes. Change anything.</span>
+        <span className={styles.hint}>Made from the shot and your moodboard&apos;s notes. Change anything.</span>
       </div>
 
       {SITES.map(({ site, label, hint }) => {
@@ -86,8 +86,8 @@ export function FindRefSheet({ project, shot, shotNo, onClose }: { project: Proj
         <span className={styles.thenLabel}>THEN</span>
         <span className={styles.thenText}>
           {sharesIn()
-            ? `Screenshot one that fits your look and share it here. It'll be ready to pin to ${forShot}.`
-            : `Screenshot one that fits your look, then come back and add it. It'll be ready to pin to ${forShot}.`}
+            ? `Screenshot one that fits your moodboard and share it here. It'll be ready to pin to ${forShot}.`
+            : `Screenshot one that fits your moodboard, then come back and add it. It'll be ready to pin to ${forShot}.`}
         </span>
       </div>
 
