@@ -753,14 +753,16 @@ The look (§5.16) fills up when you're already watching something. Find a ref wo
 **On shot detail (S3i).** `FIND A REF` sits beside `+ PIN` in the `REFS · N` header, with 44px targets. It shows even when the shot has no refs.
 
 **The sheet (S3k): `FIND A REF · SHOT 03 · THE POUR`.**
-- **`SEARCH FOR`** is an editable box, with *"Made from the shot and your look's notes. Change anything."* The phrase is built on the phone (`buildQuery`) from:
-  - **the subject**, without a leading *the*, *a* or *an*;
-  - **a word of context**, when the subject is two words or fewer: the first subject or work chip from the brief's read, if the subject doesn't already say it. So "The pour" becomes *espresso pour*. With no read, the subject stands alone (Rina, 12 Oct);
+- **`SEARCH FOR`** is an editable box, with *"Made from the shot and your look's notes. Change anything."* The phrase is built on the phone (`buildQuery`), in this order:
+  - **what it's of.** The read's search words when the shot has them (`Shot.searchWords`, below). Otherwise the subject, without a leading *the*, *a* or *an*, and without *me*, *my*, *your*, *our*, *his*, *her*, *their* or a possessive *'s*. When that subject is two words or fewer, a word of context goes in front: the first subject or work chip from the brief's read, if the subject doesn't already say it. So "The pour" becomes *espresso pour*;
+  - **the size,** in the words photo sites tag with: *wide shot*, *medium shot*, *close up*, and *close up detail* for an insert. "Insert" is set talk, and searched it finds film-school diagrams (Rina, 14 Oct);
   - **the note's opening direction** (§5.15), as words: *side on*;
   - **the angle** in plain words: *top down*, *high angle*, *eye level*, *surface level*, *low angle*;
   - **up to three look words** from the look's MOOD and GRADE notes, from a fixed list in a fixed order (colour, then quality, then the grade). Light words are followed by *light*: *warm soft light*.
 
-  It's kept to about ten words. Look words go first, then the angle, then the direction. An edit is kept on the shot (`Shot.refQuery`); clearing the box goes back to the built phrase.
+  For example: *"breville barista pro power switch, close up detail, front on"*.
+
+  It's kept to about twelve words. Look words go first, then the angle, then the direction; the size always stays. An edit is kept on the shot (`Shot.refQuery`); clearing the box goes back to the built phrase.
 - **Three rows**, each a link that opens in a new tab or the installed app:
 
   | Row | Where it goes | Its line |
@@ -769,10 +771,15 @@ The look (§5.16) fills up when you're already watching something. Find a ref wo
   | `YOUTUBE` | `youtube.com/results?search_query=` | *Whole sequences. Note the time when you screenshot.* |
   | `INSTAGRAM` | `instagram.com/explore/tags/<tag>/` | *Searches one hashtag: #espressopour* |
 
-  The hashtag is made from the context word and the subject, not the edited phrase. It's lowercase with accents and punctuation removed, skips filler words (*the*, *into*, *before*…) and keeps the first two words left: "Empty lane before the crowds" → `#emptylane`. With nothing left to make one from, the row says so and can't be tapped.
+  The hashtag is made from what the shot is of (the read's words, or the context word and subject), not the edited phrase. It's lowercase with accents and punctuation removed, skips filler words (*the*, *into*, *before*…) and keeps the first two words left: "Empty lane before the crowds" → `#emptylane`. With nothing left to make one from, the row says so and can't be tapped.
 - **With no signal,** the rows are disabled on a dashed edge, with the reason in the label: `PINTEREST · NEEDS SIGNAL`. They're never dimmed.
 - **`THEN`:** *"Screenshot one that fits your look and share it here. It'll be ready to pin to 03."* On iOS, which has no share target, it reads *"…then come back and add it."* instead.
 - **`ADD YOUR SCREENSHOT`** (outlined) shows once a search is waiting for this shot, and opens the gallery picker. It's the iOS route, and works anywhere.
+
+**What the read names (since 14 Oct).** The shot's subject says *"the machine's power switch"*; only the brief says it's a Breville Barista Pro, and nothing on the phone can tie the two together. So the read (§5.6) returns a `search` field with every shot: under 8 words naming the specific things in it as the brief names them, with no people's names, no *me* or *my*, and no camera words. The app adds those.
+- **It's kept on the shot** as `searchWords`. Editing the shot's subject drops it, because it described the old subject.
+- **Reads saved before 14 Oct don't have it,** so their shots use the subject as above. `READ_VERSION` went to 3, so the next `GENERATE` on an unchanged brief runs a fresh read rather than returning the saved one.
+- **Hand-added shots** never have it.
 
 **The waiting search.** Tapping a row saves `{projectId, shotId, startedAt}` on the phone (localStorage: it's a moment's state on one phone, not project data). Share-in and the picker use it while it's under an hour old, and drop it silently if the shot has gone. It's cleared on add, on `CANCEL`, or when it expires.
 
@@ -793,6 +800,7 @@ Adding goes back to that shot's detail. `CANCEL` goes back there too, and clears
 
 **Where the build departs from the boards**, and why (build-journal, 12 Oct):
 - **The context word.** S3k's *espresso pour* needs a word the subject "The pour" doesn't have. It comes from the brief's read (Rina chose this of three options). Hand-added shots on an unread brief search on the subject alone.
+- **The size is in the phrase, and the read names things (Rina, 14 Oct).** S3k's phrase has neither. Built from the shot alone, *"my hand flipping the machine's power switch front on"* found light switches.
 - **iOS wording.** THEN can't say *share it here* where nothing can be shared in.
 - **More than one shot under `CHANGE`** lists them all, with `CHANGE` on the last row. Unticking them all gives *"No shot — it goes on the look only."*, the button goes back to `ADD N TO LOOK`, and adding goes to the look. The board draws only the one shot.
 

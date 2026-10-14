@@ -101,6 +101,8 @@ export function updateShot(p: Project, id: Id, input: ShotInput, now = new Date(
           ...s,
           size: input.size,
           subject: input.subject.trim(),
+          // The read's search words describe the subject it wrote; a new subject makes them wrong (§5.17).
+          searchWords: input.subject.trim() === s.subject ? s.searchWords : undefined,
           lens: clean(input.lens),
           lensId: input.lensId,
           support: input.support,

@@ -431,3 +431,32 @@ Where the build differs from the boards:
 - **THEN has iOS wording.**
 - **L8b with more than one shot,** or none, isn't drawn: the shots are listed, and with none the button goes back to `ADD N TO LOOK`.
 **Kind:** spec gap
+
+### 2026-10-12 · v1 · The search phrase lacks context
+
+**Proposed:** FIND A REF built its phrase from the shot alone: subject, direction, angle and look words. It only borrowed a word from the brief's read when the subject was two words or fewer.
+**Rina:** Tried it on a real list: "'my hand flipping the machine's power switch front on', shows images of a light switch, it's missing the context of breville barista pro and insert shot."
+**Changed:** The phrase didn't say what the machine was or how close the shot is, so it searched for a light switch. What changed is in the next entry, after the plan.
+**Kind:** bug caught
+
+### 2026-10-14 · v1 · The read names what to search for
+
+**Proposed:** Claude found three reasons the phrase failed:
+- **No size:** the phrase never said how close the shot is.
+- **No name:** "the machine" doesn't point to the Breville Barista Pro anywhere on the phone.
+- **Noise:** *my* and *the machine's* were left in.
+
+The plan:
+- **A:** the phone adds the size in photo-site words and strips the owners.
+- **B:** the read writes each shot's search words from the brief.
+
+Claude also suggested "close up detail" rather than "insert shot", which on Pinterest tends to find diagrams.
+**Rina:** "both" and "yea close up detail makes more sense than insert for searching".
+**Changed:** Built both (design.md §5.17).
+- **The phrase** now runs: what it's of, size, direction, angle, look.
+- **The word limit** went from ten to twelve. With the size always in, ten would have dropped the look words from almost every shot.
+- **The read** returns a `search` field per shot, kept as `Shot.searchWords`. Editing a shot's subject drops it.
+- **`READ_VERSION` went to 3,** so GENERATE on an unchanged brief runs fresh instead of returning the saved read.
+- **A test caught a bug in the owner stripping:** JavaScript's `\b` is ASCII-only, so "crème" lost its "me". It now matches on spaces.
+- **Not yet checked against a live read:** no paid read was run. Whether the read names things well needs one real brief.
+**Kind:** bug caught

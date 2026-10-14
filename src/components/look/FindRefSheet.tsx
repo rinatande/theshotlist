@@ -24,7 +24,7 @@ export function FindRefSheet({ project, shot, shotNo, onClose }: { project: Proj
   const [query, setQuery] = useState(() => queryFor(project, shot));
   const [waiting, setWaiting] = useState(() => waitingSearch(store())?.shotId === shot.id);
   const photos = usePhotoPicker(project.id);
-  const tag = hashtag(project, shot.subject);
+  const tag = hashtag(project, shot);
   const forShot = shotNo ?? "this shot";
 
   const keep = async () => {

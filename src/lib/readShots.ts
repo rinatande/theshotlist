@@ -137,7 +137,9 @@ export function addReadPicks(project: Project, picks: ReadPick[], now = new Date
     next = {
       ...q,
       shots: q.shots.map((s) =>
-        s.id === id ? { ...s, source: "brief" as const, templateId: p.id, reason: p.shot.reason, required: p.client ? { client: p.client } : undefined } : s,
+        s.id === id
+          ? { ...s, source: "brief" as const, templateId: p.id, reason: p.shot.reason, required: p.client ? { client: p.client } : undefined, searchWords: p.shot.search?.trim() || undefined }
+          : s,
       ),
     };
   }

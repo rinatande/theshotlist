@@ -268,6 +268,8 @@ export interface Shot {
   refIds?: Id[];          // look-board references
   /** FIND A REF's search phrase, when you've changed the one built from the shot (§5.17). */
   refQuery?: string;
+  /** What the read says to search for: the things in the shot, named as the brief names them (§5.17). */
+  searchWords?: string;
 
   locationId?: Id;        // absent → the UNPLACED group
   dayId?: Id;

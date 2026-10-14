@@ -53,9 +53,10 @@ export const MAX_BRIEF = 6000;
 /**
  * Bumped when the read's instructions change what it returns. v2 (23 Sep): the
  * budget became a count to hit — reads made before it came back short, so they
- * run once more instead of being served from the cache.
+ * run once more instead of being served from the cache. v3 (14 Oct): each shot
+ * says what to search for, naming things as the brief does (§5.17).
  */
-export const READ_VERSION = 2;
+export const READ_VERSION = 3;
 
 export interface ReadContext {
   format: string;
@@ -99,6 +100,11 @@ export interface ReadShot {
   direction?: string;
   /** Cast names identifiably in it, when the cast is more than one person (§5.8). */
   people?: string[];
+  /**
+   * Since 12 Oct: words to search for a ref with, the things in the shot named
+   * as the brief names them — "Breville Barista Pro power switch" (§5.17).
+   */
+  search?: string;
 }
 
 export interface ReadResult {
@@ -157,6 +163,7 @@ const SHOT_SCHEMA = {
     roll: { type: "string", enum: ["6s", "10s", "15s", "move", "action"] },
     direction: { type: "string" },
     people: { type: "array", items: { type: "string" } },
+    search: { type: "string" },
     subject: { type: "string" },
     reason: { type: "string" },
     beat: { type: "string", enum: ["opener", "body", "closer"] },
@@ -166,7 +173,7 @@ const SHOT_SCHEMA = {
     location: { type: ["string", "null"] },
     day: { type: ["integer", "null"] },
   },
-  required: ["size", "subject", "reason", "beat", "light", "movement", "sound", "location", "day", "angle", "view", "roll", "direction", "people"],
+  required: ["size", "subject", "reason", "beat", "light", "movement", "sound", "location", "day", "angle", "view", "roll", "direction", "people", "search"],
   additionalProperties: false,
 } as const;
 
@@ -222,6 +229,7 @@ What good looks like:
 - View: "pov" when it's what the person sees (their own hands), "ots" over someone's shoulder, else "none". A POV is usually "high".
 - Roll is how long to record: "6s" for a still close-up or insert, "10s" for a still wide, "15s" for a still wide in observational work (and "10s" for its closer shots), "move" for any camera move (the whole move plus two seconds), "action" when something happens start to finish, or someone talks.
 - Direction is where the camera faces, as a short phrase that starts with one of: front-on, side-on, three-quarter, from behind, along (down the length of a surface). Under 8 words, with what's in front if it helps: "Side-on, cup in front", "Along the counter, bowl in front". A top-down shot faces nowhere in particular: leave its direction empty ("").
+- Search: the few words someone would type into an image search to find a reference for this shot — the specific things in it, named as the brief names them: "Breville Barista Pro power switch", not "the machine's switch"; "espresso pouring into a glass", not "the pour". Under 8 words. No names of people, no "me" or "my", and no camera words (no sizes, angles or directions) — the app adds those.
 - Sound: "speech" when someone talks on camera, "natural" when there's no talking but the place's sound is worth recording, "none" only when music or voice-over will cover it entirely. In a silent or observational film, natural sound is the soundtrack — use "natural", not "none".
 - Locations. If location names are given, set each shot's "location" to exactly one of those names where it clearly belongs, else null, and return "locations" empty. If none are given, suggest the places this shoot happens in "locations": short names a person would write on their own list ("Kitchen", "Nagi Coffee", "Higashiyama streets"), in the order they'd be shot, and as few as honestly cover it — usually one to four; a shoot in one room is one location. On a multi-day shoot give each its day, else null. Then set every shot's "location" to one of those names.
 - Set a shot's "day" to the day number only on a multi-day shoot, else null.

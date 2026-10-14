@@ -1,6 +1,6 @@
 import { projectBrief } from "./brief";
 import { DIRECTIONS, splitDirection } from "./suggest";
-import type { Angle, Id, Project, Shot } from "./types";
+import type { Angle, Id, Project, Shot, ShotSize } from "./types";
 
 /**
  * Find a ref (design.md §5.17): a search phrase built on the phone from the
@@ -11,7 +11,15 @@ import type { Angle, Id, Project, Shot } from "./types";
 // ─── The phrase ──────────────────────────────────────────────────────────────
 
 /** About as long as a search box wants. Look words go first when it's over. */
-export const QUERY_WORDS = 10;
+export const QUERY_WORDS = 12;
+
+/** Sizes in the words photo sites tag with. "Insert" is set talk; searched, it finds diagrams (Rina, 12 Oct). */
+const SIZE_WORDS: Record<ShotSize, string> = {
+  WS: "wide shot",
+  MS: "medium shot",
+  CU: "close up",
+  INS: "close up detail",
+};
 
 const ANGLE_WORDS: Record<Angle, string> = {
   "top-down": "top down",
@@ -31,8 +39,20 @@ const ARTICLE = /^(the|a|an)\s+/i;
 /** Words that make a hashtag worse: #emptylane, not #emptylanebeforethecrowds. */
 const FILLER = new Set(["the", "a", "an", "and", "or", "of", "in", "into", "on", "onto", "at", "to", "from", "with", "by", "for", "before", "after", "over", "under", "through", "out", "up", "down", "off", "its", "their", "her", "his", "my", "our", "your"]);
 
-/** The subject as a search would want it: no leading article. */
-const bare = (subject: string) => subject.trim().replace(ARTICLE, "").replace(/[.!?]+$/, "");
+/** Whose it is means nothing to a search: "my hand", "the machine's switch" → "hand", "machine switch". */
+// Spaces, not \b: \b is ASCII-only, so "crème" would lose its "me".
+const OWNER = /(^|\s)(me|my|mine|your|our|his|her|their|its)(?=\s|$)/gi;
+
+/** The subject as a search would want it: no leading article, no owners. */
+const bare = (subject: string) =>
+  subject
+    .trim()
+    .replace(/[.!?]+$/, "")
+    .replace(/['’]s(?=\s|$)/gi, "")
+    .replace(OWNER, "$1")
+    .replace(ARTICLE, "")
+    .replace(/\s+/g, " ")
+    .trim();
 
 /**
  * One word of context from the brief's read, for a subject too short to search
@@ -76,16 +96,28 @@ function lookPhrase(words: string[]): string | undefined {
 }
 
 /**
- * The phrase the sheet opens with: subject, direction, angle, look —
- * "coffee pour side on, surface level, warm soft light". Over about ten
- * words, look words go first, then the angle, then the direction.
+ * What the shot is of, for a search. The read's words when it gave some —
+ * it names things as the brief does: "breville barista pro power switch" —
+ * else the subject, tidied, with a word of context when it's short.
  */
-export function buildQuery(project: Project, shot: Pick<Shot, "subject" | "angle" | "note">): string {
-  const subject = [contextWord(project, shot.subject), bare(shot.subject).toLowerCase()].filter(Boolean).join(" ");
+export function searchSubject(project: Project, shot: Pick<Shot, "subject" | "searchWords">): string {
+  if (shot.searchWords?.trim()) return shot.searchWords.trim().toLowerCase().replace(/[.!?]+$/, "");
+  return [contextWord(project, shot.subject), bare(shot.subject).toLowerCase()].filter(Boolean).join(" ");
+}
+
+/**
+ * The phrase the sheet opens with: what it's of, the size, direction, angle,
+ * look — "breville barista pro power switch, close up detail, front on".
+ * Over about twelve words, look words go first, then the angle, then the
+ * direction.
+ */
+export function buildQuery(project: Project, shot: Pick<Shot, "subject" | "searchWords" | "size" | "angle" | "note">): string {
+  const subject = searchSubject(project, shot);
+  const size = SIZE_WORDS[shot.size];
   let direction = directionWords(shot.note);
   let angle = shot.angle ? ANGLE_WORDS[shot.angle] : undefined;
   let look = lookWords(project);
-  const phrase = () => [[subject, direction].filter(Boolean).join(" "), angle, lookPhrase(look)].filter(Boolean).join(", ");
+  const phrase = () => [subject, size, direction, angle, lookPhrase(look)].filter(Boolean).join(", ");
   const words = () => phrase().split(/[\s,]+/).filter(Boolean).length;
   while (look.length && words() > QUERY_WORDS) look = look.slice(0, -1);
   if (words() > QUERY_WORDS) angle = undefined;
@@ -113,10 +145,10 @@ export function setRefQuery(project: Project, shotId: Id, text: string, now = ne
 
 // ─── Where to search ─────────────────────────────────────────────────────────
 
-/** One hashtag from the subject: "The pour" with coffee → "coffeepour". Empty when there's nothing to make one from. */
-export function hashtag(project: Project, subject: string): string {
-  const words = [contextWord(project, subject), ...bare(subject).split(/\s+/)]
-    .filter((w): w is string => !!w)
+/** One hashtag from what it's of: "breville barista pro …" → "brevillebarista". Empty when there's nothing to make one from. */
+export function hashtag(project: Project, shot: Pick<Shot, "subject" | "searchWords">): string {
+  const words = searchSubject(project, shot)
+    .split(/\s+/)
     .map((w) => w.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, ""))
     .filter((w) => w && !FILLER.has(w));
   return words.slice(0, 2).join("");
