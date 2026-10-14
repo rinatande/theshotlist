@@ -5,6 +5,7 @@ import { Suspense, useState } from "react";
 import { NotHere } from "@/components/NotHere";
 import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
+import { MOODBOARD_PRIVACY } from "@/lib/read";
 import { db } from "@/lib/db";
 import { addRefs, makeNote, updateRef } from "@/lib/look";
 import type { NoteRef, NoteTag } from "@/lib/types";
@@ -49,7 +50,12 @@ function NoteScreen() {
             value={body}
             placeholder="Slow, soft and quiet. Warm grade with soft highlights."
             onChange={(e) => setText(e.target.value)}
+            aria-describedby="note-read"
           />
+          {/* Notes go with the brief when you generate; nothing else on the moodboard does (§5.16). */}
+          <p id="note-read" className={ui.hint}>
+            {MOODBOARD_PRIVACY}
+          </p>
         </div>
         <div className={ui.fieldset}>
           <span id="about" className={ui.label}>

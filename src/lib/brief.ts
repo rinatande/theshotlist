@@ -18,7 +18,7 @@ export function setBriefText(p: Project, text: string, now = new Date(), newId =
 /** Keep an online read on the brief (M6), so reopening it costs nothing. */
 export function saveRead(
   p: Project,
-  read: { hash: string; model: string; result: NonNullable<Brief["read"]>["result"] },
+  read: { hash: string; model: string; result: NonNullable<Brief["read"]>["result"]; moodboard?: NonNullable<Brief["read"]>["moodboard"] },
   now = new Date(),
 ): Project {
   const existing = projectBrief(p);

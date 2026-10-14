@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readContext, readHash, readPrompt, type ReadResult, type ReadShot } from "./read";
+import { boundMoodboard, MOODBOARD_CHARS, moodboardNotes, readContext, readHash, readPrompt, type ReadResult, type ReadShot } from "./read";
 import { addReadPicks, clearUnshot, readPicks } from "./readShots";
 import { shotNumbers } from "./shotNumbers";
 import { day, loc, project, shot } from "./test-helpers";
@@ -156,5 +156,51 @@ describe("progress while the read runs", () => {
     expect(progressOf('{"quoted":[{"label":"SUNRISE","kind":"time"}],"shots":[')).toEqual({ count: 0, subject: undefined });
     expect(progressOf('{"shots":[{"size":"CU","subject":"Descaler going into the tank","reason":"x"},{"size":"WS","subject":"Milk fro')).toEqual({ count: 1, subject: "Descaler going into the tank" });
     expect(progressOf('{"deliverables":[{"client":"Nagi","shots":[{"subject":"Hero shot of the bag"}]}],"shots":[{"subject":"Say \\"Nagi\\" out loud"}')).toEqual({ count: 2, subject: 'Say "Nagi" out loud' });
+  });
+});
+
+describe("the moodboard's notes (§5.16, Rina 14 Oct)", () => {
+  const note = (id: string, text: string, tags: ("mood" | "grade" | "pace" | "sound")[], addedAt = "2026-10-14T00:00:00.000Z") => ({ id, kind: "note" as const, text, tags, addedAt });
+  const frameRef = { id: "f", kind: "frame" as const, imageId: "img-f", width: 1080, height: 1920, addedAt: "2026-10-14T00:00:00.000Z" };
+
+  it("sends the notes' text and tags, oldest first, and no images", () => {
+    const p = project({ refs: [note("b", "Warm grade, soft highlights", ["grade", "mood"], "2026-10-14T02:00:00.000Z"), frameRef, note("a", "Slow and quiet", ["pace"], "2026-10-14T01:00:00.000Z")] });
+    const c = readContext(p);
+    expect(c.moodboard).toEqual([{ text: "Slow and quiet", tags: ["pace"] }, { text: "Warm grade, soft highlights", tags: ["mood", "grade"] }]);
+    const prompt = readPrompt({ brief: "Coffee morning", context: c });
+    expect(prompt).toContain('Moodboard notes (how it should feel): [PACE] "Slow and quiet"; [MOOD · GRADE] "Warm grade, soft highlights".');
+    expect(prompt).not.toMatch(/img-f/);
+  });
+
+  it("sends nothing extra for an empty moodboard, and keys the read as before", async () => {
+    const empty = project();
+    const framesOnly = project({ refs: [frameRef] });
+    expect(readContext(empty).moodboard).toBeUndefined();
+    expect(readContext(framesOnly).moodboard).toBeUndefined();
+    expect(readPrompt({ brief: "b", context: readContext(empty) })).not.toMatch(/Moodboard/);
+    expect(await readHash({ brief: "b", context: readContext(framesOnly) })).toBe(await readHash({ brief: "b", context: readContext(empty) }));
+  });
+
+  it("is a new read when a note's text or tags change", async () => {
+    const hash = (n: ReturnType<typeof note>) => readHash({ brief: "b", context: readContext(project({ refs: [n] })) });
+    const base = await hash(note("n", "Warm grade", ["grade"]));
+    expect(await hash(note("n", "Cool grade", ["grade"]))).not.toBe(base);
+    expect(await hash(note("n", "Warm grade", ["mood"]))).not.toBe(base);
+    expect(await hash(note("n", "Warm grade", ["grade"]))).toBe(base);
+  });
+
+  it("keeps a long moodboard under the cap, and counts what was left out", () => {
+    const long = "x".repeat(500);
+    const r = moodboardNotes({ refs: [note("a", long, [], "1"), note("b", long, [], "2"), note("c", long, [], "3")] });
+    expect(r.notes).toHaveLength(2);
+    expect(r.leftOut).toBe(1);
+    const huge = moodboardNotes({ refs: [note("a", "y".repeat(5000), [])] });
+    expect(huge.notes[0].text.length).toBe(MOODBOARD_CHARS);
+  });
+
+  it("is bounded on the server: only text and known tags, within the same cap", () => {
+    expect(boundMoodboard("nonsense")).toBeUndefined();
+    expect(boundMoodboard([{ text: "  Warm  ", tags: ["grade", "img", 3] }, { text: 7 }, null, { text: "" }])).toEqual([{ text: "Warm", tags: ["grade"] }]);
+    expect(boundMoodboard(Array.from({ length: 50 }, () => ({ text: "z".repeat(100), tags: [] })))!.reduce((n, x) => n + x.text.length, 0)).toBeLessThanOrEqual(MOODBOARD_CHARS);
   });
 });

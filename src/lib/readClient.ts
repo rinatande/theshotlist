@@ -1,7 +1,7 @@
 "use client";
 
 import { projectBrief } from "./brief";
-import { readContext, readHash, type ReadEvent, type ReadFailure, type ReadResponse } from "./read";
+import { moodboardNotes, readContext, readHash, type ReadEvent, type ReadFailure, type ReadResponse } from "./read";
 import type { Project } from "./types";
 
 /**
@@ -68,7 +68,9 @@ export function currentRead(project: Project) {
   return brief?.read && brief.read.text.trim() === brief.text.trim() ? brief.read : undefined;
 }
 
-export type ReadOutcome = { ok: true; response: ReadResponse; hash: string; cached: boolean } | { ok: false; failure: ReadFailure };
+export type ReadOutcome =
+  | { ok: true; response: ReadResponse; hash: string; cached: boolean; moodboard: ReturnType<typeof moodboardNotes> }
+  | { ok: false; failure: ReadFailure };
 
 /** Progress the read screen shows while it waits (Rina, 23 Sep). */
 export type ReadProgress = Exclude<ReadEvent, { type: "done" } | { type: "error" }>;
@@ -77,9 +79,11 @@ export async function runRead(project: Project, onProgress: (p: ReadProgress) =>
   const brief = projectBrief(project)?.text.trim() ?? "";
   const req = { brief, context: readContext(project) };
   const hash = await readHash(req);
+  // What went with it from the moodboard, so B9 can show it (§5.16).
+  const moodboard = moodboardNotes(project);
   const saved = projectBrief(project)?.read;
   if (saved && saved.hash === hash) {
-    return { ok: true, cached: true, hash, response: { result: saved.result, model: saved.model, remaining: -1 } };
+    return { ok: true, cached: true, hash, moodboard, response: { result: saved.result, model: saved.model, remaining: -1 } };
   }
   if (!navigator.onLine) return { ok: false, failure: { reason: "offline" } };
 
@@ -105,7 +109,7 @@ export async function runRead(project: Project, onProgress: (p: ReadProgress) =>
       for (const line of lines) {
         if (!line.trim()) continue;
         const event = JSON.parse(line) as ReadEvent;
-        if (event.type === "done") return { ok: true, cached: false, hash, response: event.response };
+        if (event.type === "done") return { ok: true, cached: false, hash, moodboard, response: event.response };
         if (event.type === "error") return { ok: false, failure: event.failure };
         onProgress(event);
       }

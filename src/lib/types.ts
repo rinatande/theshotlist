@@ -327,6 +327,8 @@ export interface Brief {
     result: import("./read").ReadResult;
     /** Inferred chips and deliverable subjects the person dropped on B9. */
     dropped: string[];
+    /** The moodboard notes sent with it, for B9 to show, and how many didn't fit (§5.16). Absent on older reads. */
+    moodboard?: { notes: { text: string; tags: NoteTag[] }[]; leftOut: number };
   };
 }
 

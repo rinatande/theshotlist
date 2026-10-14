@@ -556,6 +556,21 @@ On the platforms, she approved Claude's plan:
 
 *Artifacts:* `docs/design.md` §5.16; `src/lib/look.ts`; `src/lib/shareInbox.ts`; boards `L0`–`L9`, `S3g`, `N4c`, `N4d`; build-journal 12 Oct.
 
+### 2.35 The moodboard's words go out; its pictures don't — 14 Oct
+
+**What broke.** On 12 Oct the moodboard was built as *never sent to the read*: a clean privacy line, and a test enforced it. But it left the moodboard decorative. A note saying *"slow, soft, silent"* had no effect on a list full of handheld follows and six-second rolls. The half of the app meant to set the feel couldn't reach the half that plans the shots.
+
+**Options.**
+- **Keep it all on the phone,** and let the person carry the feel across in their head.
+- **Send the whole moodboard,** images included, and let the model look at them. That's richer, but it means photos leave the phone, it costs far more, and the moodboard's images are other people's work.
+- **Send the notes only:** the person's own words, as text, within a cap. They're shown back on B9, so what was sent can be checked.
+
+**Decision. [R]** Rina chose the notes only, as text and tags: images, frames and links never leave the phone. Her rule for the read: the notes shape *how* each moment is shot (movement, roll, angles, sound), never *what* is covered. Claude's plan kept gear in the promise of when a read re-runs, put the privacy line where a note is written, and capped the text. Rina accepted all three.
+
+**Why it's evidence.** A privacy rule was loosened deliberately, and narrowly. The line moved from "nothing" to "your words, not your pictures", and the interface says so twice: where you write a note, and on the screen that shows what was read. The test that once proved nothing was sent now proves exactly what is, and that a frame or a link never is.
+
+*Artifacts:* `docs/design.md` §5.6, §5.16; `src/lib/read.ts` (`moodboardNotes`, `boundMoodboard`); `src/lib/read.test.ts`; build-journal 14 Oct.
+
 ---
 
 ## 3. Artifact inventory

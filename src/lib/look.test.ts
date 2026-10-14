@@ -88,9 +88,18 @@ describe("pins", () => {
     expect(deleteRef(p, "a", at).shots.map((s) => s.refIds)).toEqual([[], []]);
   });
 
-  it("is never sent to the read", () => {
-    const p = project({ refs: [frame("a"), { id: "n", kind: "note", text: "Warm grade", tags: ["grade"], addedAt: "x" }], shots: [shot("s1", 0, { refIds: ["a"] })] });
-    expect(JSON.stringify(readContext(p))).not.toMatch(/Warm grade|img-a/);
+  it("only its notes are read — frames, links and why-lines stay on the phone (Rina, 14 Oct)", () => {
+    const p = project({
+      refs: [
+        frame("a", { why: "Backlit by the machine", source: "https://www.instagram.com/reel/C9x/" }),
+        makeLink("https://youtu.be/abc123?t=40", [40], at, "l")!,
+        { id: "n", kind: "note", text: "Warm grade", tags: ["grade"], addedAt: "x", why: "the colour" },
+      ],
+      shots: [shot("s1", 0, { refIds: ["a"] })],
+    });
+    const sent = JSON.stringify(readContext(p));
+    expect(sent).toMatch(/Warm grade/);
+    expect(sent).not.toMatch(/img-a|Backlit|C9x|abc123|youtu|the colour/);
   });
 });
 

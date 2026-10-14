@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { MAX_BRIEF, mergeTopUp, progressOf, READ_MAX_TOKENS, READ_MODEL, readEffort, READ_SCHEMA, READ_SYSTEM, readPrompt, shotTarget, topUpPrompt, type ReadEvent, type ReadFailure, type ReadRequest, type ReadResult } from "@/lib/read";
+import { boundMoodboard, MAX_BRIEF, mergeTopUp, progressOf, READ_MAX_TOKENS, READ_MODEL, readEffort, READ_SCHEMA, READ_SYSTEM, readPrompt, shotTarget, topUpPrompt, type ReadEvent, type ReadFailure, type ReadRequest, type ReadResult } from "@/lib/read";
 import { recordSpend, reserve, store } from "@/lib/server/quota";
 
 /**
@@ -48,6 +48,8 @@ export async function POST(request: Request) {
     onList: list(body.context.onList, 80, 200),
     gear: list(body.context.gear, 40, 160),
     frameRate: fr === "mixed" || [24, 25, 30, 50, 60, 120].includes(fr as number) ? fr : undefined,
+    // Moodboard notes: text and known tags only, within the phone's own cap (§5.16).
+    moodboard: boundMoodboard(body.context.moodboard),
   };
 
   const address = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";

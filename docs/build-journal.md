@@ -470,3 +470,21 @@ Claude also suggested "close up detail" rather than "insert shot", which on Pint
 - **320px,** measured in a production build: the tabs end at 216px of the 300 between the gutters, each tab is 49px tall, and nothing scrolls sideways.
 - **Found in passing:** at 320px, a group band's `4 FRAMES ›` wrapped and left the `›` on its own line. The count now stays on one line and the source name wraps instead.
 **Kind:** design call
+
+### 2026-10-14 · v1 · The moodboard's notes go to the read
+
+**Proposed:** Rina's brief: send the moodboard's notes with GENERATE so they shape the list, and show them on B9. Claude's plan disagreed on two points:
+- **Keep gear in the promise.** "won't run again unless you change the brief or your moodboard notes" would drop gear, which also changes the read. Claude proposed "the brief, your gear or your moodboard notes".
+- **No screen says "never sent to the read".** It only appears in a comment, a test and design.md. Claude proposed putting "Only your moodboard's notes are read. Images stay on this phone." under L6's textarea and on B9.
+
+The plan also added a cap of about 1,200 characters, with B9 saying how many notes were left out.
+**Rina:** "sure lets do what you recommend"
+**Changed:** Built as planned (design.md §5.6, §5.16).
+- **What's sent:** NOTE refs only, text and tags, oldest first.
+- **The server** applies the same bound to whatever a phone sends.
+- **The instructions** gained one rule: the notes shape how each moment is shot, never what's covered.
+- **The cache key** includes the notes when there are any. `READ_VERSION` went to 4.
+- **B9** shows FROM YOUR MOODBOARD from the saved read.
+- **A test caught a bug:** the line that tidies a note's spacing had lost its backslash on the way into the file, so it stripped every "s" ("soft" became "oft").
+- **Checked against a stand-in read only.** Playwright answered `/api/read` itself, so no paid read was run. Whether the notes actually change the list needs a real one.
+**Kind:** design call

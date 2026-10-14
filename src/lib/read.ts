@@ -3,7 +3,7 @@ import { DEFAULT_ON_CAMERA, onCameraLine } from "./cast";
 import { specLine } from "./gear";
 import { formatLine } from "./labels";
 import { runningOrder } from "./runningOrder";
-import type { Angle, Audio, BeatRole, Light, Movement, Project, Roll, ShotSize } from "./types";
+import type { Angle, Audio, BeatRole, Light, Movement, NoteTag, Project, Roll, ShotSize } from "./types";
 
 /**
  * The online read (design.md §5.6, M6): what the phone sends, what comes
@@ -54,9 +54,10 @@ export const MAX_BRIEF = 6000;
  * Bumped when the read's instructions change what it returns. v2 (23 Sep): the
  * budget became a count to hit — reads made before it came back short, so they
  * run once more instead of being served from the cache. v3 (14 Oct): each shot
- * says what to search for, naming things as the brief does (§5.17).
+ * says what to search for, naming things as the brief does (§5.17). v4 (14 Oct):
+ * the moodboard's notes go with the brief and shape how it's shot (§5.16).
  */
-export const READ_VERSION = 3;
+export const READ_VERSION = 4;
 
 export interface ReadContext {
   format: string;
@@ -71,6 +72,8 @@ export interface ReadContext {
   gear: string[];
   /** Frame rate the shoot is filmed at, when chosen: 24/25/30 means real time throughout. */
   frameRate?: number | "mixed";
+  /** The moodboard's notes, text and tags only (§5.16). Absent when there are none, so the read is as before. */
+  moodboard?: MoodNote[];
 }
 
 export interface ReadRequest {
@@ -138,6 +141,7 @@ const clock = (m?: number) => (m === undefined ? undefined : `${pad(Math.floor(m
 /** What the phone sends besides the brief — the least the model needs to plan well. */
 export function readContext(project: Project): ReadContext {
   const multi = project.days.length > 1;
+  const moodboard = moodboardNotes(project);
   const dayOf = (id?: string) => project.days.find((d) => d.id === id)?.index;
   return {
     format: formatLine(project.format),
@@ -151,8 +155,68 @@ export function readContext(project: Project): ReadContext {
     onCamera: onCameraLine(project.cast),
     gear: (project.gear ?? []).map((g) => `${g.name} (${g.specs.category}: ${specLine(g.specs)})`),
     frameRate: project.frameRate,
+    ...(moodboard.notes.length ? { moodboard: moodboard.notes } : {}),
   };
 }
+
+// ─── The moodboard's notes (Rina, 14 Oct) ─────────────────────────────────────
+
+/** A moodboard note as the read sees it: what it says and its tags. Nothing else leaves the phone. */
+export interface MoodNote {
+  text: string;
+  tags: NoteTag[];
+}
+
+/** Said wherever a note is written or shown as read: L6 and B9 (Rina, 14 Oct). */
+export const MOODBOARD_PRIVACY = "Only your moodboard's notes are read. Images stay on this phone.";
+
+/** About ten good notes. A long moodboard mustn't swamp the brief. */
+export const MOODBOARD_CHARS = 1200;
+const NOTE_TAGS: NoteTag[] = ["mood", "grade", "pace", "sound"];
+
+/** Keeps notes, oldest first, while they fit; a first note too long on its own is cut to fit. */
+function fitNotes(notes: MoodNote[]): { notes: MoodNote[]; leftOut: number } {
+  const kept: MoodNote[] = [];
+  let used = 0;
+  for (const n of notes) {
+    if (used + n.text.length <= MOODBOARD_CHARS) {
+      kept.push(n);
+      used += n.text.length;
+    } else if (!kept.length) {
+      kept.push({ ...n, text: `${n.text.slice(0, MOODBOARD_CHARS - 1).trimEnd()}…` });
+      used = MOODBOARD_CHARS;
+    }
+  }
+  return { notes: kept, leftOut: notes.length - kept.length };
+}
+
+/**
+ * What GENERATE sends from the moodboard: its NOTE refs' text and tags,
+ * oldest first. Frames, links, images and every ref's "why this one" stay on
+ * the phone. `leftOut` is how many didn't fit, for B9 to say.
+ */
+export function moodboardNotes(project: Pick<Project, "refs">): { notes: MoodNote[]; leftOut: number } {
+  const notes = (project.refs ?? [])
+    .flatMap((r) => (r.kind === "note" && r.text.trim() ? [{ text: r.text.trim(), tags: NOTE_TAGS.filter((t) => r.tags.includes(t)), at: r.addedAt }] : []))
+    .sort((a, b) => a.at.localeCompare(b.at))
+    .map(({ text, tags }) => ({ text, tags }));
+  return fitNotes(notes);
+}
+
+/** The server's bound on what a phone sent: only well-formed notes, known tags, within the same size. */
+export function boundMoodboard(v: unknown): MoodNote[] | undefined {
+  if (!Array.isArray(v)) return undefined;
+  const notes = v.flatMap((n): MoodNote[] => {
+    if (!n || typeof n !== "object" || typeof (n as MoodNote).text !== "string" || !(n as MoodNote).text.trim()) return [];
+    const tags = Array.isArray((n as MoodNote).tags) ? NOTE_TAGS.filter((t) => (n as MoodNote).tags.includes(t)) : [];
+    return [{ text: (n as MoodNote).text.trim(), tags }];
+  });
+  const kept = fitNotes(notes.slice(0, 40)).notes;
+  return kept.length ? kept : undefined;
+}
+
+/** "[MOOD · GRADE] "Slow, soft…"" — the request's moodboard line. */
+const noteLine = (n: MoodNote) => `${n.tags.length ? `[${n.tags.map((t) => t.toUpperCase()).join(" · ")}] ` : ""}"${n.text.replace(/\s+/g, " ")}"`;
 
 const SHOT_SCHEMA = {
   type: "object",
@@ -234,6 +298,7 @@ What good looks like:
 - Locations. If location names are given, set each shot's "location" to exactly one of those names where it clearly belongs, else null, and return "locations" empty. If none are given, suggest the places this shoot happens in "locations": short names a person would write on their own list ("Kitchen", "Nagi Coffee", "Higashiyama streets"), in the order they'd be shot, and as few as honestly cover it — usually one to four; a shoot in one room is one location. On a multi-day shoot give each its day, else null. Then set every shot's "location" to one of those names.
 - Set a shot's "day" to the day number only on a multi-day shoot, else null.
 - Gear. If gear is listed, plan only shots that gear can make, and when a piece of it earns a shot, name it in the reason line and say what it buys ("The 85 at f1.8 compresses the flame behind the hands"). Where the kit can't do something the brief wants, rewrite the shot so it can ("No tripod packed — set it on the table edge and hold twenty seconds") rather than dropping it. If no gear is listed, keep every shot possible with just a camera, and make each reason line about why the shot works, not about gear. Gear changes how you shoot a moment, never how many moments you cover.
+- Moodboard. If moodboard notes are given, they say how the film should feel. Let them shape how each moment is shot — movement, roll, the spread of angles and sound: "slow, soft, silent" means slower moves or none, longer rolls, more "surface" and "top-down" on the inserts, natural sound. Never add or drop moments because of a note; the brief decides what's covered.
 
 Chips:
 - "quoted": places, times of day, moods, subjects, clients and people exactly as they appear in the brief's own words. Never the project settings — no aspect ratios, lengths, shot counts or treatment names unless the brief itself says them.
@@ -288,6 +353,7 @@ export function readPrompt(req: ReadRequest): string {
     `On camera: ${c.onCamera}.`,
     c.gear?.length ? `Gear coming: ${c.gear.join("; ")}.` : "No gear listed.",
     ...frameRateLine(c.frameRate),
+    ...(c.moodboard?.length ? [`Moodboard notes (how it should feel): ${c.moodboard.map(noteLine).join("; ")}.`] : []),
     c.onList.length ? `Already on the list (don't repeat): ${c.onList.map((s) => `"${s}"`).join("; ")}.` : "Nothing on the list yet.",
     "",
     "Brief:",
@@ -297,8 +363,8 @@ export function readPrompt(req: ReadRequest): string {
 
 /**
  * The brief text and the gear, hashed. The screen promises a read "won't run
- * again unless you change the brief or your gear" (§5.6), so nothing else goes
- * in — adding the read's own shots used to change the planned count and buy a
+ * again unless you change the brief, your gear or your moodboard notes" (§5.6),
+ * so nothing else goes in — adding the read's own shots used to change the planned count and buy a
  * second read. Gear and frame rate joined in v1 (Rina, 23 Sep), and READ_VERSION
  * lets a change to the instructions re-run reads they got wrong.
  */
@@ -307,8 +373,10 @@ export async function readHash(req: ReadRequest): Promise<string> {
   const frameRate = req.context.frameRate;
   // A changed cast is a new read, like gear; the default self-shoot keeps older reads' keys (§5.8).
   const onCamera = req.context.onCamera !== DEFAULT_ON_CAMERA ? req.context.onCamera : undefined;
+  // Notes change the read, so they're in the key — only when there are some, so an empty moodboard keys as before.
+  const moodboard = req.context.moodboard?.length ? req.context.moodboard : undefined;
   const bytes = new TextEncoder().encode(
-    JSON.stringify({ model: READ_MODEL, v: READ_VERSION, brief: req.brief.trim(), ...(gear.length ? { gear } : {}), ...(frameRate !== undefined ? { frameRate } : {}), ...(onCamera ? { onCamera } : {}) }),
+    JSON.stringify({ model: READ_MODEL, v: READ_VERSION, brief: req.brief.trim(), ...(gear.length ? { gear } : {}), ...(frameRate !== undefined ? { frameRate } : {}), ...(onCamera ? { onCamera } : {}), ...(moodboard ? { moodboard } : {}) }),
   );
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");

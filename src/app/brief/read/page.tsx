@@ -9,7 +9,7 @@ import { StepHeader } from "@/components/StepHeader";
 import ui from "@/components/ui.module.css";
 import { projectBrief, saveRead, setDropped } from "@/lib/brief";
 import { db } from "@/lib/db";
-import { readContext, shotTarget, type ReadFailure } from "@/lib/read";
+import { MOODBOARD_PRIVACY, readContext, shotTarget, type ReadFailure } from "@/lib/read";
 import { runRead, type ReadProgress } from "@/lib/readClient";
 import type { Project } from "@/lib/types";
 import { saveProject, useProject } from "@/lib/useProject";
@@ -61,7 +61,7 @@ function Review({ project }: { project: Project }) {
       if (!outcome.cached) {
         setProgress((prev) => ({ ...prev, stage: "finishing" }));
         const latest = (await db.projects.get(project.id)) ?? project;
-        await saveProject(saveRead(latest, { hash: outcome.hash, model: outcome.response.model, result: outcome.response.result }));
+        await saveProject(saveRead(latest, { hash: outcome.hash, model: outcome.response.model, result: outcome.response.result, moodboard: outcome.moodboard.notes.length ? outcome.moodboard : undefined }));
       }
       setState({ phase: "read", cached: outcome.cached, remaining: outcome.response.remaining });
     })();
@@ -196,6 +196,25 @@ function FullRead({ project, state, back }: { project: Project; state: { cached:
           </div>
         )}
 
+        {/* What went with the brief from the moodboard, so it's checkable (§5.16, Rina 14 Oct). */}
+        {r.moodboard && r.moodboard.notes.length > 0 && (
+          <div className={styles.matched}>
+            <span className={ui.boxHeading}>FROM YOUR MOODBOARD</span>
+            <ul className={read.notes}>
+              {r.moodboard.notes.map((n, i) => (
+                <li key={i} className={read.note}>
+                  <span className={read.noteTags}>{["NOTE", ...n.tags.map((t) => t.toUpperCase())].join(" · ")}</span>
+                  <span>{n.text}</span>
+                </li>
+              ))}
+            </ul>
+            <p className={ui.hint}>
+              {r.moodboard.leftOut > 0 && (r.moodboard.leftOut === 1 ? "1 longer note didn't fit and wasn't read. " : `${r.moodboard.leftOut} notes didn't fit and weren't read. `)}
+              They shape how it&apos;s shot, not what. {MOODBOARD_PRIVACY}
+            </p>
+          </div>
+        )}
+
         {r.result.deliverables.map((d) => (
           <div key={d.client} className={read.deliverables}>
             <div className={read.client}>
@@ -230,8 +249,8 @@ function FullRead({ project, state, back }: { project: Project; state: { cached:
           <span className={ui.boxHeading}>{state.cached ? "READ ALREADY" : "READ ONCE"}</span>
           <p className={ui.boxText}>
             {state.cached
-              ? "Read earlier from this same brief and gear, so it didn't run again — reopening this costs nothing."
-              : "One request, just now. It won't run again unless you change the brief or your gear — reopening this costs nothing."}{" "}
+              ? "Read earlier from this same brief, gear and moodboard notes, so it didn't run again — reopening this costs nothing."
+              : "One request, just now. It won't run again unless you change the brief, your gear or your moodboard notes — reopening this costs nothing."}{" "}
             Sent once to be read. Not stored by this app.
           </p>
           {state.remaining >= 0 && <p className={ui.hint}>{state.remaining === 1 ? "1 full read left today." : `${state.remaining} full reads left today.`}</p>}

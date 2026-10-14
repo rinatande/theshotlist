@@ -172,3 +172,31 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* FROM YOUR MOODBOARD: the notes sent with the brief (§5.16). */
+.notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: var(--band);
+  font-size: var(--text-13);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.noteTags {
+  font-size: var(--text-11);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+}
